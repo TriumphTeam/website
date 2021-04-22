@@ -1,4 +1,4 @@
-import {createMuiTheme} from "@material-ui/core";
+import {createMuiTheme} from "@material-ui/core"
 import {green} from "@material-ui/core/colors"
 
 export const darkTheme = createMuiTheme({
@@ -9,7 +9,7 @@ export const darkTheme = createMuiTheme({
       paper: "#1A202E",
     },
     primary: {
-      main: "#B06AB3",
+      main: "#1A1A1D",
     },
     secondary: {
       main: green[500],
@@ -17,5 +17,8 @@ export const darkTheme = createMuiTheme({
     text: {
       primary: "#96a2b4",
     },
+  },
+  typography: {
+    fontFamily: `"Cabin", sans-serif`,
   },
 })
