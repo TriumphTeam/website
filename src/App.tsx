@@ -4,6 +4,7 @@ import {ThemeProvider} from "@material-ui/core/styles"
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom"
 import Home from "./pages/Home"
 import {darkTheme} from "./components/theme/DarkTheme"
+import NotFound from "./pages/NotFound"
 
 const baseStyle = makeStyles(theme => ({
   body: {
@@ -16,6 +17,13 @@ function ThemedApp() {
       <Router>
         <Switch>
           <Route path="/" exact component={Home}/>
+          <Route path="/plugin/:name" exact component={Home}/>
+          <Route path="/lib/:name" exact component={Home}/>
+
+          <Route path="/plugin/:name/wiki" component={Home}/>
+          <Route path="/lib/:name/wiki" component={Home}/>
+
+          <Route component={NotFound} />
         </Switch>
       </Router>
   )
