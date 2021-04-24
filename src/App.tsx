@@ -5,6 +5,7 @@ import {BrowserRouter as Router, Route, Switch} from "react-router-dom"
 import Home from "./pages/Home"
 import {darkTheme} from "./components/theme/DarkTheme"
 import NotFound from "./pages/NotFound"
+import Wiki from "./pages/Wiki"
 
 const baseStyle = makeStyles(theme => ({
   body: {
@@ -17,11 +18,9 @@ function ThemedApp() {
       <Router>
         <Switch>
           <Route path="/" exact component={Home}/>
-          <Route path="/plugin/:name" exact component={Home}/>
-          <Route path="/lib/:name" exact component={Home}/>
 
-          <Route path="/plugin/:name/wiki" component={Home}/>
-          <Route path="/lib/:name/wiki" component={Home}/>
+          <Route path="/plugin/:name" component={Wiki}/>
+          <Route path="/lib/:name" component={Wiki}/>
 
           <Route component={NotFound} />
         </Switch>
