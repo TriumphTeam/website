@@ -19,6 +19,6 @@ export const darkTheme = createMuiTheme({
     },
   },
   typography: {
-    fontFamily: `"Cabin", sans-serif`,
+    fontFamily: `"Roboto", sans-serif`,
   },
 })

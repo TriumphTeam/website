@@ -1,5 +1,5 @@
 import React from "react"
-import {createStyles, Theme, makeStyles} from "@material-ui/core/styles"
+import {createStyles, Theme, makeStyles, withStyles} from "@material-ui/core/styles"
 import Drawer from "@material-ui/core/Drawer"
 import List from "@material-ui/core/List"
 import Divider from "@material-ui/core/Divider"
@@ -8,17 +8,13 @@ import ListItem from "@material-ui/core/ListItem"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
 import Toolbar from "@material-ui/core/Toolbar"
+import {BarText} from "./components/BarText"
+import {BarDropdown} from "./components/BarDropdown"
 
-const drawerWidth = 240
+const drawerWidth = 350
 
 export default function SideBar() {
   const classes = useStyles()
-
-  const [open, setOpen] = React.useState(false)
-
-  const handleClick = () => {
-    setOpen(!open)
-  }
 
   return (
       <Drawer
@@ -31,19 +27,13 @@ export default function SideBar() {
         <Toolbar className={classes.toolBar}/>
         <div className={classes.drawerContainer}>
           <List>
-            {["item", "item", "item", "item"].map((text, index) => (
+            <BarText text="Hello"/>
+            {["item", "item", "item", "item"].map((text) => (
                 <>
-                  <ListItem button onClick={handleClick}>
+                  <BarDropdown text={"Test"} defaultOpen={false}/>
+                  <ListItem button key={text}>
                     <ListItemText primary={text}/>
-                    {open ? (<i className="fas fa-angle-up"/>) : (<i className="fas fa-angle-right"/>)}
                   </ListItem>
-                  <Collapse in={open} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-                      <ListItem button className={classes.nested}>
-                        <ListItemText primary="Starred"/>
-                      </ListItem>
-                    </List>
-                  </Collapse>
                 </>
             ))}
           </List>
