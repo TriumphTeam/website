@@ -1,6 +1,7 @@
 @file:OptIn(
     KtorExperimentalLocationsAPI::class,
-    KtorExperimentalAPI::class
+    KtorExperimentalAPI::class,
+    ExperimentalPathApi::class,
 )
 
 package dev.triumphteam.backend
@@ -23,6 +24,7 @@ import io.ktor.serialization.json
 import io.ktor.util.KtorExperimentalAPI
 import me.mattstudios.config.SettingsManager
 import java.nio.file.Paths
+import kotlin.io.path.ExperimentalPathApi
 
 fun Application.module() {
 

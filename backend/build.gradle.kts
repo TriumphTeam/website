@@ -43,6 +43,9 @@ dependencies {
 
     implementation("me.mattstudios:triumph-config:1.0.5-SNAPSHOT")
 
+    implementation("net.lingala.zip4j:zip4j:1.3.2")
+    implementation("commons-io:commons-io:2.8.0")
+
     /*implementation("com.zaxxer:HikariCP:4.0.1")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")

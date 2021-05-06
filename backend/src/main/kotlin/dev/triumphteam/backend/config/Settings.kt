@@ -6,10 +6,13 @@ import me.mattstudios.config.properties.Property
 
 object Settings : SettingsHolder {
 
-    @Path("repo-url")
+    @Path("repo.url")
     val REPO = Property.create("")
 
-    @Path("latest-commit")
+    @Path("repo.latest-commit")
     val LATEST_COMMIT = Property.create("")
+
+    @Path("repo.download")
+    val REPO_DOWNLOAD = Property.create("")
 
 }
