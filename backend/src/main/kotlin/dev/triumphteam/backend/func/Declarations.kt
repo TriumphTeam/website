@@ -9,14 +9,16 @@ import kotlinx.serialization.json.Json
 /**
  * Creates a CIO client
  */
-internal fun makeClient() = HttpClient(CIO) {
+fun makeClient() = HttpClient(CIO) {
     install(JsonFeature) {
         serializer = KotlinxSerializer(
             Json {
                 ignoreUnknownKeys = true
-                prettyPrint = true
-                isLenient = true
             }
         )
     }
 }
+
+private const val GITHUB_API = "https://api.github.com/"
+
+fun commits(repo: String) = "${GITHUB_API}repos/$repo/commits"

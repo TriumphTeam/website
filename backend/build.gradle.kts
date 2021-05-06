@@ -1,7 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.0-RC"
+    kotlin("jvm") version "1.5.0"
+    kotlin("plugin.serialization") version "1.5.0"
     id("com.github.johnrengelman.shadow") version "7.0.0"
     application
 }
@@ -11,6 +12,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven("https://repo.mattstudios.me/artifactory/public/")
 }
 
 val ktorVersion = "1.5.4"
@@ -36,7 +38,10 @@ dependencies {
     implementation("io.ktor:ktor-client-serialization:$ktorVersion")
 
     implementation("com.ryanharter.ktor:ktor-moshi:1.0.1")
+    implementation("io.ktor:ktor-serialization:$ktorVersion")
     implementation("io.ktor:ktor-gson:$ktorVersion")
+
+    implementation("me.mattstudios:triumph-config:1.0.5-SNAPSHOT")
 
     /*implementation("com.zaxxer:HikariCP:4.0.1")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
@@ -64,4 +69,5 @@ tasks {
     withType<Test> {
         useJUnitPlatform()
     }
+
 }
