@@ -1,11 +1,13 @@
 package dev.triumphteam.backend.func
 
 import dev.triumphteam.backend.LOGGER
+import dev.triumphteam.backend.config.BeanFactory
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import kotlinx.serialization.json.Json
+import me.mattstudios.config.properties.Property
 import net.lingala.zip4j.core.ZipFile
 import java.io.File
 import java.nio.file.Files
@@ -52,4 +54,11 @@ fun File.unzipTo(output: File) {
 private fun File.clear() {
     deleteRecursively()
     mkdir()
+}
+
+/**
+ * Bean factory function to create properties
+ */
+fun <B : Any> create(bean: BeanFactory<B>): Property<B> {
+    return Property.create(bean.createDefault())
 }

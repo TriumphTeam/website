@@ -1,5 +1,6 @@
 package dev.triumphteam.backend.feature
 
+import dev.triumphteam.backend.CONFIG
 import dev.triumphteam.backend.config.Settings
 import dev.triumphteam.backend.func.commits
 import dev.triumphteam.backend.func.log
@@ -12,7 +13,6 @@ import io.ktor.util.AttributeKey
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import me.mattstudios.config.SettingsManager
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
@@ -21,10 +21,7 @@ import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.Path
 
 @ExperimentalPathApi
-class Github(configuration: Configuration) {
-
-    private val config = configuration.config
-    private val client = configuration.client
+class Github(private val client: HttpClient) {
 
     private val downloadFolder = createOrGet(Path("data", "download"))
     private val repoFolder = createOrGet(Path("data", "repo"))
@@ -35,22 +32,23 @@ class Github(configuration: Configuration) {
 
     private fun checkCommit() {
         GlobalScope.launch {
-            val latestCommit = client.get<Array<Commit>>(commits(config[Settings.REPO])).firstOrNull() ?: return@launch
+            val latestCommit =
+                client.get<Array<Commit>>(commits(CONFIG[Settings.REPO].name)).firstOrNull() ?: return@launch
 
-            if (config[Settings.LATEST_COMMIT] == latestCommit.sha && !repoFolder.listFiles().isNullOrEmpty()) {
+            if (CONFIG[Settings.REPO].latestCommit == latestCommit.sha && !repoFolder.listFiles().isNullOrEmpty()) {
                 return@launch
             }
 
             log { "New commit found." }
             cloneRepository(downloadFolder)
 
-            config[Settings.LATEST_COMMIT] = latestCommit.sha
-            config.save()
+            CONFIG[Settings.REPO].latestCommit = latestCommit.sha
+            CONFIG.save()
         }
     }
 
     private fun cloneRepository(folder: File) {
-        URL(config[Settings.REPO_DOWNLOAD]).openStream().use { input ->
+        URL(CONFIG[Settings.REPO].downloadLink).openStream().use { input ->
             val zip = Path(folder.path, "repo.zip").toFile()
             FileOutputStream(zip).use { output ->
                 log { "Downloading repository." }
@@ -82,18 +80,7 @@ class Github(configuration: Configuration) {
      * Simple configuration for the feature builder
      */
     class Configuration {
-        lateinit var config: SettingsManager
-            private set
         lateinit var client: HttpClient
-            private set
-
-        fun config(config: SettingsManager) {
-            this.config = config
-        }
-
-        fun client(client: HttpClient) {
-            this.client = client
-        }
     }
 
     /**
@@ -103,7 +90,7 @@ class Github(configuration: Configuration) {
         override val key = AttributeKey<Github>("Github")
 
         override fun install(pipeline: Application, configure: Configuration.() -> Unit): Github {
-            return Github(Configuration().apply(configure))
+            return Github(Configuration().apply(configure).client)
         }
     }
 

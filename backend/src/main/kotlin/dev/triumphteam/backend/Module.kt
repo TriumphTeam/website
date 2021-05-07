@@ -6,7 +6,6 @@
 
 package dev.triumphteam.backend
 
-import dev.triumphteam.backend.config.Settings
 import dev.triumphteam.backend.feature.Github
 import dev.triumphteam.backend.func.makeClient
 import dev.triumphteam.backend.location.Api
@@ -22,27 +21,26 @@ import io.ktor.response.respondText
 import io.ktor.routing.routing
 import io.ktor.serialization.json
 import io.ktor.util.KtorExperimentalAPI
-import me.mattstudios.config.SettingsManager
-import java.nio.file.Paths
+import org.commonmark.parser.Parser
+import org.commonmark.renderer.html.HtmlRenderer
 import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.Path
 
 fun Application.module() {
-
-    val config = SettingsManager
-        .from(Paths.get("data", "config.yml"))
-        .configurationData(Settings::class.java)
-        .create()
-
-    val client = makeClient()
-
     install(Locations)
     install(ForwardedHeaderSupport)
-    install(ContentNegotiation) {
-        json()
-    }
+    install(ContentNegotiation) { json() }
     install(Github) {
-        config(config)
-        client(client)
+        client = makeClient()
+    }
+
+    val repo = Path("data", "repo").toFile()
+    repo.walkTopDown().forEach {
+        if (it.extension != "md") return@forEach
+        val parser = Parser.builder().build()
+        val document = parser.parse(it.readText())
+        val renderer = HtmlRenderer.builder().build()
+        println(renderer.render(document))
     }
 
     routing {

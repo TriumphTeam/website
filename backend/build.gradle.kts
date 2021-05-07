@@ -19,7 +19,7 @@ val ktorVersion = "1.5.4"
 val logbackVersion = "1.2.1"
 val junitVersion = "5.6.0"
 val assertjVersion = "3.19.0"
-val exposedVersion = "0.29.1"
+val exposedVersion = "0.30.1"
 
 dependencies {
     implementation(kotlin("stdlib"))
@@ -44,13 +44,14 @@ dependencies {
     implementation("me.mattstudios:triumph-config:1.0.5-SNAPSHOT")
 
     implementation("net.lingala.zip4j:zip4j:1.3.2")
-    implementation("commons-io:commons-io:2.8.0")
 
-    /*implementation("com.zaxxer:HikariCP:4.0.1")
+    implementation("org.commonmark:commonmark:0.17.1")
+
+    implementation("com.zaxxer:HikariCP:4.0.1")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
-    implementation("org.mariadb.jdbc:mariadb-java-client:2.7.2")*/
+    implementation("org.mariadb.jdbc:mariadb-java-client:2.7.2")
 
     // Testing
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
