@@ -3,10 +3,13 @@ package dev.triumphteam.backend.feature
 import dev.triumphteam.backend.CONFIG
 import dev.triumphteam.backend.config.Settings
 import dev.triumphteam.backend.func.commits
+import dev.triumphteam.backend.func.folder
 import dev.triumphteam.backend.func.log
 import dev.triumphteam.backend.func.unzipTo
 import io.ktor.application.Application
 import io.ktor.application.ApplicationFeature
+import io.ktor.application.MissingApplicationFeatureException
+import io.ktor.application.featureOrNull
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.util.AttributeKey
@@ -16,21 +19,23 @@ import kotlinx.serialization.Serializable
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
-import java.nio.file.Path
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.Path
 
 @ExperimentalPathApi
-class Github(private val client: HttpClient) {
+class Github(
+    private val client: HttpClient,
+    private val application: Application
+) {
 
-    private val downloadFolder = createOrGet(Path("data", "download"))
-    private val repoFolder = createOrGet(Path("data", "repo"))
+    private val downloadFolder = folder(Path("data", "download"))
+    private val repoFolder = folder(Path("data", "repo"))
 
     init {
-        checkCommit()
+        run()
     }
 
-    private fun checkCommit() {
+    private fun run() {
         GlobalScope.launch {
             val latestCommit =
                 client.get<Array<Commit>>(commits(CONFIG[Settings.REPO].name)).firstOrNull() ?: return@launch
@@ -44,6 +49,9 @@ class Github(private val client: HttpClient) {
 
             CONFIG[Settings.REPO].latestCommit = latestCommit.sha
             CONFIG.save()
+
+            val project = application.featureOrNull(Project) ?: throw MissingApplicationFeatureException(Project.key)
+            project.loadAll(repoFolder)
         }
     }
 
@@ -60,12 +68,6 @@ class Github(private val client: HttpClient) {
             zip.delete()
             log { "Unzipped and deleted zip file." }
         }
-    }
-
-    private fun createOrGet(path: Path): File {
-        val folder = path.toFile()
-        if (!folder.exists()) folder.mkdirs()
-        return folder
     }
 
     /**
@@ -90,7 +92,8 @@ class Github(private val client: HttpClient) {
         override val key = AttributeKey<Github>("Github")
 
         override fun install(pipeline: Application, configure: Configuration.() -> Unit): Github {
-            return Github(Configuration().apply(configure).client)
+            val configuration = Configuration().apply(configure)
+            return Github(configuration.client, pipeline)
         }
     }
 

@@ -7,6 +7,7 @@
 package dev.triumphteam.backend
 
 import dev.triumphteam.backend.feature.Github
+import dev.triumphteam.backend.feature.Project
 import dev.triumphteam.backend.func.makeClient
 import dev.triumphteam.backend.location.Api
 import io.ktor.application.Application
@@ -21,27 +22,17 @@ import io.ktor.response.respondText
 import io.ktor.routing.routing
 import io.ktor.serialization.json
 import io.ktor.util.KtorExperimentalAPI
-import org.commonmark.parser.Parser
-import org.commonmark.renderer.html.HtmlRenderer
 import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.Path
 
 fun Application.module() {
+
     install(Locations)
     install(ForwardedHeaderSupport)
     install(ContentNegotiation) { json() }
-    install(Github) {
-        client = makeClient()
-    }
 
-    val repo = Path("data", "repo").toFile()
-    repo.walkTopDown().forEach {
-        if (it.extension != "md") return@forEach
-        val parser = Parser.builder().build()
-        val document = parser.parse(it.readText())
-        val renderer = HtmlRenderer.builder().build()
-        println(renderer.render(document))
-    }
+    // Custom
+    install(Github) { client = makeClient() }
+    install(Project)
 
     routing {
         get<Api.Test> {

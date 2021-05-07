@@ -11,6 +11,7 @@ import me.mattstudios.config.properties.Property
 import net.lingala.zip4j.core.ZipFile
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 
 /**
@@ -61,4 +62,10 @@ private fun File.clear() {
  */
 fun <B : Any> create(bean: BeanFactory<B>): Property<B> {
     return Property.create(bean.createDefault())
+}
+
+fun folder(path: Path): File {
+    val folder = path.toFile()
+    if (!folder.exists()) folder.mkdirs()
+    return folder
 }
