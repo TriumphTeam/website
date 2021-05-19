@@ -13,10 +13,10 @@ import io.ktor.application.featureOrNull
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.util.AttributeKey
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 import kotlin.io.path.ExperimentalPathApi
@@ -32,20 +32,22 @@ class Github(
     private val repoFolder = folder(Path("data", "repo"))
 
     init {
-        run()
+        checkRepository()
     }
 
-    private fun run() {
-        GlobalScope.launch {
+    private fun checkRepository() {
+        CoroutineScope(IO).launch {
+
             val latestCommit =
                 client.get<Array<Commit>>(commits(CONFIG[Settings.REPO].name)).firstOrNull() ?: return@launch
 
             if (CONFIG[Settings.REPO].latestCommit == latestCommit.sha && !repoFolder.listFiles().isNullOrEmpty()) {
-                return@launch
+                //return@launch
             }
 
             log { "New commit found." }
-            cloneRepository(downloadFolder)
+
+            //cloneRepository()
 
             CONFIG[Settings.REPO].latestCommit = latestCommit.sha
             CONFIG.save()
@@ -55,14 +57,16 @@ class Github(
         }
     }
 
-    private fun cloneRepository(folder: File) {
+    private fun cloneRepository() {
         URL(CONFIG[Settings.REPO].downloadLink).openStream().use { input ->
-            val zip = Path(folder.path, "repo.zip").toFile()
+            val zip = Path(downloadFolder.path, "repo.zip").toFile()
+
             FileOutputStream(zip).use { output ->
                 log { "Downloading repository." }
                 input.copyTo(output)
                 log { "Downloading done, saved to `${zip.path}`." }
             }
+
             log { "Unzipping repository." }
             zip.unzipTo(repoFolder)
             zip.delete()

@@ -19,12 +19,16 @@ import java.nio.file.StandardCopyOption
  */
 fun makeClient() = HttpClient(CIO) {
     install(JsonFeature) {
-        serializer = KotlinxSerializer(
-            Json {
-                ignoreUnknownKeys = true
-            }
-        )
+        serializer = KotlinxSerializer(kotlinx)
     }
+}
+
+/**
+ * Main Kotlinx json provider
+ */
+val kotlinx = Json {
+    ignoreUnknownKeys = true
+    isLenient = true
 }
 
 private const val GITHUB_API = "https://api.github.com/"
@@ -36,6 +40,11 @@ fun commits(repo: String) = "${GITHUB_API}repos/$repo/commits"
  * Simple logging function
  */
 fun log(message: () -> String) = LOGGER.info(message())
+
+/**
+ * Simple logging function for wanrings
+ */
+fun warn(message: () -> String) = LOGGER.warn(message())
 
 /**
  * Unzips file into the output folder

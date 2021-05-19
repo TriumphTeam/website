@@ -20,6 +20,8 @@ subprojects {
         maven("https://repo.mattstudios.me/artifactory/public/")
     }
 
+    // TODO organize versions mess
+    val ktorVersion = "1.5.4"
     val logbackVersion = "1.2.1"
     val junitVersion = "5.6.0"
     val assertjVersion = "3.19.0"
@@ -27,6 +29,7 @@ subprojects {
     dependencies {
         implementation(kotlin("stdlib"))
         implementation("ch.qos.logback:logback-classic:$logbackVersion")
+        implementation("io.ktor:ktor-serialization:$ktorVersion")
 
         testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
         testImplementation("org.assertj:assertj-core:${assertjVersion}")

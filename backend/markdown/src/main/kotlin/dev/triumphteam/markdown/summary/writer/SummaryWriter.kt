@@ -1,4 +1,9 @@
-package dev.triumphteam.markdown.writer
+package dev.triumphteam.markdown.summary.writer
+
+import dev.triumphteam.markdown.summary.Entry
+import dev.triumphteam.markdown.summary.Header
+import dev.triumphteam.markdown.summary.Link
+import dev.triumphteam.markdown.summary.Menu
 
 /**
  * This class is quite bad, but it works as intended,
@@ -101,12 +106,7 @@ class SummaryWriter {
 
 }
 
-sealed interface Entry
-data class Header(val literal: String) : Entry
-data class Link(val literal: String, val destination: String) : Entry
-data class Menu(val main: Link, val children: List<Link>) : Entry
-
-class LinkBuilder(private var destination: String? = null) {
+private class LinkBuilder(private var destination: String? = null) {
 
     private val stringBuilder = StringBuilder()
 
@@ -116,7 +116,7 @@ class LinkBuilder(private var destination: String? = null) {
 
 }
 
-class MenuBuilder(private var main: Link? = null) {
+private class MenuBuilder(private var main: Link? = null) {
 
     private val children = mutableListOf<Link>()
 

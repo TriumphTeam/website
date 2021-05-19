@@ -1,7 +1,6 @@
-package dev.triumphteam.markdown
+package dev.triumphteam.markdown.summary
 
-import dev.triumphteam.markdown.renderer.SummaryRenderer
-import dev.triumphteam.markdown.writer.Entry
+import dev.triumphteam.markdown.summary.renderer.SummaryRenderer
 import org.commonmark.parser.Parser
 
 object SummaryParser {

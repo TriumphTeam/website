@@ -21,7 +21,6 @@ dependencies {
     implementation("io.ktor:ktor-client-serialization:$ktorVersion")
 
     implementation("com.ryanharter.ktor:ktor-moshi:1.0.1")
-    implementation("io.ktor:ktor-serialization:$ktorVersion")
     implementation("io.ktor:ktor-gson:$ktorVersion")
 
     implementation("me.mattstudios:triumph-config:1.0.5-SNAPSHOT")

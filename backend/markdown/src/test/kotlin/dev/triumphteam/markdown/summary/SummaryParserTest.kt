@@ -1,9 +1,5 @@
 package dev.triumphteam.markdown.summary
 
-import dev.triumphteam.markdown.SummaryParser
-import dev.triumphteam.markdown.writer.Header
-import dev.triumphteam.markdown.writer.Link
-import dev.triumphteam.markdown.writer.Menu
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
