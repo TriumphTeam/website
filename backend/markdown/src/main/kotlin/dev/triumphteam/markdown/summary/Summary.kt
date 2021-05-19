@@ -25,3 +25,6 @@ val Entry.type: UByte
         is Link -> 1u
         is Menu -> 2u
     }
+
+@Serializable
+data class Summary(val entries: List<Entry>)

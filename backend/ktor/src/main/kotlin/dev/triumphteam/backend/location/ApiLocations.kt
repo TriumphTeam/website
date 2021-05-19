@@ -15,4 +15,7 @@ class Api {
     @Location("/test")
     class Test
 
+    @Location("/summary/{project}")
+    data class Summary(val project: String)
+
 }

@@ -16,10 +16,6 @@ import io.ktor.util.AttributeKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -31,21 +27,6 @@ import kotlin.io.path.ExperimentalPathApi
 
 @ExperimentalPathApi
 class Project {
-
-    private val serializer = SerializersModule {
-        polymorphic(Entry::class) {
-            subclass(Header::class)
-            subclass(Link::class)
-            subclass(Menu::class)
-        }
-    }
-
-    private val json = Json {
-        ignoreUnknownKeys = true
-        isLenient = true
-        prettyPrint = true
-        serializersModule = serializer
-    }
 
     fun loadAll(repoFolder: File) {
         GlobalScope.launch(Dispatchers.IO) {
