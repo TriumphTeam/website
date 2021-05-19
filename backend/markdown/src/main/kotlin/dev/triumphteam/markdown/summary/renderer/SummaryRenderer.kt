@@ -1,7 +1,7 @@
-package dev.triumphteam.markdown.renderer
+package dev.triumphteam.markdown.summary.renderer
 
-import dev.triumphteam.markdown.writer.Entry
-import dev.triumphteam.markdown.writer.SummaryWriter
+import dev.triumphteam.markdown.summary.Entry
+import dev.triumphteam.markdown.summary.writer.SummaryWriter
 import org.commonmark.node.AbstractVisitor
 import org.commonmark.node.BulletList
 import org.commonmark.node.Document

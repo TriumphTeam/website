@@ -31,41 +31,6 @@ fun main() {
         )
     }
 
-    /*fun test(list: List<*>, id: EntityID<Int>? = null) {
-        var lastId = id
-        list.forEachIndexed { i, it ->
-
-            if (it is List<*>) {
-                test(it, lastId)
-                return@forEachIndexed
-            }
-
-            if (it !is String) return@forEachIndexed
-
-            transaction {
-                lastId = Entries.insertAndGetId { entry ->
-                    entry[index] = 1
-                    entry[text] = it
-                    entry[type] = 0u
-                    entry[parent] = id
-                    entry[position] = i.toUInt()
-                }
-            }
-        }
-    }*/
-
-    /*repeat(10) {
-        if (it == 9) sleep(TimeUnit.SECONDS.toMillis(60))
-        val time = measureTimeMillis {
-            transaction {
-                Entries.select { Entries.index eq 1 }.forEach {
-                    println(it)
-                }
-            }
-        }
-        println("Get took ${time}ms")
-    }*/
-
     embeddedServer(CIO, module = Application::module, port = 8000).start(true)
 }
 

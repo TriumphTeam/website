@@ -35,19 +35,20 @@ class Github(
         checkRepository()
     }
 
-    private fun checkRepository() {
+    fun checkRepository() {
         CoroutineScope(IO).launch {
 
             val latestCommit =
                 client.get<Array<Commit>>(commits(CONFIG[Settings.REPO].name)).firstOrNull() ?: return@launch
 
             if (CONFIG[Settings.REPO].latestCommit == latestCommit.sha && !repoFolder.listFiles().isNullOrEmpty()) {
-                //return@launch
+                log { "No new commits found." }
+                return@launch
             }
 
             log { "New commit found." }
 
-            //cloneRepository()
+            cloneRepository()
 
             CONFIG[Settings.REPO].latestCommit = latestCommit.sha
             CONFIG.save()
