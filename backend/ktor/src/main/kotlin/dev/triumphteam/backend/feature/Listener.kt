@@ -10,6 +10,7 @@ import dev.triumphteam.backend.CONFIG
 import dev.triumphteam.backend.config.Settings
 import dev.triumphteam.backend.events.GithubEvent
 import dev.triumphteam.backend.events.GithubPush
+import dev.triumphteam.backend.func.receiveNullable
 import dev.triumphteam.backend.location.Webhook
 import io.ktor.application.Application
 import io.ktor.application.ApplicationFeature
@@ -21,7 +22,6 @@ import io.ktor.application.install
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.post
-import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.routing
 import io.ktor.util.AttributeKey
@@ -41,12 +41,15 @@ class Listener(val pipeline: Application) {
      */
     inline fun <reified T : GithubEvent> on(crossinline action: Github.() -> Unit) {
         pipeline.routing {
-            // TODO reject non github requests
             // For now just simple things, might add more later
             if (T::class != GithubPush::class) return@routing
 
             post<Webhook> {
-                val webhookData = call.receive<PushWebhook>()
+                // TODO reject non github requests
+                val webhookData = call.receiveNullable<PushWebhook>() ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@post
+                }
                 // Always reply accepted, since it was handled
                 call.respond(HttpStatusCode.Accepted)
 

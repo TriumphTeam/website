@@ -7,10 +7,12 @@ import dev.triumphteam.markdown.summary.Entry
 import dev.triumphteam.markdown.summary.Header
 import dev.triumphteam.markdown.summary.Link
 import dev.triumphteam.markdown.summary.Menu
+import io.ktor.application.ApplicationCall
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.request.receiveOrNull
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -34,6 +36,9 @@ fun makeClient() = HttpClient(CIO) {
     }
 }
 
+/**
+ * Sets up the serializer modules needed
+ */
 private val serializer = SerializersModule {
     polymorphic(Entry::class) {
         subclass(Header::class)
@@ -50,6 +55,14 @@ val kotlinx = Json {
     isLenient = true
     prettyPrint = true
     serializersModule = serializer
+}
+
+suspend inline fun <reified T : Any> ApplicationCall.receiveNullable(): T? {
+    return try {
+        receiveOrNull()
+    } catch (e: Exception) {
+        null
+    }
 }
 
 private const val GITHUB_API = "https://api.github.com/"
