@@ -57,6 +57,9 @@ val kotlinx = Json {
     serializersModule = serializer
 }
 
+/**
+ * The original [receiveOrNull] still throws JsonException from Kotlinx.Serialization
+ */
 suspend inline fun <reified T : Any> ApplicationCall.receiveNullable(): T? {
     return try {
         receiveOrNull()
@@ -67,7 +70,9 @@ suspend inline fun <reified T : Any> ApplicationCall.receiveNullable(): T? {
 
 private const val GITHUB_API = "https://api.github.com/"
 
-
+/**
+ * Gets the commits path from the api
+ */
 fun commits(repo: String) = "${GITHUB_API}repos/$repo/commits"
 
 /**
@@ -107,12 +112,18 @@ fun <B : Any> create(bean: BeanFactory<B>): Property<B> {
     return Property.create(bean.createDefault())
 }
 
+/**
+ * Creates a folder if it doesn't exist
+ */
 fun folder(path: Path): File {
     val folder = path.toFile()
     if (!folder.exists()) folder.mkdirs()
     return folder
 }
 
+/**
+ * Maps an entry from the result row from the database
+ */
 fun mapEntry(result: ResultRow): Entry? {
     return when (result[Entries.type]) {
         1.toUByte() -> result[Entries.destination]?.let {

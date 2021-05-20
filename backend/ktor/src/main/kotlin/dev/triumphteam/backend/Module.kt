@@ -21,8 +21,11 @@ import dev.triumphteam.markdown.summary.Summary
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.features.CORS
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.ForwardedHeaderSupport
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
@@ -42,6 +45,18 @@ import kotlin.io.path.ExperimentalPathApi
  */
 fun Application.module() {
 
+    install(CORS) {
+        method(HttpMethod.Options)
+        method(HttpMethod.Get)
+        method(HttpMethod.Put)
+        method(HttpMethod.Delete)
+        method(HttpMethod.Patch)
+        header(HttpHeaders.Authorization)
+        header(HttpHeaders.AccessControlAllowOrigin)
+        allowCredentials = true
+        allowNonSimpleContentTypes = true
+        anyHost()
+    }
     install(Locations)
     install(ForwardedHeaderSupport)
     install(ContentNegotiation) { json(kotlinx) }

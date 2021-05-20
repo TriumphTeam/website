@@ -3,21 +3,16 @@ import NavBar from "../components/navigation/NavBar"
 import SideBar from "../components/sidebar/SideBar"
 import {createStyles, Theme, makeStyles} from "@material-ui/core/styles"
 import Toolbar from "@material-ui/core/Toolbar"
-import ReactMarkdown from "react-markdown"
-
 
 export default function Wiki() {
   const classes = useStyles()
-  const test = () => {
-      fetch("../projects/").then(r => console.log(r))
-  }
+
   return (
       <>
         <NavBar/>
         <SideBar/>
         <main className={classes.content}>
           <Toolbar/>
-          {test()}
         </main>
       </>
   )

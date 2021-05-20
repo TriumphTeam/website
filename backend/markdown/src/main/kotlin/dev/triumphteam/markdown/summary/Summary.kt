@@ -4,9 +4,15 @@ import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/**
+ * Main sealed interface for the entries
+ */
 @Polymorphic
 sealed interface Entry
 
+/**
+ *
+ */
 @Serializable
 @SerialName("HEADER")
 data class Header(val literal: String) : Entry
