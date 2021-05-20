@@ -16,10 +16,10 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.Paths
 
+// Application's logger
 val LOGGER: Logger = LoggerFactory.getLogger("backend")
 
 fun main() {
-
     val dataSource = HikariDataSource(hikariConfig)
     Database.connect(dataSource)
 
@@ -34,6 +34,7 @@ fun main() {
     embeddedServer(CIO, module = Application::module, port = 8000).start(true)
 }
 
+// Applications config
 val CONFIG = SettingsManager
     .from(Paths.get("data", "config.yml"))
     .configurationData(Settings::class.java)

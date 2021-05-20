@@ -8,10 +8,10 @@ package dev.triumphteam.backend
 
 import dev.triumphteam.backend.database.Entries
 import dev.triumphteam.backend.database.Projects
-import dev.triumphteam.backend.event.GithubPush
-import dev.triumphteam.backend.event.listen
+import dev.triumphteam.backend.events.GithubPush
 import dev.triumphteam.backend.feature.Github
 import dev.triumphteam.backend.feature.Project
+import dev.triumphteam.backend.feature.listening
 import dev.triumphteam.backend.func.kotlinx
 import dev.triumphteam.backend.func.log
 import dev.triumphteam.backend.func.makeClient
@@ -36,9 +36,10 @@ import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.io.path.ExperimentalPathApi
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
+/**
+ * Module of the application
+ */
 fun Application.module() {
 
     install(Locations)
@@ -49,13 +50,14 @@ fun Application.module() {
     install(Github) { client = makeClient() }
     install(Project)
 
-    routing {
-        // TODO move to listener instead of routing
-        listen<GithubPush> {
+    listening {
+        on<GithubPush> {
             log { "Detected Github push." }
             checkRepository()
         }
+    }
 
+    routing {
         get<Api.Test> {
             println("Hello")
             call.respondText("Test")

@@ -120,11 +120,11 @@ class Project {
     /**
      * Feature companion
      */
-    companion object Feature : ApplicationFeature<Application, Configuration, Project> {
+    companion object Feature : ApplicationFeature<Application, Project, Project> {
         override val key = AttributeKey<Project>("Project")
 
-        override fun install(pipeline: Application, configure: Configuration.() -> Unit): Project {
-            return Project()
+        override fun install(pipeline: Application, configure: Project.() -> Unit): Project {
+            return Project().apply(configure)
         }
     }
 
