@@ -139,7 +139,7 @@ fun mapEntry(result: ResultRow): Entry? {
                 Entries.select { Entries.parent eq result[Entries.id] }
             }.mapNotNull { childResult ->
                 childResult[Entries.destination]?.let {
-                    Link(result[Entries.literal], it)
+                    Link(childResult[Entries.literal], it)
                 }
             }
 

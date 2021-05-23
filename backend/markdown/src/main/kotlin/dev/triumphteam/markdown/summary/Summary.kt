@@ -23,7 +23,7 @@ data class Link(val literal: String, val destination: String) : Entry
 
 @Serializable
 @SerialName("MENU")
-data class Menu(val main: Link, val children: List<Link>) : Entry
+data class Menu(val main: Entry, val children: List<Entry>) : Entry
 
 val Entry.type: UByte
     get() = when (this) {
