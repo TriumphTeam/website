@@ -3,7 +3,7 @@ import NavBar from "../components/navigation/NavBar"
 import SideBar from "../components/sidebar/SideBar"
 import {createStyles, Theme, makeStyles} from "@material-ui/core/styles"
 import Toolbar from "@material-ui/core/Toolbar"
-import {useLocation} from "react-router-dom"
+import {useLocation, Redirect} from "react-router-dom"
 import {Entry} from "../components/axios/Types"
 import api from "../components/axios/Api"
 
@@ -15,11 +15,12 @@ export default function Wiki() {
 
   useEffect(() => {
     api.get<{ entries: Entry[] }>("/summary/triumph-gui")
-        .then(res => {
-          setSummary(res.data.entries)
+        .then(response => {
+          setSummary(response.data.entries)
         })
-        .catch(err => {
-          console.log(err)
+        .catch(_ => {
+          // TODO this might be temporary as i don't know if there is a better way to do this
+          window.location.replace("/404")
         })
   }, [])
 
