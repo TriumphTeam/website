@@ -1,19 +1,21 @@
-import React from "react"
+import React, {useState} from "react"
 import ListItemText from "@material-ui/core/ListItemText"
 import {createStyles, makeStyles, Theme, withStyles} from "@material-ui/core/styles"
 import ListItem from "@material-ui/core/ListItem"
 import Collapse from "@material-ui/core/Collapse"
 import List from "@material-ui/core/List"
+import {Entry} from "../../axios/Types"
 
 interface BarDropdownProp {
   defaultOpen: boolean,
-  text: string
+  text: string,
+  child: Entry[]
 }
 
-export const BarDropdown: React.FC<BarDropdownProp> = ({defaultOpen, text}) => {
+export const BarDropdown: React.FC<BarDropdownProp> = ({defaultOpen, text, child}) => {
   const classes = useStyles()
 
-  const [open, setOpen] = React.useState(defaultOpen)
+  const [open, setOpen] = useState(defaultOpen)
 
   const handleClick = () => {
     setOpen(!open)
@@ -27,12 +29,19 @@ export const BarDropdown: React.FC<BarDropdownProp> = ({defaultOpen, text}) => {
         </ListItem>
         <Collapse className={classes.collapse} in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItem button className={classes.nested}>
-              <ListItemText primary="Sub 1"/>
-            </ListItem>
-            <ListItem button className={classes.nested}>
-              <ListItemText primary="Sub 2"/>
-            </ListItem>
+            {
+              child.map(entry => {
+                if (entry.type !== "LINK") {
+                  return (<></>)
+                }
+
+                return (
+                    <ListItem button key={entry.literal} className={classes.nested}>
+                      <ListItemText primary={entry.literal}/>
+                    </ListItem>
+                )
+              })
+            }
           </List>
         </Collapse>
       </div>
@@ -62,3 +71,5 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     }),
 )
+
+export default BarDropdown

@@ -9,21 +9,17 @@ import ListItemText from "@material-ui/core/ListItemText"
 import Toolbar from "@material-ui/core/Toolbar"
 import {BarText} from "./components/BarText"
 import api from "../axios/Api"
-import {BarDropdown} from "./components/BarDropdown"
+import BarDropdown from "./components/BarDropdown"
+import {Entry} from "../axios/Types"
+
+interface SideBarProp {
+  entries: Entry[]
+}
 
 const drawerWidth = 350
 
-export default function SideBar() {
+export const SideBar: React.FC<SideBarProp> = ({entries}) => {
   const classes = useStyles()
-  const [summary, setSummary] = useState([])
-
-  useEffect(() => {
-    api.get("/summary/triumph-gui")
-        .then(res => setSummary(res.data.entries))
-        .catch(err => {
-          console.log(err)
-        })
-  }, [])
 
   return (
       <Drawer
@@ -36,33 +32,31 @@ export default function SideBar() {
         <Toolbar className={classes.toolBar}/>
         <div className={classes.drawerContainer}>
           <List>
-            {summary.map(entry => {
-                const type = entry["type"]
-                if (type === "MENU") {
-                  const main = entry["main"]
-                  const children = entry["children"]
-
-                  return (<BarDropdown text={main["literal"]} defaultOpen={false}/>)
+            {
+              entries.map(entry => {
+                if (entry.type === "MENU") {
+                  const main = entry.main
+                  if (main.type === "LINK") {
+                    return (<BarDropdown text={main.literal} child={entry.children} defaultOpen={false}/>)
+                  }
                 }
 
-                if (type === "LINK") {
+                if (entry.type === "LINK") {
+                  console.log(entry.destination)
                   return (
-                      <ListItem button>
+                      <ListItem button key={entry["literal"]}>
                         <ListItemText primary={entry["literal"]}/>
                       </ListItem>
                   )
                 }
 
-                return (<BarText text={entry["literal"]}/>)
-                /*
-                <>
-                <BarDropdown text={"Test"} defaultOpen={false}/>
-                <ListItem button key={text}>
-                  <ListItemText primary={text}/>
-                </ListItem>
-              </>
-                * */
-            })}
+                if (entry.type === "HEADER") {
+                  return (<BarText text={entry.literal}/>)
+                }
+
+                return (<></>)
+              })
+            }
           </List>
           <Divider/>
         </div>
@@ -107,3 +101,5 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     }),
 )
+
+export default SideBar

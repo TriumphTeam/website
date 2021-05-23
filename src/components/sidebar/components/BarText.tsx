@@ -11,7 +11,7 @@ export const BarText: React.FC<BarTextProp> = ({text}) => {
 
   return (
       <div className={classes.sideText}>
-        <ListItemText className={classes.listText} disableTypography>{text}</ListItemText>
+        <ListItemText key={text} className={classes.listText} disableTypography>{text}</ListItemText>
       </div>
   )
 }
