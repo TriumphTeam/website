@@ -30,7 +30,7 @@ fun main() {
             Entries,
         )
     }
-
+    
     embeddedServer(CIO, module = Application::module, port = 8000).start(true)
 }
 

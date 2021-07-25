@@ -1,6 +1,5 @@
 @file:OptIn(
     KtorExperimentalLocationsAPI::class,
-    KtorExperimentalAPI::class,
     ExperimentalPathApi::class,
 )
 
@@ -18,6 +17,7 @@ import dev.triumphteam.backend.func.makeClient
 import dev.triumphteam.backend.func.mapEntry
 import dev.triumphteam.backend.location.Api
 import dev.triumphteam.markdown.summary.Summary
+import dev.triumphteam.markdown.summary.SummaryParser
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -34,7 +34,6 @@ import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.routing
 import io.ktor.serialization.json
-import io.ktor.util.KtorExperimentalAPI
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -62,6 +61,7 @@ fun Application.module() {
     install(ContentNegotiation) { json(kotlinx) }
 
     // Custom
+    install(SummaryParser)
     install(Github) { client = makeClient() }
     install(Project)
 
@@ -73,6 +73,7 @@ fun Application.module() {
     }
 
     routing {
+
         get<Api.Test> {
             println("Hello")
             call.respondText("Test")
@@ -97,6 +98,7 @@ fun Application.module() {
             }
 
             call.respond(summary)
+
         }
 
     }

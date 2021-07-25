@@ -1,33 +1,35 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.0"
-    kotlin("plugin.serialization") version "1.5.0"
+    kotlin("jvm") version "1.5.10"
+    kotlin("plugin.serialization") version "1.5.10"
 }
 
 group = "dev.triumphteam"
 version = "1.0-SNAPSHOT"
 
-subprojects {
-
-    apply {
-        plugin("org.jetbrains.kotlin.jvm")
-        plugin("kotlinx-serialization")
-    }
-
+allprojects {
     repositories {
         mavenCentral()
         maven("https://repo.mattstudios.me/artifactory/public/")
     }
+}
+
+subprojects {
+
+    apply {
+        plugin("kotlin")
+        plugin("kotlinx-serialization")
+    }
 
     // TODO organize versions mess
-    val ktorVersion = "1.5.4"
+    val ktorVersion = "1.6.0"
     val logbackVersion = "1.2.1"
     val junitVersion = "5.6.0"
     val assertjVersion = "3.19.0"
 
     dependencies {
-        implementation(kotlin("stdlib"))
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         implementation("ch.qos.logback:logback-classic:$logbackVersion")
         implementation("io.ktor:ktor-serialization:$ktorVersion")
 

@@ -10,26 +10,18 @@ import kotlinx.serialization.Serializable
 @Polymorphic
 sealed interface Entry
 
-/**
- *
- */
 @Serializable
 @SerialName("HEADER")
 data class Header(val literal: String) : Entry
 
 @Serializable
 @SerialName("LINK")
-data class Link(val literal: String, val destination: String) : Entry
-
-@Serializable
-@SerialName("MENU")
-data class Menu(val main: Entry, val children: List<Entry>) : Entry
+data class Link(val literal: String, val destination: String, var indent: Int = 0) : Entry
 
 val Entry.type: UByte
     get() = when (this) {
         is Header -> 0u
         is Link -> 1u
-        is Menu -> 2u
     }
 
 @Serializable

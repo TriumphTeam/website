@@ -2,7 +2,7 @@ import React from "react"
 import ListItemText from "@material-ui/core/ListItemText"
 import {createStyles, makeStyles, Theme, withStyles} from "@material-ui/core/styles"
 
-interface BarTextProp {
+type BarTextProp = {
   text: string
 }
 
@@ -22,17 +22,19 @@ const useStyles = makeStyles((theme: Theme) =>
         border: "1px solid transparent",
         margin: 0,
         display: "flex",
-        padding: "7px 24px 7px 16px",
+        padding: "5px 0",
         position: "relative",
         alignItems: "center",
         borderRight: 0,
         textDecoration: "none",
         "-webkit-box-align": "center",
+        fontWeight: "bold",
+        fontSize: "1.2em"
       },
       listText: {
-        fontWeight: 700,
-        lineHeight: 1.2,
-        letterSpacing: "1.2px",
-      }
+        //padding: "7px 24px 7px 16px",
+      },
     }),
 )
+
+export default BarText

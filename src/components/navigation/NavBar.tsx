@@ -38,8 +38,9 @@ export default function NavBar() {
           <NavButton color="inherit">HOME</NavButton>
           <NavButton color="inherit">PLUGINS</NavButton>
           <NavButton color="inherit">LIBRARIES</NavButton>
-          <IconNavButton edge="start" color="inherit" className={classes.discord}><i
-              className="fab fa-discord"/></IconNavButton>
+          <IconNavButton edge="start" color="inherit" className={classes.discord}>
+            <i className="fab fa-discord"/>
+          </IconNavButton>
         </Toolbar>
       </AppBar>
   )

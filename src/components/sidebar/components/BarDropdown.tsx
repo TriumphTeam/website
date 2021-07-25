@@ -6,13 +6,15 @@ import Collapse from "@material-ui/core/Collapse"
 import List from "@material-ui/core/List"
 import {Entry} from "../../axios/Types"
 
-interface BarDropdownProp {
-  defaultOpen: boolean,
-  text: string,
+type BarDropdownProp = {
+  defaultOpen: boolean
+  text: string
+  itemClass: string
+  textClass: string
   child: Entry[]
 }
 
-export const BarDropdown: React.FC<BarDropdownProp> = ({defaultOpen, text, child}) => {
+export const BarDropdown: React.FC<BarDropdownProp> = ({defaultOpen, text, itemClass, textClass, child}) => {
   const classes = useStyles()
 
   const [open, setOpen] = useState(defaultOpen)
@@ -23,9 +25,14 @@ export const BarDropdown: React.FC<BarDropdownProp> = ({defaultOpen, text, child
 
   return (
       <div>
-        <ListItem button onClick={handleClick}>
-          <ListItemText primary={text}/>
-          {open ? (<i className="fas fa-angle-down"/>) : (<i className="fas fa-angle-right"/>)}
+        <ListItem button className={itemClass} onClick={handleClick}>
+          <ListItemText className={textClass} primary={text}/>
+          {
+            open ?
+                (<i className={"fas fa-angle-down " + classes.menuIcon}/>)
+                :
+                (<i className={"fas fa-angle-right " + classes.menuIcon}/>)
+          }
         </ListItem>
         <Collapse className={classes.collapse} in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
@@ -68,6 +75,9 @@ const useStyles = makeStyles((theme: Theme) =>
           position: "absolute",
           background: "rgb(35, 38, 39)",
         },
+      },
+      menuIcon: {
+        width: "10%",
       },
     }),
 )

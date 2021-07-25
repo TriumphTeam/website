@@ -3,7 +3,6 @@ package dev.triumphteam.markdown.summary.writer
 import dev.triumphteam.markdown.summary.Entry
 import dev.triumphteam.markdown.summary.Header
 import dev.triumphteam.markdown.summary.Link
-import dev.triumphteam.markdown.summary.Menu
 
 /**
  * This class is quite bad, but it works as intended,
@@ -83,7 +82,7 @@ class SummaryWriter {
     fun closeUl() {
         if (ulChild) {
             ulChild = false
-            menuBuilder.build()?.let { summary.add(it) }
+            summary.addAll(menuBuilder.build())
             menuBuilder = MenuBuilder()
             return
         }
@@ -116,13 +115,17 @@ private class LinkBuilder(private var destination: String? = null) {
 
 }
 
-private class MenuBuilder(private var main: Link? = null) {
+private class MenuBuilder(main: Link? = null) {
 
-    private val children = mutableListOf<Link>()
+    private val links = mutableListOf<Link>()
 
-    fun append(child: Link) = children.add(child)
+    init {
+        main?.let { links.add(it) }
+    }
 
-    fun build(): Menu? = main?.let { Menu(it, children) }
+    fun append(child: Link) = links.add(child.apply { indent = 1 })
+
+    fun build(): List<Link> = links
 
 }
 

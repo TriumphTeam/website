@@ -3,7 +3,7 @@ plugins {
     application
 }
 
-val ktorVersion = "1.5.4"
+val ktorVersion = "1.6.0"
 val exposedVersion = "0.30.1"
 
 dependencies {

@@ -6,7 +6,6 @@ import dev.triumphteam.backend.database.Entries
 import dev.triumphteam.markdown.summary.Entry
 import dev.triumphteam.markdown.summary.Header
 import dev.triumphteam.markdown.summary.Link
-import dev.triumphteam.markdown.summary.Menu
 import io.ktor.application.ApplicationCall
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -20,8 +19,6 @@ import kotlinx.serialization.modules.subclass
 import me.mattstudios.config.properties.Property
 import net.lingala.zip4j.core.ZipFile
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -36,6 +33,8 @@ fun makeClient() = HttpClient(CIO) {
     }
 }
 
+fun String.titleCase() = replaceFirstChar { it.uppercase() }
+
 /**
  * Sets up the serializer modules needed
  */
@@ -43,7 +42,6 @@ private val serializer = SerializersModule {
     polymorphic(Entry::class) {
         subclass(Header::class)
         subclass(Link::class)
-        subclass(Menu::class)
     }
 }
 
@@ -127,23 +125,7 @@ fun folder(path: Path): File {
 fun mapEntry(result: ResultRow): Entry? {
     return when (result[Entries.type]) {
         1.toUByte() -> result[Entries.destination]?.let {
-            Link(result[Entries.literal], it)
-        }
-        2.toUByte() -> {
-
-            val main = result[Entries.destination]?.let {
-                Link(result[Entries.literal], it)
-            } ?: return null
-
-            val children = transaction {
-                Entries.select { Entries.parent eq result[Entries.id] }
-            }.mapNotNull { childResult ->
-                childResult[Entries.destination]?.let {
-                    Link(childResult[Entries.literal], it)
-                }
-            }
-
-            Menu(main, children)
+            Link(result[Entries.literal], it, result[Entries.indent])
         }
         else -> Header(result[Entries.literal])
     }
