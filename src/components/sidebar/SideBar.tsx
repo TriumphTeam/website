@@ -7,15 +7,16 @@ import InputBase from "@material-ui/core/InputBase"
 import Toolbar from "@material-ui/core/Toolbar"
 import {BarText} from "./components/BarText"
 import api from "../axios/Api"
-import BarDropdown from "./components/BarDropdown"
 import {Entry} from "../axios/Types"
 import BarLink from "./components/BarLink"
+import ListItemText from "@material-ui/core/ListItemText"
+import ListItem from "@material-ui/core/ListItem"
 
 interface SideBarProp {
   entries: Entry[]
 }
 
-const drawerWidth = 350
+const drawerWidth = 300
 
 export const SideBar: React.FC<SideBarProp> = ({entries}) => {
   const classes = useStyles()
@@ -44,35 +45,20 @@ export const SideBar: React.FC<SideBarProp> = ({entries}) => {
           <List>
             {
               entries.map(entry => {
-                if (entry.type === "MENU") {
-                  const main = entry.main
-                  if (main.type === "LINK") {
-
-                    entry.children.map(child => {
-                      if (child.type === "LINK") {
-                        return <BarLink itemClass={classes.itemClass} textClass={classes.textLinkClass} text={child.literal}/>
-                      } else {
-                        return <></>
-                      }
-                    })
-
-                  }
-                }
 
                 if (entry.type === "LINK") {
                   console.log(entry.destination)
-                  return <BarLink itemClass={classes.itemClass} textClass={classes.textLinkClass} text={entry.literal}/>
+                  return <BarLink text={entry.literal} indent={entry.indent}/>
                 }
 
                 if (entry.type === "HEADER") {
                   return <BarText text={entry.literal}/>
                 }
 
-                return (<></>)
+                return <></>
               })
             }
           </List>
-          <Divider/>
         </div>
       </Drawer>
   )
@@ -92,6 +78,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       drawerPaper: {
         width: drawerWidth,
+        border: "none",
       },
       drawerContainer: {
         overflow: "auto",
@@ -105,10 +92,10 @@ const useStyles = makeStyles((theme: Theme) =>
           backgroundColor: "#3C3E41",
           borderRadius: "25px",
         },
-        width: "90%",
+        width: "100%",
         marginLeft: "auto",
         marginRight: "auto",
-        padding: "20px 0"
+        padding: "20px 0",
       },
       content: {
         flexGrow: 1,
@@ -116,27 +103,6 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       nested: {
         paddingLeft: theme.spacing(4),
-      },
-      itemClass: {
-        margin: 0,
-        padding: 0,
-      },
-      textLinkClass: {
-        //padding: "7px 24px 7px 16px",
-        //borderWidth: "1px 0px 1px 1px",
-        borderYopStyle: "solid",
-        borderBottomStyle: "solid",
-        borderLeftStyle: "solid",
-        borderTopColor: "transparent",
-        borderBottomColor: "transparent",
-        borderLeftColor: "transparent",
-        borderImage: "initial",
-        cursor: "pointer",
-        display: "flex",
-        position: "relative",
-        alignItems: "center",
-        borderRightStyle: "initial",
-        fontSize: ""
       },
       search: {
         position: "relative",
@@ -147,8 +113,9 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         marginRight: "auto",
         marginLeft: "auto",
-        marginBottom: "10px",
-        width: "80%",
+        marginTop: "10px",
+        marginBottom: "0",
+        width: "90%",
       },
       searchIcon: {
         padding: theme.spacing(0, 2),

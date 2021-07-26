@@ -3,5 +3,4 @@
  */
 export type Entry =
     | { type: "HEADER", literal: string }
-    | { type: "LINK", literal: string, destination: string }
-    | { type: "MENU", main: Entry, children: Entry[] }
+    | { type: "LINK", literal: string, destination: string, indent: number }

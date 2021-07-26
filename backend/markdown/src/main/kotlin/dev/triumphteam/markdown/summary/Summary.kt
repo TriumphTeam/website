@@ -16,7 +16,7 @@ data class Header(val literal: String) : Entry
 
 @Serializable
 @SerialName("LINK")
-data class Link(val literal: String, val destination: String, var indent: Int = 0) : Entry
+data class Link(val literal: String, val destination: String, var indent: Int) : Entry
 
 val Entry.type: UByte
     get() = when (this) {

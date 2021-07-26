@@ -11,7 +11,7 @@ export const BarText: React.FC<BarTextProp> = ({text}) => {
 
   return (
       <div className={classes.sideText}>
-        <ListItemText key={text} className={classes.listText} disableTypography>{text}</ListItemText>
+        <ListItemText key={text} disableTypography>{text}</ListItemText>
       </div>
   )
 }
@@ -19,8 +19,11 @@ export const BarText: React.FC<BarTextProp> = ({text}) => {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
       sideText: {
+        width: "80%",
+        marginLeft: "auto",
+        marginRight: "auto",
+        color: "#FFFFFF",
         border: "1px solid transparent",
-        margin: 0,
         display: "flex",
         padding: "5px 0",
         position: "relative",
@@ -29,10 +32,8 @@ const useStyles = makeStyles((theme: Theme) =>
         textDecoration: "none",
         "-webkit-box-align": "center",
         fontWeight: "bold",
-        fontSize: "1.2em"
-      },
-      listText: {
-        //padding: "7px 24px 7px 16px",
+        fontSize: "1.3em",
+        marginTop: "15px",
       },
     }),
 )
