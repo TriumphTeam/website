@@ -11,15 +11,21 @@ import {Entry} from "../axios/Types"
 import BarLink from "./components/BarLink"
 import ListItemText from "@material-ui/core/ListItemText"
 import ListItem from "@material-ui/core/ListItem"
+import {useParams} from "react-router-dom"
 
 interface SideBarProp {
   entries: Entry[]
+  url: string
 }
 
 const drawerWidth = 300
 
-export const SideBar: React.FC<SideBarProp> = ({entries}) => {
+export const SideBar: React.FC<SideBarProp> = ({entries, url}) => {
   const classes = useStyles()
+
+  const {path} = useParams<{ type?: string, name?: string, path?: string }>()
+
+  const isActive = (destination: string) => destination === path
 
   return (
       <Drawer
@@ -45,15 +51,14 @@ export const SideBar: React.FC<SideBarProp> = ({entries}) => {
           <List>
             {
               entries.map(entry => {
+                if (entry.type === "LINK") return <BarLink
+                    text={entry.literal}
+                    destination={`${url}/${entry.destination}`}
+                    indent={entry.indent}
+                    active={isActive(entry.destination)}
+                />
 
-                if (entry.type === "LINK") {
-                  console.log(entry.destination)
-                  return <BarLink text={entry.literal} indent={entry.indent}/>
-                }
-
-                if (entry.type === "HEADER") {
-                  return <BarText text={entry.literal}/>
-                }
+                if (entry.type === "HEADER") return <BarText text={entry.literal}/>
 
                 return <></>
               })

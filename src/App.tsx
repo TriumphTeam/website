@@ -18,9 +18,7 @@ function ThemedApp() {
       <Router>
         <Switch>
           <Route path="/" exact component={Home}/>
-
-          <Route path="/plugin/:name" component={Wiki}/>
-          <Route path="/lib/:name" component={Wiki}/>
+          <Route path="/:type/:name/:path?" component={Wiki}/>
 
           <Route component={NotFound} />
         </Switch>

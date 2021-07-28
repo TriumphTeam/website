@@ -23,8 +23,13 @@ import org.commonmark.node.SoftLineBreak
 import org.commonmark.node.StrongEmphasis
 import org.commonmark.node.Text
 import org.commonmark.node.ThematicBreak
+import org.commonmark.parser.Parser
 import org.commonmark.renderer.NodeRenderer
 import org.commonmark.renderer.html.HtmlNodeRendererContext
+import org.commonmark.renderer.html.HtmlRenderer
+
+
+
 
 class LaterRenderer(private val context: HtmlNodeRendererContext) : AbstractVisitor(), NodeRenderer {
 
@@ -258,4 +263,19 @@ class LaterRenderer(private val context: HtmlNodeRendererContext) : AbstractVisi
         return context.extendAttributes(node, tagName, defaultAttributes)
     }
 
+}
+
+fun main() {
+    val md = """
+        # Hello
+        
+        ```java
+            public static String TEST = "Hey!";
+        ```
+    """.trimIndent()
+
+    val parser: Parser = Parser.builder().build()
+    val document: Node = parser.parse(md)
+    val renderer = HtmlRenderer.builder().build()
+    println(renderer.render(document))
 }

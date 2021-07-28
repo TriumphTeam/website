@@ -7,9 +7,11 @@ import {Link} from "react-router-dom"
 type BarLinkProp = {
   text: string
   indent: number
+  destination: string
+  active?: boolean
 }
 
-export const BarLink: React.FC<BarLinkProp> = ({text, indent}) => {
+export const BarLink: React.FC<BarLinkProp> = ({text, indent, destination, active}) => {
   const classes = useStyles()
 
   const Indentation = () => {
@@ -20,10 +22,12 @@ export const BarLink: React.FC<BarLinkProp> = ({text, indent}) => {
     return <></>
   }
 
+  const activeClass = (active ? ` ${classes.active}` : "")
+
   return (
-      <Link to="/" className={classes.link}>
+      <Link to={destination} className={classes.link}>
         <Indentation/>
-        <div className={classes.linkContainer}>{text}</div>
+        <div className={`${classes.linkContainer}${activeClass}`}>{text}</div>
       </Link>
   )
 }
@@ -49,6 +53,9 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       indent: {
         marginRight: "25px",
+      },
+      active: {
+        color: "#2980b9",
       },
     }),
 )

@@ -3,18 +3,23 @@ import NavBar from "../components/navigation/NavBar"
 import SideBar from "../components/sidebar/SideBar"
 import {createStyles, Theme, makeStyles} from "@material-ui/core/styles"
 import Toolbar from "@material-ui/core/Toolbar"
-import {useLocation} from "react-router-dom"
+import {useLocation, useRouteMatch, useParams} from "react-router-dom"
 import {Entry} from "../components/axios/Types"
 import api from "../components/axios/Api"
 
 export default function Wiki() {
   const classes = useStyles()
-  const location = useLocation()
 
+  const {type, name, optionalPath} = useParams<{ type?: string, name?: string, optionalPath?: string }>()
   const [summary, setSummary] = useState<Entry[]>([])
 
+  const url = `/${type}/${name}`
+
   useEffect(() => {
-    api.get<{ entries: Entry[] }>("/summary/triumph-gui")
+    // Guarantees it's a valid type
+    if (type !== "lib" && type !== "plugin") window.location.replace("/404")
+
+    api.get<{ entries: Entry[] }>("/summary/" + name)
         .then(response => {
           setSummary(response.data.entries)
         })
@@ -27,10 +32,15 @@ export default function Wiki() {
   return (
       <>
         <NavBar/>
-        <SideBar entries={summary}/>
+        <SideBar entries={summary} url={url}/>
         <main className={classes.content}>
           <Toolbar/>
-          {JSON.stringify(location)}
+          {name}, {optionalPath}
+          <pre>
+            <code className="language-kotlin">
+              public static String TEST = &quot;Hey!&quot;;
+            </code>
+          </pre>
         </main>
       </>
   )
