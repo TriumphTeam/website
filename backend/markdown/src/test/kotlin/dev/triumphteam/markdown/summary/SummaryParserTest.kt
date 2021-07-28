@@ -5,12 +5,14 @@ import org.junit.jupiter.api.Test
 
 class SummaryParserTest {
 
+    private val parser = SummaryParser()
+
     @Test
     fun `Test header`() {
         val md = """
             # Header
         """.trimIndent()
-        assertThat(SummaryParser.parse(md)).isEqualTo(listOf(Header("Header")))
+        assertThat(parser.parse(md)).isEqualTo(listOf(Header("Header")))
     }
 
     @Test
@@ -20,11 +22,11 @@ class SummaryParserTest {
             * [Entry 2](destination.md)
             * [Entry 3](destination.md)
         """.trimIndent()
-        assertThat(SummaryParser.parse(md)).isEqualTo(
+        assertThat(parser.parse(md)).isEqualTo(
             listOf(
-                Link("Entry 1", "destination.md"),
-                Link("Entry 2", "destination.md"),
-                Link("Entry 3", "destination.md"),
+                Link("Entry 1", "destination.md", 0),
+                Link("Entry 2", "destination.md", 0),
+                Link("Entry 3", "destination.md", 0),
             )
         )
     }
@@ -40,34 +42,13 @@ class SummaryParserTest {
             * [Entry 3](destination.md)
             * [Entry 4](destination.md)
         """.trimIndent()
-        assertThat(SummaryParser.parse(md)).isEqualTo(
+        assertThat(parser.parse(md)).isEqualTo(
             listOf(
-                Link("Entry 1", "destination.md"),
-                Link("Entry 2", "destination.md"),
+                Link("Entry 1", "destination.md", 0),
+                Link("Entry 2", "destination.md", 0),
                 Header("Header"),
-                Link("Entry 3", "destination.md"),
-                Link("Entry 4", "destination.md"),
-            )
-        )
-    }
-
-    @Test
-    fun `Test menu`() {
-
-        val md = """
-            * [Entry 1](destination.md)
-              * [Sub Entry 1](destination.md)
-              * [Sub Entry 2](destination.md)
-        """.trimIndent()
-        assertThat(SummaryParser.parse(md)).isEqualTo(
-            listOf(
-                Menu(
-                    Link("Entry 1", "destination.md"),
-                    listOf(
-                        Link("Sub Entry 1", "destination.md"),
-                        Link("Sub Entry 2", "destination.md"),
-                    )
-                ),
+                Link("Entry 3", "destination.md", 0),
+                Link("Entry 4", "destination.md", 0),
             )
         )
     }

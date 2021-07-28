@@ -10,6 +10,7 @@ import dev.triumphteam.markdown.summary.Header
 import dev.triumphteam.markdown.summary.Link
 import dev.triumphteam.markdown.summary.SummaryParser
 import dev.triumphteam.markdown.summary.type
+import dev.triumphteam.markdown.summary.writer.InvalidSummaryException
 import io.ktor.application.Application
 import io.ktor.application.ApplicationFeature
 import io.ktor.application.feature
@@ -20,7 +21,6 @@ import kotlinx.coroutines.launch
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.insertIgnoreAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -55,18 +55,30 @@ class Project(private val parser: SummaryParser) {
 
                 val projectName = projectFile.nameWithoutExtension
                 val projectId = transaction {
-                    Projects.insertIgnoreAndGetId {
-                        it[name] = projectName
-                    } ?: Projects.select {
+                    Projects.select {
                         Projects.name eq projectName
                     }.firstOrNull()?.get(Projects.id)
-                } ?: return@forEach
+                        ?: Projects.insertAndGetId {
+                            it[name] = projectName
+                        }
+                }
 
-                transaction {
+                val parsed = transaction {
                     Entries.deleteWhere { Entries.project eq projectId }
 
-                    val summary = parser.parse(summaryMd.readText())
+                    val summary = try {
+                        parser.parse(summaryMd.readText())
+                    } catch (exception: InvalidSummaryException) {
+                        return@transaction false
+                    }
+
                     summary.insertEntries(projectId)
+                    true
+                }
+
+                if (!parsed) {
+                    warn { "Could not parse project $projectName, project will be ignored!" }
+                    return@forEach
                 }
 
             }

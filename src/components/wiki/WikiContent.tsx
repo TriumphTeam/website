@@ -25,7 +25,7 @@ export const WikiContent: React.FC<SideBarProp> = ({url}) => {
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
-
+      
     }),
 )
 
