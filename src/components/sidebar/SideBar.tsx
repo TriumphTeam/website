@@ -10,8 +10,8 @@ import BarLink from "./components/BarLink"
 import {useParams} from "react-router-dom"
 
 interface SideBarProp {
-  entries: Entry[]
-  url: string
+  entries: Entry[],
+  url: string,
 }
 
 const drawerWidth = 300

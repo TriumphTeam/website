@@ -3,10 +3,10 @@ import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
 import {Link} from "react-router-dom"
 
 type BarLinkProp = {
-  text: string
-  indent: number
-  destination: string
-  active?: boolean
+  text: string,
+  indent: number,
+  destination: string,
+  active?: boolean,
 }
 
 export const BarLink: React.FC<BarLinkProp> = ({text, indent, destination, active}) => {

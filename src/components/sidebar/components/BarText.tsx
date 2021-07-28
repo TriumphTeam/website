@@ -3,7 +3,7 @@ import ListItemText from "@material-ui/core/ListItemText"
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
 
 type BarTextProp = {
-  text: string
+  text: string,
 }
 
 export const BarText: React.FC<BarTextProp> = ({text}) => {
