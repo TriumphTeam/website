@@ -265,15 +265,36 @@ class LaterRenderer(private val context: HtmlNodeRendererContext) : AbstractVisi
 
 fun main() {
     val md = """
-        # Hello
-        
-        ```java
-            public static String TEST = "Hey!";
-        ```
+# H1
+## H2
+### H3
+
+**bold text**  
+*italicized text*
+> blockquote
+
+1. First item
+2. Second item
+3. Third item
+
+- First item
+- Second item
+- Third item
+
+`code`
+
+```kt
+    val hello = "There!"
+```
+
+[title](https://www.example.com)
+
+![alt text](https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png)
     """.trimIndent()
 
     val parser: Parser = Parser.builder().build()
     val document: Node = parser.parse(md)
-    val renderer = HtmlRenderer.builder().build()
+    val renderer = HtmlRenderer.builder().escapeHtml(false).build()
     println(renderer.render(document))
+
 }

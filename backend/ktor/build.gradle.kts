@@ -28,6 +28,7 @@ dependencies {
     implementation("net.lingala.zip4j:zip4j:1.3.2")
 
     implementation("org.commonmark:commonmark:0.17.1")
+    implementation("com.google.guava:guava:30.1.1-jre")
 
     implementation("com.zaxxer:HikariCP:4.0.1")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")

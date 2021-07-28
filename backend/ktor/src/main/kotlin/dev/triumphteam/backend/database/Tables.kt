@@ -18,3 +18,10 @@ object Entries : IntIdTable() {
     val parent = reference("parent", Entries, ReferenceOption.CASCADE).nullable()
     val position = uinteger("position")
 }
+
+object Contents : IntIdTable() {
+    val project = reference("project", Projects)
+    val url = varchar("url", 255)
+    val content = text("content", "utf8_general_ci")
+    val checksum = varchar("checksum", 64)
+}

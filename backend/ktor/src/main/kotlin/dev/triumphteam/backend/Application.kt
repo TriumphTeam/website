@@ -3,6 +3,7 @@ package dev.triumphteam.backend
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import dev.triumphteam.backend.config.Settings
+import dev.triumphteam.backend.database.Contents
 import dev.triumphteam.backend.database.Entries
 import dev.triumphteam.backend.database.Projects
 import io.ktor.application.Application
@@ -28,9 +29,10 @@ fun main() {
         SchemaUtils.create(
             Projects,
             Entries,
+            Contents,
         )
     }
-    
+
     embeddedServer(CIO, module = Application::module, port = 8000).start(true)
 }
 

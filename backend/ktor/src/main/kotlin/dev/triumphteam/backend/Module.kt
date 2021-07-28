@@ -5,6 +5,7 @@
 
 package dev.triumphteam.backend
 
+import dev.triumphteam.backend.database.Contents
 import dev.triumphteam.backend.database.Entries
 import dev.triumphteam.backend.database.Projects
 import dev.triumphteam.backend.events.GithubPush
@@ -87,8 +88,6 @@ fun Application.module() {
 
                 val entries = Entries.select {
                     Entries.project eq project[Projects.id]
-                }.andWhere {
-                    Entries.parent.isNull()
                 }.orderBy(Entries.position).mapNotNull { mapEntry(it) }
 
                 Summary(entries)
@@ -99,6 +98,25 @@ fun Application.module() {
 
             call.respond(summary)
 
+        }
+
+        get<Api.Page> { location ->
+            val page = transaction {
+                val project = Projects.select {
+                    Projects.name eq location.project
+                }.firstOrNull() ?: return@transaction null
+
+                return@transaction Contents.select {
+                    Contents.project eq project[Projects.id]
+                }.andWhere {
+                    Contents.url eq location.page
+                }.firstOrNull()?.get(Contents.content)
+            } ?: run {
+                call.respond(HttpStatusCode.NotFound)
+                return@get
+            }
+
+            call.respondText(page)
         }
 
     }

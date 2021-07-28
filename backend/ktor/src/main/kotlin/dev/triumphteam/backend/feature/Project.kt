@@ -1,8 +1,11 @@
 package dev.triumphteam.backend.feature
 
+import dev.triumphteam.backend.database.Contents
 import dev.triumphteam.backend.database.Entries
 import dev.triumphteam.backend.database.Projects
+import dev.triumphteam.backend.func.MARKDOWN_FILE_EXTENSION
 import dev.triumphteam.backend.func.SUMMARY_FILE_NAME
+import dev.triumphteam.backend.func.checksum
 import dev.triumphteam.backend.func.titleCase
 import dev.triumphteam.backend.func.warn
 import dev.triumphteam.markdown.summary.Entry
@@ -18,9 +21,14 @@ import io.ktor.util.AttributeKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import org.commonmark.node.Node
+import org.commonmark.parser.Parser
+import org.commonmark.renderer.html.HtmlRenderer
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.insertIgnoreAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -30,59 +38,93 @@ import kotlin.io.path.ExperimentalPathApi
 @OptIn(ExperimentalUnsignedTypes::class)
 class Project(private val parser: SummaryParser) {
 
-    fun loadAll(repoFolder: File) {
-        CoroutineScope(IO).launch {
-            val projects = repoFolder.listFiles()?.filter { it.isDirectory } ?: return@launch
-            projects.forEach { projectFile ->
-                val summaryMd = projectFile.listFiles()
-                    ?.filter { it.extension == "md" }
-                    ?.find { it.name == SUMMARY_FILE_NAME }
-                    ?: run {
+    fun loadAll(repoFolder: File) = CoroutineScope(IO).launch {
+        val projects = repoFolder.listFiles()?.filter { it.isDirectory } ?: return@launch
+        projects.forEach { projectFile ->
+            val files = projectFile.listFiles()
+                ?.filter { it.extension == MARKDOWN_FILE_EXTENSION }
+                ?: return@forEach
 
-                        // Removes the project as it's unavailable
-                        transaction {
-                            Projects.deleteWhere { Projects.name eq projectFile.name }
-                        }
-
-                        warn {
-                            """
-                                Could not find summary for project "${projectFile.name}", ignoring.
-                            """.trimIndent()
-                        }
-
-                        return@forEach
-                    }
-
-                val projectName = projectFile.nameWithoutExtension
-                val projectId = transaction {
-                    Projects.select {
-                        Projects.name eq projectName
-                    }.firstOrNull()?.get(Projects.id)
-                        ?: Projects.insertAndGetId {
-                            it[name] = projectName
-                        }
+            val summaryMd = files.find { it.name == SUMMARY_FILE_NAME } ?: run {
+                // Removes the project as it's invalid or unavailable
+                transaction {
+                    Projects.deleteWhere { Projects.name eq projectFile.name }
                 }
 
-                val parsed = transaction {
-                    Entries.deleteWhere { Entries.project eq projectId }
+                warn { "Could not find summary for project ${projectFile.name}, ignoring!" }
+                return@forEach
+            }
 
-                    val summary = try {
-                        parser.parse(summaryMd.readText())
-                    } catch (exception: InvalidSummaryException) {
-                        return@transaction false
+            // Gets the current project name
+            val projectName = projectFile.nameWithoutExtension
+
+            transaction {
+
+                val projectId = Projects.select {
+                    Projects.name eq projectName
+                }.firstOrNull()?.get(Projects.id)
+                    ?: Projects.insertAndGetId {
+                        it[name] = projectName
                     }
 
-                    summary.insertEntries(projectId)
-                    true
-                }
-
-                if (!parsed) {
+                if (!insertSummary(projectId, summaryMd.readText())) {
                     warn { "Could not parse project $projectName, project will be ignored!" }
-                    return@forEach
+                    rollback()
+                    return@transaction
                 }
 
+                files.filter { it.name != SUMMARY_FILE_NAME }.forEach { pageFile ->
+                    val content = Contents
+                        .select { Contents.project eq projectId }
+                        .andWhere { Contents.url eq pageFile.nameWithoutExtension }
+                        .firstOrNull()
+
+                    // Doesn't exist, insert
+                    if (content == null) {
+                        if (!insertPage(projectId, pageFile)) rollback()
+                        return@transaction
+                    }
+
+                    // No change, ignore
+                    if (content[Contents.checksum] == pageFile.checksum()) return@transaction
+
+                    // Delete existing one
+                    Contents.deleteWhere { Contents.id eq content[Contents.id] }
+                    if (!insertPage(projectId, pageFile)) rollback()
+                }
             }
         }
+    }
+
+    private fun insertSummary(projectId: EntityID<Int>, summaryText: String): Boolean {
+        Entries.deleteWhere { Entries.project eq projectId }
+
+        val summary = try {
+            parser.parse(summaryText)
+        } catch (exception: InvalidSummaryException) {
+            return false
+        }
+
+        summary.insertEntries(projectId)
+        return true
+    }
+
+    private fun insertPage(projectId: EntityID<Int>, pageFile: File): Boolean {
+        // TODO move parser out
+        val parser: Parser = Parser.builder().build()
+        val document: Node = parser.parse(pageFile.readText())
+        val renderer = HtmlRenderer.builder().build()
+
+        // TODO the id will be used later I think
+        Contents.insertIgnoreAndGetId {
+            it[project] = projectId
+            // TODO make sure name doesn't have spaces
+            it[url] = pageFile.nameWithoutExtension
+            it[content] = renderer.render(document)
+            it[checksum] = pageFile.checksum()
+        }
+
+        return true
     }
 
     private fun List<Entry>.insertEntries(projectId: EntityID<Int>) {
