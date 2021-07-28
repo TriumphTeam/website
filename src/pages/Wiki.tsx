@@ -6,6 +6,7 @@ import Toolbar from "@material-ui/core/Toolbar"
 import {useParams} from "react-router-dom"
 import {Entry} from "../components/axios/Types"
 import api from "../components/axios/Api"
+import WikiContent from "../components/wiki/WikiContent"
 
 export default function Wiki() {
   const classes = useStyles()
@@ -35,12 +36,7 @@ export default function Wiki() {
         <SideBar entries={summary} url={url}/>
         <main className={classes.content}>
           <Toolbar/>
-          {name}, {optionalPath}
-          <pre>
-            <code className="language-kotlin">
-              public static String TEST = &quot;Hey!&quot;;
-            </code>
-          </pre>
+          <WikiContent url={url}/>
         </main>
       </>
   )

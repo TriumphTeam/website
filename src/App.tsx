@@ -7,12 +7,6 @@ import {darkTheme} from "./components/theme/DarkTheme"
 import NotFound from "./pages/NotFound"
 import Wiki from "./pages/Wiki"
 
-const baseStyle = makeStyles(theme => ({
-  body: {
-    background: theme.palette.background.default,
-  },
-}))
-
 function ThemedApp() {
   return (
       <Router>

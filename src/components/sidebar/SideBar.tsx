@@ -26,6 +26,7 @@ export const SideBar: React.FC<SideBarProp> = ({entries, url}) => {
   // Function to check if the link is currently active
   const isActive = (destination: string) => destination === path
 
+  // TODO move search bar to its own component
   return (
       <Drawer
           className={classes.drawer}
