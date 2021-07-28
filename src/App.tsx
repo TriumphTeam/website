@@ -20,7 +20,7 @@ function ThemedApp() {
           <Route path="/" exact component={Home}/>
           <Route path="/:type/:name/:path?" component={Wiki}/>
 
-          <Route component={NotFound} />
+          <Route component={NotFound}/>
         </Switch>
       </Router>
   )

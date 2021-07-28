@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react"
 import NavBar from "../components/navigation/NavBar"
 import SideBar from "../components/sidebar/SideBar"
-import {createStyles, Theme, makeStyles} from "@material-ui/core/styles"
+import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
 import Toolbar from "@material-ui/core/Toolbar"
-import {useLocation, useRouteMatch, useParams} from "react-router-dom"
+import {useParams} from "react-router-dom"
 import {Entry} from "../components/axios/Types"
 import api from "../components/axios/Api"
 

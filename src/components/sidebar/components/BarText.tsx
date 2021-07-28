@@ -1,6 +1,6 @@
 import React from "react"
 import ListItemText from "@material-ui/core/ListItemText"
-import {createStyles, makeStyles, Theme, withStyles} from "@material-ui/core/styles"
+import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
 
 type BarTextProp = {
   text: string

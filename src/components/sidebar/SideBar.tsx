@@ -1,16 +1,12 @@
-import React, {useEffect, useState} from "react"
-import {alpha, createStyles, Theme, makeStyles, withStyles} from "@material-ui/core/styles"
+import React from "react"
+import {alpha, createStyles, makeStyles, Theme} from "@material-ui/core/styles"
 import Drawer from "@material-ui/core/Drawer"
 import List from "@material-ui/core/List"
-import Divider from "@material-ui/core/Divider"
 import InputBase from "@material-ui/core/InputBase"
 import Toolbar from "@material-ui/core/Toolbar"
 import {BarText} from "./components/BarText"
-import api from "../axios/Api"
 import {Entry} from "../axios/Types"
 import BarLink from "./components/BarLink"
-import ListItemText from "@material-ui/core/ListItemText"
-import ListItem from "@material-ui/core/ListItem"
 import {useParams} from "react-router-dom"
 
 interface SideBarProp {
@@ -45,8 +41,8 @@ export const SideBar: React.FC<SideBarProp> = ({entries, url}) => {
             <InputBase
                 placeholder="Search…"
                 classes={{
-                  root: classes.inputRoot,
                   input: classes.inputInput,
+                  root: classes.inputRoot,
                 }}
                 inputProps={{"aria-label": "search"}}
             />
