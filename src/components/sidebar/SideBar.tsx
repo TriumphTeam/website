@@ -21,10 +21,13 @@ interface SideBarProp {
 const drawerWidth = 300
 
 export const SideBar: React.FC<SideBarProp> = ({entries, url}) => {
+  // CSS styles
   const classes = useStyles()
 
+  // Simply for getting the current path url
   const {path} = useParams<{ type?: string, name?: string, path?: string }>()
 
+  // Function to check if the link is currently active
   const isActive = (destination: string) => destination === path
 
   return (

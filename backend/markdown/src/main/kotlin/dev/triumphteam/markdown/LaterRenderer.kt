@@ -27,8 +27,8 @@ import org.commonmark.parser.Parser
 import org.commonmark.renderer.NodeRenderer
 import org.commonmark.renderer.html.HtmlNodeRendererContext
 import org.commonmark.renderer.html.HtmlRenderer
-
-
+import java.util.logging.Level
+import java.util.logging.Logger
 
 
 class LaterRenderer(private val context: HtmlNodeRendererContext) : AbstractVisitor(), NodeRenderer {
@@ -278,4 +278,15 @@ fun main() {
     val document: Node = parser.parse(md)
     val renderer = HtmlRenderer.builder().build()
     println(renderer.render(document))
+}
+
+val logger = Logger.getLogger("")
+val configCondition = true
+
+fun debug(message: () -> String) {
+    if (configCondition) logger.log(Level.INFO, message())
+}
+
+fun test() {
+    debug { "Debug message here!" }
 }
