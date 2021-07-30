@@ -10,7 +10,7 @@ import io.ktor.locations.Location
 import io.ktor.util.KtorExperimentalAPI
 
 @Location("/api")
-class Api {
+object Api {
 
     @Location("/test")
     class Test
@@ -20,5 +20,8 @@ class Api {
 
     @Location("/page/{project}/{page}")
     data class Page(val project: String, val page: String)
+
+    @Location("/content/{project}/{page}")
+    data class Content(val project: String, val page: String)
 
 }

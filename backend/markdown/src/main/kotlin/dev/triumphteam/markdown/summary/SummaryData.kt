@@ -16,7 +16,7 @@ data class Header(val literal: String) : Entry
 
 @Serializable
 @SerialName("LINK")
-data class Link(val literal: String, val destination: String, var indent: Int) : Entry
+data class Link(val literal: String, val destination: String, var indent: UInt) : Entry
 
 val Entry.type: UByte
     get() = when (this) {
@@ -25,4 +25,4 @@ val Entry.type: UByte
     }
 
 @Serializable
-data class Summary(val entries: List<Entry>)
+data class SummaryData(val entries: List<Entry>)

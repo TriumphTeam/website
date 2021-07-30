@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource
 import dev.triumphteam.backend.config.Settings
 import dev.triumphteam.backend.database.Contents
 import dev.triumphteam.backend.database.Entries
+import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.database.Projects
 import io.ktor.application.Application
 import io.ktor.server.cio.CIO
@@ -29,6 +30,7 @@ fun main() {
         SchemaUtils.create(
             Projects,
             Entries,
+            Pages,
             Contents,
         )
     }

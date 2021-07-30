@@ -7,18 +7,21 @@ package dev.triumphteam.backend
 
 import dev.triumphteam.backend.database.Contents
 import dev.triumphteam.backend.database.Entries
+import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.database.Projects
 import dev.triumphteam.backend.events.GithubPush
 import dev.triumphteam.backend.feature.Github
 import dev.triumphteam.backend.feature.Project
 import dev.triumphteam.backend.feature.listening
+import dev.triumphteam.backend.func.getPage
+import dev.triumphteam.backend.func.getProject
 import dev.triumphteam.backend.func.kotlinx
 import dev.triumphteam.backend.func.log
 import dev.triumphteam.backend.func.makeClient
 import dev.triumphteam.backend.func.mapEntry
 import dev.triumphteam.backend.location.Api
-import dev.triumphteam.markdown.summary.Summary
-import dev.triumphteam.markdown.summary.SummaryParser
+import dev.triumphteam.markdown.content.ContentEntry
+import dev.triumphteam.markdown.summary.SummaryData
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -35,7 +38,6 @@ import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.routing
 import io.ktor.serialization.json
-import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.io.path.ExperimentalPathApi
@@ -62,7 +64,6 @@ fun Application.module() {
     install(ContentNegotiation) { json(kotlinx) }
 
     // Custom
-    install(SummaryParser)
     install(Github) { client = makeClient() }
     install(Project)
 
@@ -75,22 +76,15 @@ fun Application.module() {
 
     routing {
 
-        get<Api.Test> {
-            println("Hello")
-            call.respondText("Test")
-        }
-
         get<Api.Summary> { location ->
             val summary = transaction {
-                val project = Projects.select {
-                    Projects.name eq location.project
-                }.firstOrNull() ?: return@transaction null
+                val project = getProject(location.project) ?: return@transaction null
 
                 val entries = Entries.select {
                     Entries.project eq project[Projects.id]
                 }.orderBy(Entries.position).mapNotNull { mapEntry(it) }
 
-                Summary(entries)
+                SummaryData(entries)
             } ?: run {
                 call.respond(HttpStatusCode.NotFound)
                 return@get
@@ -102,21 +96,31 @@ fun Application.module() {
 
         get<Api.Page> { location ->
             val page = transaction {
-                val project = Projects.select {
-                    Projects.name eq location.project
-                }.firstOrNull() ?: return@transaction null
-
-                return@transaction Contents.select {
-                    Contents.project eq project[Projects.id]
-                }.andWhere {
-                    Contents.url eq location.page
-                }.firstOrNull()?.get(Contents.content)
+                getPage(location.project, location.page)?.get(Pages.content)
             } ?: run {
                 call.respond(HttpStatusCode.NotFound)
                 return@get
             }
 
             call.respondText(page)
+        }
+
+        get<Api.Content> { location ->
+            val content = transaction {
+                val page = getPage(location.project, location.page) ?: return@transaction null
+
+                Contents.select {
+                    Contents.page eq page[Pages.id]
+                }.orderBy(Contents.position)
+                    .map {
+                        ContentEntry(it[Contents.literal], it[Contents.indent])
+                    }
+            } ?: run {
+                call.respond(HttpStatusCode.NotFound)
+                return@get
+            }
+
+            call.respond(content)
         }
 
     }

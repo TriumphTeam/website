@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 
 class SummaryParserTest {
 
-    private val parser = SummaryParser()
+    private val parser = SummaryRenderer()
 
     @Test
     fun `Test header`() {

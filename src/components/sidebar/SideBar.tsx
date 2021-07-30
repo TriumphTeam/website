@@ -7,24 +7,23 @@ import Toolbar from "@material-ui/core/Toolbar"
 import {BarText} from "./components/BarText"
 import {Entry} from "../axios/Types"
 import BarLink from "./components/BarLink"
-import {useParams} from "react-router-dom"
-
-interface SideBarProp {
-  entries: Entry[],
-  url: string,
-}
+import {Redirect, useParams} from "react-router-dom"
+import useSWR from "swr"
 
 const drawerWidth = 300
 
-export const SideBar: React.FC<SideBarProp> = ({entries, url}) => {
-  // CSS styles
+export const SideBar: React.FC<{ url: string }> = ({url}) => {
   const classes = useStyles()
+  const {project, page} = useParams<{ type?: string, project?: string, page?: string }>()
 
-  // Simply for getting the current path url
-  const {path} = useParams<{ type?: string, name?: string, path?: string }>()
+  // API call for the summary data
+  const {data: summary, error} = useSWR<{ entries: Entry[] }>(`/summary/${project}`)
+
+  // TODO right now this will redirect on any error, might wanna change to only 404 or something
+  if (error) return <Redirect to="/404"/>
 
   // Function to check if the link is currently active
-  const isActive = (destination: string) => destination === path
+  const isActive = (destination: string) => destination === page
 
   // TODO move search bar to its own component
   return (
@@ -50,7 +49,7 @@ export const SideBar: React.FC<SideBarProp> = ({entries, url}) => {
           </div>
           <List>
             {
-              entries.map(entry => {
+              summary?.entries.map(entry => {
                 if (entry.type === "LINK") return <BarLink
                     text={entry.literal}
                     destination={`${url}/${entry.destination}`}

@@ -3,6 +3,8 @@ package dev.triumphteam.backend.func
 import dev.triumphteam.backend.LOGGER
 import dev.triumphteam.backend.config.BeanFactory
 import dev.triumphteam.backend.database.Entries
+import dev.triumphteam.backend.database.Pages
+import dev.triumphteam.backend.database.Projects
 import dev.triumphteam.markdown.summary.Entry
 import dev.triumphteam.markdown.summary.Header
 import dev.triumphteam.markdown.summary.Link
@@ -19,6 +21,8 @@ import kotlinx.serialization.modules.subclass
 import me.mattstudios.config.properties.Property
 import net.lingala.zip4j.core.ZipFile
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.andWhere
+import org.jetbrains.exposed.sql.select
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -129,4 +133,20 @@ fun mapEntry(result: ResultRow): Entry? {
         }
         else -> Header(result[Entries.literal])
     }
+}
+
+fun getProject(projectName: String): ResultRow? {
+    return Projects.select {
+        Projects.name eq projectName
+    }.firstOrNull()
+}
+
+fun getPage(projectName: String, page: String): ResultRow? {
+    val project = getProject(projectName) ?: return null
+
+    return Pages.select {
+        Pages.project eq project[Projects.id]
+    }.andWhere {
+        Pages.url eq page
+    }.firstOrNull()
 }

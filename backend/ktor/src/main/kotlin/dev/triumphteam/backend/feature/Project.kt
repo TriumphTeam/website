@@ -2,33 +2,33 @@ package dev.triumphteam.backend.feature
 
 import dev.triumphteam.backend.database.Contents
 import dev.triumphteam.backend.database.Entries
+import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.database.Projects
 import dev.triumphteam.backend.func.MARKDOWN_FILE_EXTENSION
 import dev.triumphteam.backend.func.SUMMARY_FILE_NAME
 import dev.triumphteam.backend.func.checksum
 import dev.triumphteam.backend.func.titleCase
 import dev.triumphteam.backend.func.warn
+import dev.triumphteam.markdown.content.ContentRenderer
 import dev.triumphteam.markdown.summary.Entry
 import dev.triumphteam.markdown.summary.Header
 import dev.triumphteam.markdown.summary.Link
-import dev.triumphteam.markdown.summary.SummaryParser
+import dev.triumphteam.markdown.summary.SummaryRenderer
 import dev.triumphteam.markdown.summary.type
 import dev.triumphteam.markdown.summary.writer.InvalidSummaryException
 import io.ktor.application.Application
 import io.ktor.application.ApplicationFeature
-import io.ktor.application.feature
 import io.ktor.util.AttributeKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
-import org.commonmark.node.Node
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.insertIgnoreAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -36,7 +36,13 @@ import kotlin.io.path.ExperimentalPathApi
 
 @ExperimentalPathApi
 @OptIn(ExperimentalUnsignedTypes::class)
-class Project(private val parser: SummaryParser) {
+class Project {
+
+    private val parser = Parser.builder().build()
+
+    private val htmlRenderer = HtmlRenderer.builder().build()
+    private val summaryRenderer = SummaryRenderer()
+    private val contentRenderer = ContentRenderer()
 
     fun loadAll(repoFolder: File) = CoroutineScope(IO).launch {
         val projects = repoFolder.listFiles()?.filter { it.isDirectory } ?: return@launch
@@ -73,23 +79,23 @@ class Project(private val parser: SummaryParser) {
                     return@transaction
                 }
 
-                files.filter { it.name != SUMMARY_FILE_NAME }.forEach { pageFile ->
-                    val content = Contents
-                        .select { Contents.project eq projectId }
-                        .andWhere { Contents.url eq pageFile.nameWithoutExtension }
+                files.filter { it.name != SUMMARY_FILE_NAME }.forEach pages@{ pageFile ->
+                    val content = Pages
+                        .select { Pages.project eq projectId }
+                        .andWhere { Pages.url eq pageFile.nameWithoutExtension }
                         .firstOrNull()
 
                     // Doesn't exist, insert
                     if (content == null) {
                         if (!insertPage(projectId, pageFile)) rollback()
-                        return@transaction
+                        return@pages
                     }
 
                     // No change, ignore
-                    if (content[Contents.checksum] == pageFile.checksum()) return@transaction
+                    if (content[Pages.checksum] == pageFile.checksum()) return@pages
 
                     // Delete existing one
-                    Contents.deleteWhere { Contents.id eq content[Contents.id] }
+                    Pages.deleteWhere { Pages.id eq content[Pages.id] }
                     if (!insertPage(projectId, pageFile)) rollback()
                 }
             }
@@ -100,7 +106,8 @@ class Project(private val parser: SummaryParser) {
         Entries.deleteWhere { Entries.project eq projectId }
 
         val summary = try {
-            parser.parse(summaryText)
+            val document = parser.parse(summaryText)
+            summaryRenderer.render(document)
         } catch (exception: InvalidSummaryException) {
             return false
         }
@@ -110,18 +117,24 @@ class Project(private val parser: SummaryParser) {
     }
 
     private fun insertPage(projectId: EntityID<Int>, pageFile: File): Boolean {
-        // TODO move parser out
-        val parser: Parser = Parser.builder().build()
-        val document: Node = parser.parse(pageFile.readText())
-        val renderer = HtmlRenderer.builder().build()
+        val markdown = parser.parse(pageFile.readText())
 
-        // TODO the id will be used later I think
-        Contents.insertIgnoreAndGetId {
+        val pageId = Pages.insertAndGetId {
             it[project] = projectId
             // TODO make sure name doesn't have spaces
             it[url] = pageFile.nameWithoutExtension
-            it[content] = renderer.render(document)
+            it[content] = htmlRenderer.render(markdown)
             it[checksum] = pageFile.checksum()
+        }
+
+        val contents = contentRenderer.render(markdown)
+        contents.forEachIndexed { index, entry ->
+            Contents.insert {
+                it[page] = pageId
+                it[literal] = entry.literal
+                it[indent] = entry.indent
+                it[position] = (index + 1).toUInt()
+            }
         }
 
         return true
@@ -150,11 +163,10 @@ class Project(private val parser: SummaryParser) {
             } else if (entry is Link) {
                 it[literal] = entry.literal.titleCase()
                 it[destination] = entry.destination
-                it[indent] = entry.indent
+                it[indent] = entry.indent.toUInt()
             }
 
             it[this.type] = type ?: entry.type
-            it[this.parent] = parent
             it[this.position] = position
         }
     }
@@ -171,8 +183,7 @@ class Project(private val parser: SummaryParser) {
         override val key = AttributeKey<Project>("Project")
 
         override fun install(pipeline: Application, configure: Project.() -> Unit): Project {
-            val parser = pipeline.feature(SummaryParser)
-            return Project(parser).apply(configure)
+            return Project().apply(configure)
         }
     }
 

@@ -111,7 +111,7 @@ private class LinkBuilder(private var destination: String? = null) {
 
     fun append(string: String): StringBuilder = stringBuilder.append(string)
 
-    fun build() = destination?.let { Link(stringBuilder.toString(), it, 0) }
+    fun build() = destination?.let { Link(stringBuilder.toString(), it, 0u) }
 
 }
 
@@ -123,7 +123,7 @@ private class MenuBuilder(main: Link? = null) {
         main?.let { links.add(it) }
     }
 
-    fun append(child: Link) = links.add(child.apply { indent = 1 })
+    fun append(child: Link) = links.add(child.apply { indent = 1u })
 
     fun build(): List<Link> = links
 

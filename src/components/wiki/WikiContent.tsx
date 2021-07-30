@@ -1,42 +1,34 @@
-import React, {useEffect, useState} from "react"
+import React from "react"
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
-import {useParams} from "react-router-dom"
-import api from "../axios/Api"
+import {Redirect, useParams} from "react-router-dom"
+import useSWR from "swr"
 
-interface SideBarProp {
-  url: string,
-}
+// Import DOMPurify
+const DOMPurify = require("dompurify")(window)
 
-export const WikiContent: React.FC<SideBarProp> = ({url}) => {
+export const WikiContent: React.FC<{ url: string }> = ({url}) => {
   // CSS styles
   const classes = useStyles()
-  const [content, setContent] = useState<string>("")
 
   // Simply for getting the current path url
-  const {type, name, path} = useParams<{ type?: string, name?: string, path?: string }>()
+  const {project, page} = useParams<{ type?: string, project?: string, page?: string }>()
 
-  useEffect(() => {
-    // Guarantees it's a valid type
-    if (type !== "lib" && type !== "plugin") window.location.replace("/404")
+  // API data
+  const {data, error} = useSWR(`/page/${project}/${page}`)
 
-    api.get("/page/" + name + "/" + path)
-        .then(response => {
-          setContent(response.data)
-        })
-        .catch(_ => {
-          // TODO this might be temporary as i don't know if there is a better way to do this
-          window.location.replace("/404")
-        })
-  }, [])
+  // Redirects to introduction if no page is typed
+  if (page == null) return <Redirect to={`${url}/introduction`}/>
 
-  // TODO move search bar to its own component
-  return (
-      <div dangerouslySetInnerHTML={{__html: content}}/>
-  )
+  // TODO right now this will redirect on any error, might wanna change to only 404 or something
+  if (error) return <Redirect to="/404"/>
+
+  // Sets the content
+  return <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(data)}}/>
 }
 
 const useStyles = makeStyles((theme: Theme) =>
-    createStyles({}),
+    createStyles({
+    }),
 )
 
 export default WikiContent
