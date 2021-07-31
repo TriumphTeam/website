@@ -1,6 +1,9 @@
 package dev.triumphteam.backend.feature
 
+import dev.triumphteam.backend.CONFIG
+import dev.triumphteam.backend.config.Settings
 import dev.triumphteam.backend.database.Contents
+import dev.triumphteam.backend.database.Contents.page
 import dev.triumphteam.backend.database.Entries
 import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.database.Projects
@@ -26,8 +29,8 @@ import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.andWhere
+import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -87,7 +90,7 @@ class Project {
 
                     // Doesn't exist, insert
                     if (content == null) {
-                        if (!insertPage(projectId, pageFile)) rollback()
+                        if (!insertPage(projectId, pageFile, projectFile)) rollback()
                         return@pages
                     }
 
@@ -96,7 +99,7 @@ class Project {
 
                     // Delete existing one
                     Pages.deleteWhere { Pages.id eq content[Pages.id] }
-                    if (!insertPage(projectId, pageFile)) rollback()
+                    if (!insertPage(projectId, pageFile, projectFile)) rollback()
                 }
             }
         }
@@ -116,7 +119,7 @@ class Project {
         return true
     }
 
-    private fun insertPage(projectId: EntityID<Int>, pageFile: File): Boolean {
+    private fun insertPage(projectId: EntityID<Int>, pageFile: File, projectFile: File): Boolean {
         val markdown = parser.parse(pageFile.readText())
 
         val pageId = Pages.insertAndGetId {
@@ -124,20 +127,29 @@ class Project {
             // TODO make sure name doesn't have spaces
             it[url] = pageFile.nameWithoutExtension
             it[content] = htmlRenderer.render(markdown)
+            it[github] = githubLink(projectFile.name, pageFile.name)
             it[checksum] = pageFile.checksum()
         }
 
         val contents = contentRenderer.render(markdown)
-        contents.forEachIndexed { index, entry ->
-            Contents.insert {
-                it[page] = pageId
-                it[literal] = entry.literal
-                it[indent] = entry.indent
-                it[position] = (index + 1).toUInt()
-            }
+            .withIndex()
+            .associate { it.index to it.value }
+
+        Contents.batchInsert(contents.entries) { entry ->
+            this[page] = pageId
+            this[Contents.literal] = entry.value.literal
+            this[Contents.indent] = entry.value.indent
+            this[Contents.position] = (entry.key + 1).toUInt()
         }
 
         return true
+    }
+
+    private fun githubLink(project: String, page: String): String {
+        val repo = CONFIG[Settings.REPO]
+        return """
+            https://github.com/${repo.name}/${repo.githubPath}/$project/$page
+        """.trimIndent()
     }
 
     private fun List<Entry>.insertEntries(projectId: EntityID<Int>) {
@@ -148,6 +160,7 @@ class Project {
         }
     }
 
+    // TODO make this batch insert
     private fun insertEntry(
         entry: Entry,
         project: EntityID<Int>,

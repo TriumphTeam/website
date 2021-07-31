@@ -23,6 +23,9 @@ data class Repo(
 
     @Name("download")
     var downloadLink: String = "",
+
+    @Name("github-path")
+    var githubPath: String = "",
 ) {
     companion object : BeanFactory<Repo> {
         override fun createDefault(): Repo {

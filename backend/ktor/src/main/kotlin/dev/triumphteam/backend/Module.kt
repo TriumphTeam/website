@@ -20,6 +20,7 @@ import dev.triumphteam.backend.func.log
 import dev.triumphteam.backend.func.makeClient
 import dev.triumphteam.backend.func.mapEntry
 import dev.triumphteam.backend.location.Api
+import dev.triumphteam.markdown.content.ContentData
 import dev.triumphteam.markdown.content.ContentEntry
 import dev.triumphteam.markdown.summary.SummaryData
 import io.ktor.application.Application
@@ -106,21 +107,23 @@ fun Application.module() {
         }
 
         get<Api.Content> { location ->
-            val content = transaction {
+            val contentData = transaction {
                 val page = getPage(location.project, location.page) ?: return@transaction null
 
-                Contents.select {
+                val entries = Contents.select {
                     Contents.page eq page[Pages.id]
                 }.orderBy(Contents.position)
                     .map {
                         ContentEntry(it[Contents.literal], it[Contents.indent])
                     }
+
+                ContentData(page[Pages.github], entries)
             } ?: run {
                 call.respond(HttpStatusCode.NotFound)
                 return@get
             }
 
-            call.respond(content)
+            call.respond(contentData)
         }
 
     }

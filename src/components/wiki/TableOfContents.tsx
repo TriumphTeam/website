@@ -6,6 +6,9 @@ import useSWR from "swr"
 // Import DOMPurify
 const DOMPurify = require("dompurify")(window)
 
+type ContentEntry = { literal: string, indent: number }
+type ContentData = { link: string, entries: ContentEntry[] }
+
 export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
   // CSS styles
   const classes = useStyles()
@@ -14,7 +17,7 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
   const {project, page} = useParams<{ type?: string, project?: string, page?: string }>()
 
   // API data
-  const {data, error} = useSWR<{ literal: string, indent: number }[]>(`/content/${project}/${page}`)
+  const {data, error} = useSWR<ContentData>(`/content/${project}/${page}`)
 
   // Redirects to introduction if no page is typed
   if (page == null) return <Redirect to={`${url}/introduction`}/>
@@ -37,7 +40,7 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
   return (
       <div>
         {
-          data?.map(entry => {
+          data?.entries?.map(entry => {
             return <p>{indentation(entry.indent)}{entry.literal}</p>
           })
         }

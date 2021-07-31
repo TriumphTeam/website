@@ -4,3 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ContentEntry(val literal: String, val indent: UInt)
+
+@Serializable
+data class ContentData(val link: String, val entries: List<ContentEntry>)
