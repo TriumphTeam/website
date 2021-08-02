@@ -13,6 +13,7 @@ import dev.triumphteam.backend.func.checksum
 import dev.triumphteam.backend.func.titleCase
 import dev.triumphteam.backend.func.warn
 import dev.triumphteam.markdown.content.ContentRenderer
+import dev.triumphteam.markdown.html.MarkdownRenderer
 import dev.triumphteam.markdown.summary.Entry
 import dev.triumphteam.markdown.summary.Header
 import dev.triumphteam.markdown.summary.Link
@@ -43,7 +44,7 @@ class Project {
 
     private val parser = Parser.builder().build()
 
-    private val htmlRenderer = HtmlRenderer.builder().build()
+    private val htmlRenderer = HtmlRenderer.builder().nodeRendererFactory(::MarkdownRenderer).build()
     private val summaryRenderer = SummaryRenderer()
     private val contentRenderer = ContentRenderer()
 

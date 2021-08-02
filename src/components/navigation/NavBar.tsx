@@ -1,25 +1,9 @@
 import React from "react"
-import {makeStyles, withStyles} from "@material-ui/core/styles"
+import {createStyles, makeStyles, Theme, withStyles} from "@material-ui/core/styles"
 import AppBar from "@material-ui/core/AppBar"
 import Toolbar from "@material-ui/core/Toolbar"
 import Button from "@material-ui/core/Button"
 import IconButton from "@material-ui/core/IconButton"
-
-const useStyles = makeStyles((theme) => ({
-  nav: {
-    padding: "5px",
-    zIndex: theme.zIndex.drawer + 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-  discord: {
-    marginLeft: "5px",
-  },
-}))
 
 // TODO RESPONSIVE
 export default function NavBar() {
@@ -44,17 +28,34 @@ export default function NavBar() {
         </Toolbar>
       </AppBar>
   )
-
 }
+
+const useStyles = makeStyles((theme) =>
+    createStyles({
+      nav: {
+        padding: "5px",
+        zIndex: theme.zIndex.drawer + 1,
+        background: theme.palette.background.default,
+      },
+      menuButton: {
+        marginRight: theme.spacing(2),
+      },
+      title: {
+        flexGrow: 1,
+      },
+      discord: {
+        marginLeft: "5px",
+      },
+    }),
+)
 
 const NavButton = withStyles(theme => ({
   root: {
     fontSize: "1.1em",
-    color: "#ecf0f1",
     transition: "color .25s",
     "&:hover": {
       background: "none",
-      color: "#2980b9",
+      color: theme.palette.primary.main,
     },
   },
 }))(Button)
@@ -62,11 +63,11 @@ const NavButton = withStyles(theme => ({
 const IconNavButton = withStyles(theme => ({
   root: {
     fontSize: "1.6em",
-    color: "#ecf0f1",
     transition: "color .25s",
     "&:hover": {
       background: "none",
-      color: "#2980b9",
+      color: theme.palette.primary.main,
     },
   },
 }))(IconButton)
+

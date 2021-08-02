@@ -9,13 +9,14 @@ export const darkTheme = createMuiTheme({
       paper: "#1A1A1A",
     },
     primary: {
-      main: "#1A1A1A",
+      main: "#3498db",
     },
     secondary: {
       main: green[500],
     },
     text: {
-      primary: "#96a2b4",
+      primary: "#FFFFFF",
+      secondary: "#96a2b4"
     },
   },
   typography: {

@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme: Theme) =>
         width: "80%",
         marginLeft: "auto",
         marginRight: "auto",
-        color: "#FFFFFF",
         border: "1px solid transparent",
         display: "flex",
         padding: "5px 0",

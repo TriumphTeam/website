@@ -2,6 +2,7 @@ import React from "react"
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
 import {Redirect, useParams} from "react-router-dom"
 import useSWR from "swr"
+import "./page.css"
 
 // Import DOMPurify
 const DOMPurify = require("dompurify")(window)
@@ -23,11 +24,31 @@ export const WikiContent: React.FC<{ url: string }> = ({url}) => {
   if (error) return <Redirect to="/404"/>
 
   // Sets the content
-  return <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(data)}}/>
+  return <div className={classes.wikiContent} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(data)}}/>
 }
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
+      wikiContent: {
+        width: "90%",
+        marginLeft: "auto",
+        marginRight: "auto",
+        padding: "0 10px",
+        fontSize: "1.2em",
+        "& img": {
+          maxWidth: "100%",
+        },
+        "& a": {
+          textDecoration: "none",
+          color: theme.palette.primary.main,
+        },
+        "& h1": {
+          fontSize: "2em",
+        },
+        "& h2": {
+          fontSize: "1.5em",
+        },
+      },
     }),
 )
 

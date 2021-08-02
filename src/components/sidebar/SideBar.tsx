@@ -5,7 +5,7 @@ import List from "@material-ui/core/List"
 import InputBase from "@material-ui/core/InputBase"
 import Toolbar from "@material-ui/core/Toolbar"
 import {BarText} from "./components/BarText"
-import {Entry} from "../axios/Types"
+import {Entry, SideBarSize} from "../axios/Types"
 import BarLink from "./components/BarLink"
 import {Redirect, useParams} from "react-router-dom"
 import useSWR from "swr"
@@ -77,11 +77,11 @@ const useStyles = makeStyles((theme: Theme) =>
         marginBottom: "10px",
       },
       drawer: {
-        width: drawerWidth,
+        width: SideBarSize,
         flexShrink: 0,
       },
       drawerPaper: {
-        width: drawerWidth,
+        width: SideBarSize,
         border: "none",
       },
       drawerContainer: {

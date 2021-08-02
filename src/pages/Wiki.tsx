@@ -7,6 +7,7 @@ import {Redirect, useParams} from "react-router-dom"
 import WikiBody from "../components/wiki/WikiContent"
 import {Grid} from "@material-ui/core"
 import TableOfContents from "../components/wiki/TableOfContents"
+import {SideBarSize} from "../components/axios/Types"
 
 export default function Wiki() {
   const classes = useStyles()
@@ -25,7 +26,7 @@ export default function Wiki() {
         <SideBar url={url}/>
         <main className={classes.content}>
           <Toolbar/>
-          <Grid container spacing={1}>
+          <Grid container spacing={4}>
             <Grid item xs={10}>
               <WikiBody url={url}/>
             </Grid>
@@ -50,9 +51,8 @@ const useStyles = makeStyles((theme: Theme) =>
         overflow: "auto",
       },
       content: {
-        flexGrow: 1,
         padding: theme.spacing(3),
-        marginLeft: "350px",
+        marginLeft: SideBarSize,
       },
       wikiBody: {
         display: "inline-block",

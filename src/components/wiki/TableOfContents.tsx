@@ -36,9 +36,11 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
     }
   }
 
+  // <div className={classes.editOn}><i className="fab fa-github-square"/> Edit on GitHub</div>
   // Sets the table of contents
   return (
-      <div>
+      <div className={classes.tableOfContent}>
+        <div className={classes.contentTitle}>On this page</div>
         {
           data?.entries?.map(entry => {
             return <p>{indentation(entry.indent)}{entry.literal}</p>
@@ -49,8 +51,20 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
 }
 
 const useStyles = makeStyles((theme: Theme) =>
-    // Pretty dumb solution but i'll think of something later
+    // Pretty dumb solution for the indent but i'll think of something later
     createStyles({
+      tableOfContent: {
+        position: "fixed",
+        padding: "35px 5px",
+      },
+      contentTitle: {
+        fontSize: "1.2em",
+        fontWeight: "bold",
+      },
+      editOn: {
+        fontSize: "1.2em",
+        color: "#FFFFFFB3",
+      },
       indent1: {
         marginRight: "10px",
       },

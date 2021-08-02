@@ -42,18 +42,18 @@ const useStyles = makeStyles((theme: Theme) =>
       linkContainer: {
         fontSize: "1.15em",
         padding: "5px 0",
-        color: "#ffffffb3",
+        color: "#FFFFFFB3",
         transition: "color .25s",
         "&:hover": {
           background: "none",
-          color: "#2980b9",
+          color: theme.palette.primary.main,
         },
       },
       indent: {
         marginRight: "25px",
       },
       active: {
-        color: "#2980b9",
+        color: theme.palette.primary.main,
       },
     }),
 )
