@@ -1,7 +1,7 @@
-import {createMuiTheme} from "@material-ui/core"
+import {createTheme} from "@material-ui/core"
 import {green} from "@material-ui/core/colors"
 
-export const darkTheme = createMuiTheme({
+export const darkTheme = createTheme({
   palette: {
     type: "dark",
     background: {
@@ -12,6 +12,7 @@ export const darkTheme = createMuiTheme({
       main: "#3498db",
     },
     secondary: {
+      // TODO change
       main: green[500],
     },
     text: {

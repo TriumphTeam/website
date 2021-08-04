@@ -68,7 +68,9 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
     override fun visit(heading: Heading) {
         val tag = "h${heading.level}"
         html.line()
-        html.tag(tag, getAttrs(heading, tag))
+        val attributes = getAttrs(heading, tag)
+        attributes["id"] = "ass"
+        html.tag(tag, attributes)
         visitChildren(heading)
         html.tag("/$tag")
         html.line()
@@ -251,11 +253,11 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
         return false
     }
 
-    private fun getAttrs(node: Node, tagName: String): Map<String, String> {
+    private fun getAttrs(node: Node, tagName: String): MutableMap<String, String> {
         return getAttrs(node, tagName, emptyMap())
     }
 
-    private fun getAttrs(node: Node, tagName: String, defaultAttributes: Map<String, String>): Map<String, String> {
+    private fun getAttrs(node: Node, tagName: String, defaultAttributes: Map<String, String>): MutableMap<String, String> {
         return context.extendAttributes(node, tagName, defaultAttributes)
     }
 

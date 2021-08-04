@@ -4,8 +4,8 @@ import {Redirect, useParams} from "react-router-dom"
 import useSWR from "swr"
 import Prism from "prismjs"
 import "prismjs/components/prism-java"
-import "prismjs/components/prism-kotlin-custom"
-import "prismjs/components/prism-groovy-custom"
+import "../prism/prism-kotlin-custom"
+import "../prism/prism-groovy-custom"
 import "./page.css"
 
 // Import DOMPurify
@@ -33,13 +33,13 @@ export const WikiContent: React.FC<{ url: string }> = ({url}) => {
   if (error) return <Redirect to="/404"/>
 
   // Sets the content
-  return <div className={classes.wikiContent} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(data)}}/>
+  return <div id="page" className={classes.wikiContent} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(data)}}/>
 }
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
       wikiContent: {
-        width: "90%",
+        width: "70%",
         marginLeft: "auto",
         marginRight: "auto",
         padding: "0 10px",

@@ -1,5 +1,5 @@
 import React from "react"
-import {createStyles, makeStyles, Theme, withStyles} from "@material-ui/core/styles"
+import {createStyles, makeStyles, withStyles} from "@material-ui/core/styles"
 import AppBar from "@material-ui/core/AppBar"
 import Toolbar from "@material-ui/core/Toolbar"
 import Button from "@material-ui/core/Button"
@@ -63,7 +63,7 @@ const NavButton = withStyles(theme => ({
 const IconNavButton = withStyles(theme => ({
   root: {
     fontSize: "1.6em",
-    transition: "color .25s",
+    transition: "color .1s",
     "&:hover": {
       background: "none",
       color: theme.palette.primary.main,

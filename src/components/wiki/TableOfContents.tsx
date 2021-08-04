@@ -1,10 +1,7 @@
-import React from "react"
+import React, {useEffect, useRef, useState} from "react"
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
-import {Redirect, useParams} from "react-router-dom"
+import {Link, Redirect, useParams} from "react-router-dom"
 import useSWR from "swr"
-
-// Import DOMPurify
-const DOMPurify = require("dompurify")(window)
 
 type ContentEntry = { literal: string, indent: number }
 type ContentData = { link: string, entries: ContentEntry[] }
@@ -19,6 +16,14 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
   // API data
   const {data, error} = useSWR<ContentData>(`/content/${project}/${page}`)
 
+  const [isIntersecting, setIntersecting] = useState(false)
+
+  const observer = new IntersectionObserver(
+      ([entry]) => setIntersecting(entry.isIntersecting)
+  )
+
+  const test = useRef()
+
   // Redirects to introduction if no page is typed
   if (page == null) return <Redirect to={`${url}/introduction`}/>
 
@@ -28,11 +33,11 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
   const indentation = (indent: number) => {
     switch (indent) {
       case 1:
-        return <span className={classes.indent1}/>
+        return classes.level1
       case 2:
-        return <span className={classes.indent2}/>
+        return classes.level2
       default:
-        return <></>
+        return ""
     }
   }
 
@@ -41,11 +46,18 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
   return (
       <div className={classes.tableOfContent}>
         <div className={classes.contentTitle}>On this page</div>
-        {
-          data?.entries?.map(entry => {
-            return <p>{indentation(entry.indent)}{entry.literal}</p>
-          })
-        }
+        <ul className={classes.contentItems}>
+          {
+            data?.entries?.map((entry, index) => {
+              return <li
+                  key={`${entry.literal}-${index}`}
+                  className={indentation(entry.indent)}
+              >
+                <Link to="">{entry.literal}</Link>
+              </li>
+            })
+          }
+        </ul>
       </div>
   )
 }
@@ -58,18 +70,43 @@ const useStyles = makeStyles((theme: Theme) =>
         padding: "35px 5px",
       },
       contentTitle: {
-        fontSize: "1.2em",
+        fontSize: "1.3em",
         fontWeight: "bold",
+        marginTop: 0,
+        marginBottom: "10px",
       },
       editOn: {
         fontSize: "1.2em",
         color: "#FFFFFFB3",
       },
-      indent1: {
-        marginRight: "10px",
+      contentItems: {
+        padding: 0,
+        margin: 0,
+        listStyle: "none",
+        display: "block",
+        "& li": {
+          display: "block",
+          paddingTop: "5px",
+          paddingBottom: "5px",
+          fontSize: "1.1em",
+          lineHeight: 1.5,
+          "-webkit-transition": "opacity .1s,color .1s",
+          transition: "opacity .1s,color .1s",
+        },
+        "& a": {
+          color: "#FFFFFFB3",
+          "-webkit-transition": "opacity .1s,color .1s",
+          transition: "opacity .1s,color .1s",
+        },
+        "& a:hover": {
+          color: theme.palette.primary.main,
+        },
       },
-      indent2: {
-        marginRight: "20px",
+      level1: {
+        paddingLeft: ".8em",
+      },
+      level2: {
+        paddingLeft: "1.6em",
       },
     }),
 )

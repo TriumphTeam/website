@@ -29,18 +29,18 @@ export const SideBar: React.FC<{ url: string }> = ({url}) => {
   const isActive = (destination: string) => destination === page
 
   // Could use some improvement make it more DRY
-  const renderItem = (destination: string, literal: string) => {
-    if (isActive(destination)) return <li><Link className={classes.active} to={destination}>{literal}</Link></li>
-    return <li><Link to={destination}>{literal}</Link></li>
+  const renderItem = (destination: string, literal: string, key: string) => {
+    if (isActive(destination)) return <li key={key}><Link className={classes.active} to={destination}>{literal}</Link></li>
+    return <li key={key}><Link to={destination}>{literal}</Link></li>
   }
 
-  const renderList = (children: Entry[]) => {
+  const renderList = (children: Entry[], key: string) => {
     return (
-        <ul>
+        <ul key={`ul-${key}`}>
           {
-            children.map(entry => {
-              if (entry.type === "ITEM") return renderItem(entry.destination, entry.literal)
-              if (entry.type === "LIST") return renderList(entry.children)
+            children.map((entry, index) => {
+              if (entry.type === "ITEM") return renderItem(entry.destination, entry.literal, `${key}-${index}`)
+              if (entry.type === "LIST") return renderList(entry.children, `${key}-${index}`)
               else return <></>
             })
           }
@@ -72,10 +72,10 @@ export const SideBar: React.FC<{ url: string }> = ({url}) => {
         <div className={classes.drawerContainer}>
           <div className={classes.sideList}>
             {
-              summary?.map(entry => {
-                if (entry.type === "ITEM") return renderItem(entry.destination, entry.literal)
-                if (entry.type === "HEADER") return <h1>{entry.literal}</h1>
-                if (entry.type === "LIST") return renderList(entry.children)
+              summary?.map((entry, index) => {
+                if (entry.type === "ITEM") return renderItem(entry.destination, entry.literal, `${entry.destination}-${index}`)
+                if (entry.type === "HEADER") return <h1 key={`${entry.literal}-${index}`}>{entry.literal}</h1>
+                if (entry.type === "LIST") return renderList(entry.children, `${index}`)
                 return <></>
               })
             }
@@ -154,15 +154,15 @@ const useStyles = makeStyles((theme: Theme) =>
           flexFlow: "row nowrap",
           padding: "6px 0",
           fontSize: "1.15em",
-          lineHeight: "1.5",
+          lineHeight: 1.5,
           placeItems: "center",
           display: "list-item",
           cursor: "pointer",
         },
         "& a": {
           color: "#FFFFFFB3",
-          "-webkit-transition": "opacity .2s,color .2s",
-          transition: "opacity .2s,color .2s",
+          "-webkit-transition": "opacity .1s,color .1s",
+          transition: "opacity .1s,color .1s",
         },
         "& a:hover": {
           color: theme.palette.primary.main,
