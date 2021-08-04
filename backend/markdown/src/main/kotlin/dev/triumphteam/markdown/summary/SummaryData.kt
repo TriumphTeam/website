@@ -15,14 +15,15 @@ sealed interface Entry
 data class Header(val literal: String) : Entry
 
 @Serializable
-@SerialName("LINK")
-data class Link(val literal: String, val destination: String, var indent: UInt) : Entry
-
-val Entry.type: UByte
-    get() = when (this) {
-        is Header -> 0u
-        is Link -> 1u
-    }
+@SerialName("ITEM")
+data class Item(val literal: String, val destination: String) : Entry
 
 @Serializable
-data class SummaryData(val entries: List<Entry>)
+@SerialName("LIST")
+data class UnorderedList(val children: MutableList<Entry>) : Entry {
+
+    fun add(entry: Entry) {
+        children.add(entry)
+    }
+
+}

@@ -9,13 +9,9 @@ object Projects : IntIdTable() {
     val name = varchar("name", 255)
 }
 
-object Entries : IntIdTable() {
+object Summaries : IntIdTable() {
     val project = reference("project", Projects, ReferenceOption.CASCADE, ReferenceOption.CASCADE)
-    val literal = varchar("literal", 255)
-    val destination = varchar("destination", 255).nullable()
-    val type = ubyte("type")
-    val indent = uinteger("indent").default(0u)
-    val position = uinteger("position")
+    val content = text("content")
 }
 
 object Pages : IntIdTable() {

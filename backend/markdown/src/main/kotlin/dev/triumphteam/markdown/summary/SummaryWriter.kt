@@ -2,7 +2,8 @@ package dev.triumphteam.markdown.summary.writer
 
 import dev.triumphteam.markdown.summary.Entry
 import dev.triumphteam.markdown.summary.Header
-import dev.triumphteam.markdown.summary.Link
+import dev.triumphteam.markdown.summary.Item
+import dev.triumphteam.markdown.summary.UnorderedList
 
 /**
  * This class is quite bad, but it works as intended,
@@ -14,17 +15,15 @@ class SummaryWriter {
 
     private var header = false
     private var link = false
-    private var ulParent = false
-    private var ulChild = false
-    private var liParent = false
-    private var liChild = false
+    private var ul = false
+    private var li = false
 
     private var stringBuilder = StringBuilder()
-    private var linkBuilder = LinkBuilder()
-    private var menuBuilder = MenuBuilder()
+    private var itemBuilder = ItemBuilder()
+    private var listBuilder = ListBuilder()
 
     fun openHeader() {
-        if (ulParent || ulChild || link) throw InvalidSummaryException("Header is not allowed inside a list!")
+        if (ul || li || link) throw InvalidSummaryException("Header is not allowed inside a list!")
         header = true
     }
 
@@ -35,35 +34,18 @@ class SummaryWriter {
     }
 
     fun openLi() {
-        if (!ulParent && !ulChild) return
-
-        if (liParent) {
-            liChild = true
-            return
-        }
-
-        liParent = true
+        li = true
     }
 
     fun closeLi() {
-        val link = linkBuilder.build()
-
-        if (liChild) {
-            link?.let { menuBuilder.append(it) }
-            linkBuilder = LinkBuilder()
-            liChild = false
-            return
-        }
-
-        link?.let { summary.add(it) }
-        linkBuilder = LinkBuilder()
-        liParent = false
+        itemBuilder.build()?.let { listBuilder.append(it) }
+        li = false
     }
 
     fun openLink(destination: String) {
         if (header) throw InvalidSummaryException("Link is not allowed inside a header!")
-        if (!liParent) throw InvalidSummaryException("Link must be inside a list block!")
-        linkBuilder = LinkBuilder(destination)
+        if (!li) throw InvalidSummaryException("Link must be inside a list block!")
+        itemBuilder = ItemBuilder(destination)
         link = true
     }
 
@@ -72,27 +54,16 @@ class SummaryWriter {
     }
 
     fun openUl() {
-        if (ulParent) {
-            if (!liParent) throw InvalidSummaryException("Opening a LI child outside a UL parent is not allowed!")
-            ulChild = true
-            menuBuilder = MenuBuilder(linkBuilder.build())
-        } else ulParent = true
+        listBuilder = ListBuilder()
     }
 
     fun closeUl() {
-        if (ulChild) {
-            ulChild = false
-            summary.addAll(menuBuilder.build())
-            menuBuilder = MenuBuilder()
-            return
-        }
-
-        ulParent = false
+        summary.add(listBuilder.build())
     }
 
     fun append(value: String) {
         if (link) {
-            linkBuilder.append(value)
+            itemBuilder.append(value)
             return
         }
 
@@ -105,27 +76,23 @@ class SummaryWriter {
 
 }
 
-private class LinkBuilder(private var destination: String? = null) {
+private class ItemBuilder(private var destination: String? = null) {
 
     private val stringBuilder = StringBuilder()
 
     fun append(string: String): StringBuilder = stringBuilder.append(string)
 
-    fun build() = destination?.let { Link(stringBuilder.toString(), it, 0u) }
+    fun build() = destination?.let { Item(stringBuilder.toString(), it) }
 
 }
 
-private class MenuBuilder(main: Link? = null) {
+private class ListBuilder() {
 
-    private val links = mutableListOf<Link>()
+    private val list = UnorderedList(mutableListOf())
 
-    init {
-        main?.let { links.add(it) }
-    }
+    fun append(child: Entry) = list.add(child)
 
-    fun append(child: Link) = links.add(child.apply { indent = 1u })
-
-    fun build(): List<Link> = links
+    fun build(): UnorderedList = list
 
 }
 

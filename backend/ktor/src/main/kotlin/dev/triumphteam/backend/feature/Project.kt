@@ -4,21 +4,18 @@ import dev.triumphteam.backend.CONFIG
 import dev.triumphteam.backend.config.Settings
 import dev.triumphteam.backend.database.Contents
 import dev.triumphteam.backend.database.Contents.page
-import dev.triumphteam.backend.database.Entries
 import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.database.Projects
+import dev.triumphteam.backend.database.Summaries
+import dev.triumphteam.backend.func.JSON
 import dev.triumphteam.backend.func.MARKDOWN_FILE_EXTENSION
 import dev.triumphteam.backend.func.SUMMARY_FILE_NAME
 import dev.triumphteam.backend.func.checksum
-import dev.triumphteam.backend.func.titleCase
+import dev.triumphteam.backend.func.log
 import dev.triumphteam.backend.func.warn
 import dev.triumphteam.markdown.content.ContentRenderer
 import dev.triumphteam.markdown.html.MarkdownRenderer
-import dev.triumphteam.markdown.summary.Entry
-import dev.triumphteam.markdown.summary.Header
-import dev.triumphteam.markdown.summary.Link
 import dev.triumphteam.markdown.summary.SummaryRenderer
-import dev.triumphteam.markdown.summary.type
 import dev.triumphteam.markdown.summary.writer.InvalidSummaryException
 import io.ktor.application.Application
 import io.ktor.application.ApplicationFeature
@@ -26,15 +23,18 @@ import io.ktor.util.AttributeKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import java.io.File
 import kotlin.io.path.ExperimentalPathApi
 
@@ -78,7 +78,7 @@ class Project {
                     }
 
                 if (!insertSummary(projectId, summaryMd.readText())) {
-                    warn { "Could not parse project $projectName, project will be ignored!" }
+                    log { "Could not parse summary, invalid syntax!" }
                     rollback()
                     return@transaction
                 }
@@ -91,7 +91,7 @@ class Project {
 
                     // Doesn't exist, insert
                     if (content == null) {
-                        if (!insertPage(projectId, pageFile, projectFile)) rollback()
+                        insertPage(projectId, pageFile, projectFile)
                         return@pages
                     }
 
@@ -100,27 +100,42 @@ class Project {
 
                     // Delete existing one
                     Pages.deleteWhere { Pages.id eq content[Pages.id] }
-                    if (!insertPage(projectId, pageFile, projectFile)) rollback()
+                    insertPage(projectId, pageFile, projectFile)
                 }
             }
         }
     }
 
     private fun insertSummary(projectId: EntityID<Int>, summaryText: String): Boolean {
-        Entries.deleteWhere { Entries.project eq projectId }
+        val summary = Summaries.select { Summaries.project eq projectId }.firstOrNull()
 
-        val summary = try {
+        val summaryContent = try {
             val document = parser.parse(summaryText)
-            summaryRenderer.render(document)
-        } catch (exception: InvalidSummaryException) {
+            document.accept(summaryRenderer)
+            summaryRenderer.finalize()
+        } catch (ignored: InvalidSummaryException) {
             return false
         }
 
-        summary.insertEntries(projectId)
+        // Serializing the data to JSON and storing it on the database is a disgrace
+        // But right now it's the fastest solution for me, yikes
+        if (summary == null) {
+            Summaries.insert {
+                it[project] = projectId
+                it[content] = JSON.encodeToString(summaryContent)
+            }
+            return true
+        }
+
+        Summaries.update({ Summaries.id eq summary[Summaries.id] }) {
+            it[content] = JSON.encodeToString(summaryContent)
+        }
+
         return true
     }
 
-    private fun insertPage(projectId: EntityID<Int>, pageFile: File, projectFile: File): Boolean {
+    // TODO attempt batch insert
+    private fun insertPage(projectId: EntityID<Int>, pageFile: File, projectFile: File) {
         val markdown = parser.parse(pageFile.readText())
 
         val pageId = Pages.insertAndGetId {
@@ -142,8 +157,6 @@ class Project {
             this[Contents.indent] = entry.value.indent
             this[Contents.position] = (entry.key + 1).toUInt()
         }
-
-        return true
     }
 
     private fun githubLink(project: String, page: String): String {
@@ -152,43 +165,6 @@ class Project {
             https://github.com/${repo.name}/${repo.githubPath}/$project/$page
         """.trimIndent()
     }
-
-    private fun List<Entry>.insertEntries(projectId: EntityID<Int>) {
-        forEachIndexed { pos, entry ->
-            transaction {
-                insertEntry(entry, projectId, pos.toUInt())
-            }
-        }
-    }
-
-    // TODO make this batch insert
-    private fun insertEntry(
-        entry: Entry,
-        project: EntityID<Int>,
-        position: UInt,
-        type: UByte? = null,
-        parent: EntityID<Int>? = null
-    ): EntityID<Int> {
-        return Entries.insertAndGetId {
-            it[this.project] = project
-
-            if (entry is Header) {
-                it[literal] = entry.literal.titleCase()
-            } else if (entry is Link) {
-                it[literal] = entry.literal.titleCase()
-                it[destination] = entry.destination
-                it[indent] = entry.indent.toUInt()
-            }
-
-            it[this.type] = type ?: entry.type
-            it[this.position] = position
-        }
-    }
-
-    /**
-     * Empty config, not much needed tbh
-     */
-    class Configuration
 
     /**
      * Feature companion

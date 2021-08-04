@@ -24,9 +24,9 @@ class SummaryParserTest {
         """.trimIndent()
         assertThat(parser.parse(md)).isEqualTo(
             listOf(
-                Link("Entry 1", "destination.md", 0),
-                Link("Entry 2", "destination.md", 0),
-                Link("Entry 3", "destination.md", 0),
+                Item("Entry 1", "destination.md", 0),
+                Item("Entry 2", "destination.md", 0),
+                Item("Entry 3", "destination.md", 0),
             )
         )
     }
@@ -44,11 +44,11 @@ class SummaryParserTest {
         """.trimIndent()
         assertThat(parser.parse(md)).isEqualTo(
             listOf(
-                Link("Entry 1", "destination.md", 0),
-                Link("Entry 2", "destination.md", 0),
+                Item("Entry 1", "destination.md", 0),
+                Item("Entry 2", "destination.md", 0),
                 Header("Header"),
-                Link("Entry 3", "destination.md", 0),
-                Link("Entry 4", "destination.md", 0),
+                Item("Entry 3", "destination.md", 0),
+                Item("Entry 4", "destination.md", 0),
             )
         )
     }

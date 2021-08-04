@@ -6,23 +6,21 @@
 package dev.triumphteam.backend
 
 import dev.triumphteam.backend.database.Contents
-import dev.triumphteam.backend.database.Entries
 import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.database.Projects
+import dev.triumphteam.backend.database.Summaries
 import dev.triumphteam.backend.events.GithubPush
 import dev.triumphteam.backend.feature.Github
 import dev.triumphteam.backend.feature.Project
 import dev.triumphteam.backend.feature.listening
+import dev.triumphteam.backend.func.JSON
 import dev.triumphteam.backend.func.getPage
 import dev.triumphteam.backend.func.getProject
-import dev.triumphteam.backend.func.kotlinx
 import dev.triumphteam.backend.func.log
 import dev.triumphteam.backend.func.makeClient
-import dev.triumphteam.backend.func.mapEntry
 import dev.triumphteam.backend.location.Api
 import dev.triumphteam.markdown.content.ContentData
 import dev.triumphteam.markdown.content.ContentEntry
-import dev.triumphteam.markdown.summary.SummaryData
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -47,7 +45,6 @@ import kotlin.io.path.ExperimentalPathApi
  * Module of the application
  */
 fun Application.module() {
-
     install(CORS) {
         method(HttpMethod.Options)
         method(HttpMethod.Get)
@@ -62,7 +59,7 @@ fun Application.module() {
     }
     install(Locations)
     install(ForwardedHeaderSupport)
-    install(ContentNegotiation) { json(kotlinx) }
+    install(ContentNegotiation) { json(JSON) }
 
     // Custom
     install(Github) { client = makeClient() }
@@ -81,18 +78,15 @@ fun Application.module() {
             val summary = transaction {
                 val project = getProject(location.project) ?: return@transaction null
 
-                val entries = Entries.select {
-                    Entries.project eq project[Projects.id]
-                }.orderBy(Entries.position).mapNotNull { mapEntry(it) }
-
-                SummaryData(entries)
+                Summaries.select {
+                    Summaries.project eq project[Projects.id]
+                }.firstOrNull()
             } ?: run {
                 call.respond(HttpStatusCode.NotFound)
                 return@get
             }
 
-            call.respond(summary)
-
+            call.respondText(summary[Summaries.content])
         }
 
         get<Api.Page> { location ->

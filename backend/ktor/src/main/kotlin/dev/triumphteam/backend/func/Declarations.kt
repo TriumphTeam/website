@@ -2,12 +2,12 @@ package dev.triumphteam.backend.func
 
 import dev.triumphteam.backend.LOGGER
 import dev.triumphteam.backend.config.BeanFactory
-import dev.triumphteam.backend.database.Entries
 import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.database.Projects
 import dev.triumphteam.markdown.summary.Entry
 import dev.triumphteam.markdown.summary.Header
-import dev.triumphteam.markdown.summary.Link
+import dev.triumphteam.markdown.summary.Item
+import dev.triumphteam.markdown.summary.UnorderedList
 import io.ktor.application.ApplicationCall
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -33,7 +33,7 @@ import java.nio.file.StandardCopyOption
  */
 fun makeClient() = HttpClient(CIO) {
     install(JsonFeature) {
-        serializer = KotlinxSerializer(kotlinx)
+        serializer = KotlinxSerializer(JSON)
     }
 }
 
@@ -45,14 +45,15 @@ fun String.titleCase() = replaceFirstChar { it.uppercase() }
 private val serializer = SerializersModule {
     polymorphic(Entry::class) {
         subclass(Header::class)
-        subclass(Link::class)
+        subclass(Item::class)
+        subclass(UnorderedList::class)
     }
 }
 
 /**
  * Main Kotlinx json provider
  */
-val kotlinx = Json {
+val JSON = Json {
     ignoreUnknownKeys = true
     isLenient = true
     prettyPrint = true
@@ -121,18 +122,6 @@ fun folder(path: Path): File {
     val folder = path.toFile()
     if (!folder.exists()) folder.mkdirs()
     return folder
-}
-
-/**
- * Maps an entry from the result row from the database
- */
-fun mapEntry(result: ResultRow): Entry? {
-    return when (result[Entries.type]) {
-        1.toUByte() -> result[Entries.destination]?.let {
-            Link(result[Entries.literal], it, result[Entries.indent])
-        }
-        else -> Header(result[Entries.literal])
-    }
 }
 
 fun getProject(projectName: String): ResultRow? {

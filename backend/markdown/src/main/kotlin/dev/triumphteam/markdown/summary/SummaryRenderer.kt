@@ -6,7 +6,6 @@ import org.commonmark.node.BulletList
 import org.commonmark.node.Heading
 import org.commonmark.node.Link
 import org.commonmark.node.ListItem
-import org.commonmark.node.Node
 import org.commonmark.node.Text
 import org.commonmark.renderer.html.DefaultUrlSanitizer
 
@@ -14,11 +13,6 @@ class SummaryRenderer : AbstractVisitor() {
 
     private val urlSanitizer = DefaultUrlSanitizer()
     private var writer = SummaryWriter()
-
-    fun render(node: Node): List<Entry> {
-        node.accept(this)
-        return finalize()
-    }
 
     override fun visit(heading: Heading) {
         writer.openHeader()
@@ -48,7 +42,7 @@ class SummaryRenderer : AbstractVisitor() {
         writer.append(text.literal)
     }
 
-    private fun finalize(): List<Entry> {
+    fun finalize(): List<Entry> {
         return writer.build().also { writer = SummaryWriter() }
     }
 
