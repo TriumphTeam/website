@@ -16,7 +16,7 @@ export const darkTheme = createMuiTheme({
     },
     text: {
       primary: "#FFFFFF",
-      secondary: "#96a2b4"
+      secondary: "#96a2b4",
     },
   },
   typography: {

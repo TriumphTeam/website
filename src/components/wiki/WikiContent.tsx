@@ -1,7 +1,11 @@
-import React from "react"
+import React, {useEffect} from "react"
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
 import {Redirect, useParams} from "react-router-dom"
 import useSWR from "swr"
+import Prism from "prismjs"
+import "prismjs/components/prism-java"
+import "prismjs/components/prism-kotlin-custom"
+import "prismjs/components/prism-groovy-custom"
 import "./page.css"
 
 // Import DOMPurify
@@ -16,6 +20,11 @@ export const WikiContent: React.FC<{ url: string }> = ({url}) => {
 
   // API data
   const {data, error} = useSWR(`/page/${project}/${page}`)
+
+  // Sets up all code highlighting
+  useEffect(() => {
+    Prism.highlightAll()
+  })
 
   // Redirects to introduction if no page is typed
   if (page == null) return <Redirect to={`${url}/introduction`}/>
@@ -39,7 +48,6 @@ const useStyles = makeStyles((theme: Theme) =>
           maxWidth: "100%",
         },
         "& a": {
-          textDecoration: "none",
           color: theme.palette.primary.main,
         },
         "& h1": {

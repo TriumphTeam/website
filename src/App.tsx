@@ -9,6 +9,8 @@ import NotFound from "./pages/NotFound"
 import Wiki from "./pages/Wiki"
 import api from "./components/axios/Api"
 
+import "./global.css"
+
 function ThemedApp() {
   return (
       <Router>

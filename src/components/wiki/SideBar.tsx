@@ -28,26 +28,9 @@ export const SideBar: React.FC<{ url: string }> = ({url}) => {
   // Function to check if the link is currently active
   const isActive = (destination: string) => destination === page
 
-  /**
-   * <List className={classes.sideList}>
-   {
-        summary?.entries.map(entry => {
-          if (entry.type === "LINK") return <BarLink
-              text={entry.literal}
-              destination={`${url}/${entry.destination}`}
-              indent={entry.indent}
-              active={isActive(entry.destination)}
-          />
-
-          if (entry.type === "HEADER") return <BarText text={entry.literal}/>
-
-          return <></>
-        })
-      }
-   </List>
-   */
-
+  // Could use some improvement make it more DRY
   const renderItem = (destination: string, literal: string) => {
+    if (isActive(destination)) return <li><Link className={classes.active} to={destination}>{literal}</Link></li>
     return <li><Link to={destination}>{literal}</Link></li>
   }
 
@@ -96,6 +79,7 @@ export const SideBar: React.FC<{ url: string }> = ({url}) => {
                 return <></>
               })
             }
+            <div className={classes.lastSpace}/>
           </div>
         </div>
       </Drawer>
@@ -128,10 +112,10 @@ const useStyles = makeStyles((theme: Theme) =>
         maxHeight: "calc(100vh - 100px)",
         "&::after": {
           position: "absolute",
-          zIndex: 10000,
+          zIndex: 10,
           left: 0,
           width: "100%",
-          height: "20%",
+          height: "10%",
           content: `""`,
           bottom: 0,
           background: `linear-gradient(180deg, ${theme.palette.background.default}00 0%, ${theme.palette.background.default}FF 50%)`,
@@ -167,22 +151,22 @@ const useStyles = makeStyles((theme: Theme) =>
           display: "block",
         },
         "& li": {
-          display: "list-item",
-        },
-        "& a": {
-          display: "flex",
           flexFlow: "row nowrap",
           padding: "6px 0",
-          color: "#FFFFFFB3",
           fontSize: "1.15em",
           lineHeight: "1.5",
           placeItems: "center",
+          display: "list-item",
+          cursor: "pointer",
+        },
+        "& a": {
+          color: "#FFFFFFB3",
           "-webkit-transition": "opacity .2s,color .2s",
           transition: "opacity .2s,color .2s",
         },
         "& a:hover": {
-          color: theme.palette.primary.main
-        }
+          color: theme.palette.primary.main,
+        },
       },
       content: {
         flexGrow: 1,
@@ -200,9 +184,9 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         marginRight: "auto",
         marginLeft: "auto",
-        marginTop: "10px",
-        marginBottom: "0",
-        width: "90%",
+        marginTop: "25px",
+        marginBottom: "15px",
+        width: "80%",
       },
       searchIcon: {
         padding: theme.spacing(0, 2),
@@ -226,6 +210,12 @@ const useStyles = makeStyles((theme: Theme) =>
           width: "20ch",
         },
       },
+      active: {
+        color: `${theme.palette.primary.main} !important`,
+      },
+      lastSpace: {
+        height: "20%",
+      }
     }),
 )
 

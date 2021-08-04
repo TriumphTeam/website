@@ -27,6 +27,7 @@ import io.ktor.application.install
 import io.ktor.features.CORS
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.ForwardedHeaderSupport
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -86,7 +87,7 @@ fun Application.module() {
                 return@get
             }
 
-            call.respondText(summary[Summaries.content])
+            call.respondText(summary[Summaries.content], ContentType.Application.Json)
         }
 
         get<Api.Page> { location ->
@@ -97,7 +98,7 @@ fun Application.module() {
                 return@get
             }
 
-            call.respondText(page)
+            call.respondText(page, ContentType.Text.Html)
         }
 
         get<Api.Content> { location ->
