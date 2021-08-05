@@ -31,6 +31,9 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
 
     private val html = context.writer
 
+    private var hashHref = StringBuilder()
+    private var hash = false
+
     override fun getNodeTypes(): Set<Class<out Node>> {
         return setOf(
             Document::class.java,
@@ -66,11 +69,10 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
     }
 
     override fun visit(heading: Heading) {
-        val tag = "h${heading.level}"
+        val tag = "h${heading.level + 1}"
         html.line()
-        val attributes = getAttrs(heading, tag)
-        attributes["id"] = "ass"
-        html.tag(tag, attributes)
+        html.tag(tag, mapOf("id" to "header"))
+        appendHash(heading)
         visitChildren(heading)
         html.tag("/$tag")
         html.line()
@@ -187,6 +189,11 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
     }
 
     override fun visit(text: Text) {
+        if (hash) {
+            hashHref.append(text.literal)
+            return
+        }
+
         html.text(text.literal)
     }
 
@@ -224,11 +231,14 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
 
     private fun renderCodeBlock(literal: String, node: Node, attributes: Map<String, String>) {
         html.line()
+        html.tag("div", mapOf("id" to "code"))
         html.tag("pre", getAttrs(node, "pre"))
+        appendCopy()
         html.tag("code", getAttrs(node, "code", attributes))
         html.text(literal)
         html.tag("/code")
         html.tag("/pre")
+        html.tag("/div")
         html.line()
     }
 
@@ -257,8 +267,34 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
         return getAttrs(node, tagName, emptyMap())
     }
 
-    private fun getAttrs(node: Node, tagName: String, defaultAttributes: Map<String, String>): MutableMap<String, String> {
+    private fun getAttrs(
+        node: Node,
+        tagName: String,
+        defaultAttributes: Map<String, String>
+    ): MutableMap<String, String> {
         return context.extendAttributes(node, tagName, defaultAttributes)
+    }
+
+    private fun appendHash(heading: Heading) {
+        hash = true
+        visitChildren(heading)
+
+        html.tag(
+            "a",
+            mapOf(
+                "id" to "hash",
+                "href" to "#${hashHref.toString().lowercase().replace(" ", "-")}"
+            )
+        )
+        html.text("#")
+        html.tag("/a")
+        hashHref.setLength(0)
+        hash = false
+    }
+
+    private fun appendCopy() {
+        html.tag("i", mapOf("id" to "copy", "class" to "far fa-copy"))
+        html.tag("/i")
     }
 
 }
