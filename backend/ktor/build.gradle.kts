@@ -27,7 +27,15 @@ dependencies {
 
     implementation("net.lingala.zip4j:zip4j:1.3.2")
 
-    implementation("org.commonmark:commonmark:0.17.1")
+    val commonmark = "0.18.0"
+
+    // MD things
+    implementation("org.commonmark:commonmark:$commonmark")
+    implementation("org.commonmark:commonmark-ext-autolink:$commonmark")
+    implementation("org.commonmark:commonmark-ext-gfm-strikethrough:$commonmark")
+    implementation("org.commonmark:commonmark-ext-gfm-tables:$commonmark")
+    implementation("org.commonmark:commonmark-ext-task-list-items:$commonmark")
+
     implementation("com.google.guava:guava:30.1.1-jre")
 
     implementation("com.zaxxer:HikariCP:4.0.1")

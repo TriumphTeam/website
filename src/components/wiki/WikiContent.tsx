@@ -80,18 +80,44 @@ const useStyles = makeStyles((theme: Theme) =>
         marginLeft: "auto",
         marginRight: "auto",
         padding: "0 10px",
-        fontSize: "1.2em",
+        fontSize: "1.3em",
+        color: "#FFFFFFB3",
+        "& section": {
+          scrollMarginTop: "100px",
+        },
         "& img": {
           maxWidth: "100%",
         },
         "& a": {
           color: theme.palette.primary.main,
         },
+        "& h1": {
+          color: theme.palette.text.primary,
+        },
         "& h2": {
-          fontSize: "2em",
+          fontSize: "1.6em",
+          color: theme.palette.text.primary,
         },
         "& h3": {
-          fontSize: "1.5em",
+          fontSize: "1.4em",
+          color: theme.palette.text.primary,
+        },
+        "& blockquote": {
+          borderLeft: ".25em solid  #282C34",
+          padding: "0 1em",
+          margin: 0,
+        },
+        "& hr": {
+          border: 0,
+          height: "1px",
+          backgroundImage: "linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0))",
+        },
+        "& ul": {
+          margin: "0px 0px 24px",
+          padding: "0px 0px 0px 2em",
+        },
+        "& .contains-task-list": {
+          decoration: "none",
         },
         "& #header:hover": {
           "& #hash": {

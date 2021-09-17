@@ -1,9 +1,10 @@
-import React, {useEffect, useRef, useState} from "react"
+import React, {useEffect} from "react"
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
-import {Link, Redirect, useParams} from "react-router-dom"
+import {Redirect, useParams} from "react-router-dom"
+import {HashLink} from "react-router-hash-link"
 import useSWR from "swr"
 
-type ContentEntry = { literal: string, indent: number }
+type ContentEntry = { literal: string, href: string, indent: number }
 type ContentData = { link: string, entries: ContentEntry[] }
 
 export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
@@ -16,13 +17,29 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
   // API data
   const {data, error} = useSWR<ContentData>(`/content/${project}/${page}`)
 
-  const [isIntersecting, setIntersecting] = useState(false)
-
-  const observer = new IntersectionObserver(
-      ([entry]) => setIntersecting(entry.isIntersecting)
-  )
-
-  const test = useRef()
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const id = entry.target.getAttribute("id")
+        if (entry.isIntersecting) {
+          const element = document.querySelector(`#table-content a[id="${id}"]`)
+          if (element != null) {
+            console.log(classes.active)
+            element.classList.add(classes.active)
+          }
+        } else {
+          const element = document.querySelector(`#table-content a[id="${id}"]`)
+          if (element != null) {
+            element.classList.remove(classes.active)
+          }
+        }
+      })
+    }, {threshold: 0.75, rootMargin: "-100px"})
+    // Track all sections that have an `id` applied
+    document.querySelectorAll("section[id]").forEach((section) => {
+      observer.observe(section)
+    })
+  })
 
   // Redirects to introduction if no page is typed
   if (page == null) return <Redirect to={`${url}/introduction`}/>
@@ -46,14 +63,14 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
   return (
       <div className={classes.tableOfContent}>
         <div className={classes.contentTitle}>On this page</div>
-        <ul className={classes.contentItems}>
+        <ul id="table-content" className={classes.contentItems}>
           {
             data?.entries?.map((entry, index) => {
               return <li
                   key={`${entry.literal}-${index}`}
                   className={indentation(entry.indent)}
               >
-                <Link to="">{entry.literal}</Link>
+                <HashLink id={entry.href} to={`#${entry.href}`}>{entry.literal}</HashLink>
               </li>
             })
           }
@@ -65,6 +82,9 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
 const useStyles = makeStyles((theme: Theme) =>
     // Pretty dumb solution for the indent but i'll think of something later
     createStyles({
+      active: {
+        color: `${theme.palette.primary.main} !important`,
+      },
       tableOfContent: {
         position: "fixed",
         padding: "35px 5px",

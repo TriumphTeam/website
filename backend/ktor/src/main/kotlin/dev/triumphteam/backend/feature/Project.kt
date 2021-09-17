@@ -24,6 +24,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
+import org.commonmark.ext.autolink.AutolinkExtension
+import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension
+import org.commonmark.ext.gfm.tables.TablesExtension
+import org.commonmark.ext.task.list.items.TaskListItemsExtension
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 import org.jetbrains.exposed.dao.id.EntityID
@@ -42,9 +46,18 @@ import kotlin.io.path.ExperimentalPathApi
 @OptIn(ExperimentalUnsignedTypes::class)
 class Project {
 
-    private val parser = Parser.builder().build()
+    private val extensions = listOf(
+        StrikethroughExtension.create(),
+        AutolinkExtension.create(),
+        TablesExtension.create(),
+        TaskListItemsExtension.create(),
+    )
 
-    private val htmlRenderer = HtmlRenderer.builder().nodeRendererFactory(::MarkdownRenderer).build()
+    private val parser = Parser.builder().extensions(extensions).build()
+    private val htmlRenderer = HtmlRenderer.builder()
+        .nodeRendererFactory(::MarkdownRenderer)
+        .extensions(extensions)
+        .build()
     private val summaryRenderer = SummaryRenderer()
     private val contentRenderer = ContentRenderer()
 
@@ -154,6 +167,7 @@ class Project {
         Contents.batchInsert(contents.entries) { entry ->
             this[page] = pageId
             this[Contents.literal] = entry.value.literal
+            this[Contents.href] = entry.value.href
             this[Contents.indent] = entry.value.indent
             this[Contents.position] = (entry.key + 1).toUInt()
         }

@@ -23,8 +23,10 @@ import org.commonmark.node.SoftLineBreak
 import org.commonmark.node.StrongEmphasis
 import org.commonmark.node.Text
 import org.commonmark.node.ThematicBreak
+import org.commonmark.parser.Parser
 import org.commonmark.renderer.NodeRenderer
 import org.commonmark.renderer.html.HtmlNodeRendererContext
+import org.commonmark.renderer.html.HtmlRenderer
 
 
 class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractVisitor(), NodeRenderer {
@@ -33,6 +35,8 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
 
     private var hashHref = StringBuilder()
     private var hash = false
+
+    private val sections = mutableMapOf<Int, String>()
 
     override fun getNodeTypes(): Set<Class<out Node>> {
         return setOf(
@@ -66,13 +70,40 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
     override fun visit(document: Document) {
         // No rendering itself
         visitChildren(document)
+        sections.forEach { _ ->
+            html.tag("/section")
+            html.line()
+        }
     }
 
     override fun visit(heading: Heading) {
-        val tag = "h${heading.level + 1}"
+        val level = heading.level + 1
+
+        if (sections.contains(level)) {
+            val tags = sections.filterKeys { it >= level }
+            tags.forEach { _ ->
+                html.tag("/section")
+                html.line()
+            }
+            val iterator = sections.iterator()
+            while (iterator.hasNext()) {
+                val entry = iterator.next()
+                if (entry.key in tags) iterator.remove()
+            }
+        }
+
+        val parentId = sections[level - 1]
+        val currentId = buildString {
+            if (parentId != null) append(parentId).append("-")
+            append(HeaderIdRenderer().render(heading))
+        }
+        html.tag("section", mapOf("id" to currentId))
+        sections[level] = currentId
+
+        val tag = "h${level}"
         html.line()
-        html.tag(tag, mapOf("id" to "header"))
-        appendHash(heading)
+        html.tag(tag)
+        appendHash(currentId)
         visitChildren(heading)
         html.tag("/$tag")
         html.line()
@@ -158,6 +189,22 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
         html.tag("a", getAttrs(link, "a", attrs))
         visitChildren(link)
         html.tag("/a")
+    }
+
+    override fun visit(image: Image) {
+        var url = image.destination
+
+        val attrs: MutableMap<String, String> = java.util.LinkedHashMap()
+        if (context.shouldSanitizeUrls()) {
+            url = context.urlSanitizer().sanitizeImageUrl(url)
+        }
+
+        attrs["src"] = context.encodeUrl(url)
+        if (image.title != null) {
+            attrs["title"] = image.title
+        }
+
+        html.tag("img", getAttrs(image, "img", attrs), true)
     }
 
     override fun visit(listItem: ListItem) {
@@ -275,21 +322,10 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
         return context.extendAttributes(node, tagName, defaultAttributes)
     }
 
-    private fun appendHash(heading: Heading) {
-        hash = true
-        visitChildren(heading)
-
-        html.tag(
-            "a",
-            mapOf(
-                "id" to "hash",
-                "href" to "#${hashHref.toString().lowercase().replace(" ", "-")}"
-            )
-        )
+    private fun appendHash(href: String) {
+        html.tag("a", mapOf("id" to "hash", "href" to "#$href"))
         html.text("#")
         html.tag("/a")
-        hashHref.setLength(0)
-        hash = false
     }
 
     private fun appendCopy() {
@@ -297,4 +333,31 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
         html.tag("/i")
     }
 
+}
+
+fun main() {
+    val parser = Parser.builder().build()
+    val htmlRenderer = HtmlRenderer.builder().nodeRendererFactory(::MarkdownRenderer).build()
+    val markdown = parser.parse(
+        """
+            # Header
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+            ## Sub header
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            
+            ### Test
+            Boyyyyy
+
+            # Header2
+            Hello
+
+            ## Sub2
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+            # Header 3
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        """.trimIndent()
+    )
+    println(htmlRenderer.render(markdown))
 }

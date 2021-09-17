@@ -109,7 +109,7 @@ fun Application.module() {
                     Contents.page eq page[Pages.id]
                 }.orderBy(Contents.position)
                     .map {
-                        ContentEntry(it[Contents.literal], it[Contents.indent])
+                        ContentEntry(it[Contents.literal], it[Contents.href], it[Contents.indent])
                     }
 
                 ContentData(page[Pages.github], entries)
@@ -122,4 +122,5 @@ fun Application.module() {
         }
 
     }
+
 }

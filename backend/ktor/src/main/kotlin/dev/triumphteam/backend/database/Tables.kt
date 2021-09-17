@@ -25,6 +25,7 @@ object Pages : IntIdTable() {
 object Contents : IntIdTable() {
     val page = reference("page", Pages, ReferenceOption.CASCADE, ReferenceOption.CASCADE)
     val literal = varchar("literal", 512)
+    val href = varchar("href", 1024)
     val indent = uinteger("indent").default(0u)
     val position = uinteger("position")
 }
