@@ -119,7 +119,17 @@ const useStyles = makeStyles((theme: Theme) =>
         "& .contains-task-list": {
           decoration: "none",
         },
-        "& #header:hover": {
+        "& h2:hover": {
+          "& #hash": {
+            opacity: .3,
+          },
+        },
+        "& h3:hover": {
+          "& #hash": {
+            opacity: .3,
+          },
+        },
+        "& h4:hover": {
           "& #hash": {
             opacity: .3,
           },

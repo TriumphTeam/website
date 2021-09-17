@@ -84,6 +84,7 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
       active: {
         color: `${theme.palette.primary.main} !important`,
+        fontWeight: "bold",
       },
       tableOfContent: {
         position: "fixed",
