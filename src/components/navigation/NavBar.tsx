@@ -1,36 +1,42 @@
 import React from "react"
-import {createStyles, makeStyles, withStyles} from "@material-ui/core/styles"
-import AppBar from "@material-ui/core/AppBar"
-import Toolbar from "@material-ui/core/Toolbar"
-import Button from "@material-ui/core/Button"
-import IconButton from "@material-ui/core/IconButton"
+import {createStyles, DefaultTheme, makeStyles, withStyles} from "@mui/styles"
+import {Theme} from "@mui/material/styles"
+import AppBar from "@mui/material/AppBar"
+import Toolbar from "@mui/material/Toolbar"
+import Button from "@mui/material/Button"
+import IconButton from "@mui/material/IconButton"
 
 // TODO RESPONSIVE
 export default function NavBar() {
   const classes = useStyles()
 
   return (
-      <AppBar position="fixed" className={classes.nav}>
-        <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            LOGO
-          </IconButton>
+    <AppBar position="fixed" className={classes.nav}>
+      <Toolbar>
+        <IconButton
+          edge="start"
+          className={classes.menuButton}
+          color="inherit"
+          aria-label="menu"
+          size="large">
+          LOGO
+        </IconButton>
 
-          {/* Makes content go to the right */}
-          <span className={classes.title}/>
+        {/* Makes content go to the right */}
+        <span className={classes.title}/>
 
-          <NavButton color="inherit">HOME</NavButton>
-          <NavButton color="inherit">PLUGINS</NavButton>
-          <NavButton color="inherit">LIBRARIES</NavButton>
-          <IconNavButton edge="start" color="inherit" className={classes.discord}>
-            <i className="fab fa-discord"/>
-          </IconNavButton>
-        </Toolbar>
-      </AppBar>
-  )
+        <NavButton color="inherit">HOME</NavButton>
+        <NavButton color="inherit">PLUGINS</NavButton>
+        <NavButton color="inherit">LIBRARIES</NavButton>
+        <IconNavButton edge="start" color="inherit" className={classes.discord}>
+          <i className="fab fa-discord"/>
+        </IconNavButton>
+      </Toolbar>
+    </AppBar>
+  );
 }
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles((theme: Theme) =>
     createStyles({
       nav: {
         padding: "5px",

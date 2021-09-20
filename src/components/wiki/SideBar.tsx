@@ -1,8 +1,10 @@
 import React from "react"
-import {alpha, createStyles, makeStyles, Theme} from "@material-ui/core/styles"
-import Drawer from "@material-ui/core/Drawer"
-import InputBase from "@material-ui/core/InputBase"
-import Toolbar from "@material-ui/core/Toolbar"
+import {createStyles, makeStyles} from "@mui/styles"
+import {Theme} from "@mui/material/styles"
+import {alpha} from "@mui/material"
+import Drawer from "@mui/material/Drawer"
+import InputBase from "@mui/material/InputBase"
+import Toolbar from "@mui/material/Toolbar"
 import {SideBarSize} from "../axios/Types"
 import {Link, Redirect, useParams} from "react-router-dom"
 import useSWR from "swr"
@@ -17,6 +19,7 @@ export type Entry =
 
 export const SideBar: React.FC<{ url: string }> = ({url}) => {
   const classes = useStyles()
+
   const {project, page} = useParams<{ type?: string, project?: string, page?: string }>()
 
   // API call for the summary data
@@ -203,7 +206,7 @@ const useStyles = makeStyles((theme: Theme) =>
       inputInput: {
         padding: theme.spacing(1, 1, 1, 0),
         // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
         transition: theme.transitions.create("width"),
         width: "100%",
         [theme.breakpoints.up("md")]: {

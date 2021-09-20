@@ -1,9 +1,15 @@
-import {createTheme} from "@material-ui/core"
-import {green} from "@material-ui/core/colors"
+import {createTheme, Theme} from "@mui/material/styles"
+import {green} from "@mui/material/colors"
+
+declare module "@mui/material/styles" {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {
+  }
+}
 
 export const darkTheme = createTheme({
   palette: {
-    type: "dark",
+    mode: "dark",
     background: {
       default: "#1A1A1A",
       paper: "#1A1A1A",

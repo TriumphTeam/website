@@ -1,6 +1,6 @@
 import React from "react"
-import {CssBaseline} from "@material-ui/core"
-import {ThemeProvider} from "@material-ui/core/styles"
+import {CssBaseline} from "@mui/material"
+import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom"
 import Home from "./pages/Home"
 import {darkTheme} from "./components/theme/DarkTheme"
@@ -26,7 +26,8 @@ function ThemedApp() {
 
 function App() {
   return (
-      <React.Fragment>
+    <React.Fragment>
+      <StyledEngineProvider injectFirst>
         <ThemeProvider theme={darkTheme}>
           <CssBaseline/>
           <SWRConfig value={{
@@ -39,8 +40,9 @@ function App() {
             <ThemedApp/>
           </SWRConfig>
         </ThemeProvider>
-      </React.Fragment>
-  )
+      </StyledEngineProvider>
+    </React.Fragment>
+  );
 }
 
 export default App

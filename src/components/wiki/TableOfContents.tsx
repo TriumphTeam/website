@@ -1,5 +1,6 @@
 import React, {useEffect} from "react"
-import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
+import {createStyles, makeStyles} from "@mui/styles"
+import {Theme} from "@mui/material/styles"
 import {Redirect, useParams} from "react-router-dom"
 import {HashLink} from "react-router-hash-link"
 import useSWR from "swr"
