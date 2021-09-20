@@ -127,10 +127,10 @@ const useStyles = makeStyles((theme: Theme) =>
         height: "100vh",
         padding: "0 15% 0 15%",
         "&::-webkit-scrollbar": {
-          width: 7,
+          width: "0.5em",
         },
         "&::-webkit-scrollbar-track": {
-          boxShadow: `inset 0 0 6px rgba(0, 0, 0, 0.3)`,
+          boxShadow: `inset 0 0 6px rgba(0, 0, 0, 0.5)`,
         },
         "&::-webkit-scrollbar-thumb": {
           backgroundColor: "#3C3E41",

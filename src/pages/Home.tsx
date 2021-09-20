@@ -1,11 +1,26 @@
 import React from "react"
 import NavBar from "../components/navigation/NavBar"
+import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
 
-export default function Home() {
+function Home() {
+  const classes = useStyles()
+
   return (
       <>
-        <NavBar/>
-        <h1>Home</h1>
+        <div className={classes.main}>
+          Team
+        </div>
       </>
   )
 }
+
+const useStyles = makeStyles((theme: Theme) =>
+    // Pretty dumb solution for the indent but i'll think of something later
+    createStyles({
+      main: {
+
+      }
+    }),
+)
+
+export default Home
