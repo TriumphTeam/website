@@ -2,14 +2,14 @@ import React from "react"
 import {CssBaseline} from "@mui/material"
 import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom"
-import Home from "./pages/Home"
+import Home from "./pages/home/Home"
 import {darkTheme} from "./components/theme/DarkTheme"
 import {SWRConfig} from "swr"
 import NotFound from "./pages/NotFound"
 import Wiki from "./pages/Wiki"
 import api from "./components/axios/Api"
 
-import "./global.css"
+import "./global.scss"
 
 function ThemedApp() {
   return (

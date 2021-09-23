@@ -60,7 +60,6 @@ export const SideBar: React.FC<{ url: string }> = ({url}) => {
             paper: classes.drawerPaper,
           }}
       >
-        <Toolbar className={classes.toolBar}/>
         <div className={classes.search}>
           <div className={classes.searchIcon}><i className="fas fa-search"/></div>
           <InputBase
@@ -93,9 +92,6 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
       root: {
         display: "flex",
-      },
-      toolBar: {
-        marginBottom: "10px",
       },
       drawer: {
         width: SideBarSize,

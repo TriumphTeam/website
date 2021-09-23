@@ -23,10 +23,8 @@ export default function Wiki() {
 
   return (
       <>
-        <NavBar/>
         <SideBar url={url}/>
         <main className={classes.content}>
-          <Toolbar/>
           <Grid container spacing={4}>
             <Grid item xs={10}>
               <WikiBody url={url}/>

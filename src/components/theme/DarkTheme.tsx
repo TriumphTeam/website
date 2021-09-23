@@ -2,8 +2,15 @@ import {createTheme, Theme} from "@mui/material/styles"
 import {green} from "@mui/material/colors"
 
 declare module "@mui/material/styles" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {
+  }
+
+  interface Palette {
+    neutral: Palette['primary'];
+  }
+
+  interface PaletteOptions {
+    neutral: PaletteOptions['primary'];
   }
 }
 
@@ -11,11 +18,14 @@ export const darkTheme = createTheme({
   palette: {
     mode: "dark",
     background: {
-      default: "#1A1A1A",
-      paper: "#1A1A1A",
+      default: "#111016",
+      paper: "#111016",
     },
     primary: {
       main: "#3498db",
+    },
+    neutral: {
+      main: "red"
     },
     secondary: {
       // TODO change

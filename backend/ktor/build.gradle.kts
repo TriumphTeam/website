@@ -8,7 +8,6 @@ val exposedVersion = "0.30.1"
 
 dependencies {
     implementation(project(":markdown"))
-
     implementation("io.ktor:ktor-server-cio:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-metrics:$ktorVersion")

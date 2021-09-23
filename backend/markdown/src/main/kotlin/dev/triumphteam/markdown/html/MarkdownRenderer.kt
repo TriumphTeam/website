@@ -27,6 +27,7 @@ import org.commonmark.parser.Parser
 import org.commonmark.renderer.NodeRenderer
 import org.commonmark.renderer.html.HtmlNodeRendererContext
 import org.commonmark.renderer.html.HtmlRenderer
+import java.lang.reflect.Method
 
 
 class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractVisitor(), NodeRenderer {
@@ -360,4 +361,6 @@ fun main() {
         """.trimIndent()
     )
     println(htmlRenderer.render(markdown))
+    val method: Method = null!!
+    method.invoke("")
 }

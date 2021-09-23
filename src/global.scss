@@ -1,3 +1,10 @@
+/** {
+  border: dashed black 1px;
+}*/
+
+html {
+  scroll-behavior: smooth;
+}
 
 a {
   text-decoration: none;
@@ -14,4 +21,12 @@ a {
 ::-webkit-scrollbar-thumb {
   background-color: #3C3E41;
   border-radius: 25px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+  text-align: center;
 }
