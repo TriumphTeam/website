@@ -28,20 +28,26 @@ function Home() {
           <div className="bg-hollow-circles" style={{transform: `translateY(${scrollOffSet * 0.5}px)`}}/>
           <Container>
             <Box sx={{height: "100vh"}} className="center">
-              <div className="logo-container">
-                <div className="main-logo"/>
-                <Typography variant="h2" sx={{fontWeight: "bold"}}>Triumph Team</Typography>
-                <Typography variant="h3" sx={{fontWeight: "100", marginTop: "25px"}}>
-                  A development team with a passion for <HashLink to="#plugins"
-                                                                  className="gradient-text">plugins</HashLink>, <HashLink
-                    to="#libraries" className="gradient-text">libraries</HashLink>, and much <HashLink to="#more"
-                                                                                                       className="gradient-text">more</HashLink>.
-                </Typography>
-                <HomeButton onClick={() => openLink("https://mattstudios.me/discord")}><i
-                    className="fab fa-discord"/></HomeButton>
-                <HomeButton onClick={() => openLink("https://github.com/TriumphTeam")}><i
-                    className="fab fa-github"/></HomeButton>
-              </div>
+              <Grid container>
+                <Grid item xs={12}>
+                  <div className="main-logo"/>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="h2" sx={{fontWeight: "bold"}}>Triumph Team</Typography>
+                  <Typography variant="h3" sx={{fontWeight: "100", marginTop: "25px"}}>
+                    A development team with a passion for <HashLink to="#plugins"
+                                                                    className="gradient-text">plugins</HashLink>, <HashLink
+                      to="#libraries" className="gradient-text">libraries</HashLink>, and much <HashLink to="#more"
+                                                                                                         className="gradient-text">more</HashLink>.
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <HomeButton onClick={() => openLink("https://mattstudios.me/discord")}><i
+                      className="fab fa-discord"/></HomeButton>
+                  <HomeButton onClick={() => openLink("https://github.com/TriumphTeam")}><i
+                      className="fab fa-github"/></HomeButton>
+                </Grid>
+              </Grid>
               <HashLink to="#plugins" className="scroll-link">
                 <div className="scroll-down">
                   <span className="text">Projects</span>
@@ -96,7 +102,7 @@ const Particle = () => <Particles
           },
         },
         opacity: {
-          value: 0.05,
+          value: 0.3,
           random: {
             enable: true,
             minimumValue: 0.005,
