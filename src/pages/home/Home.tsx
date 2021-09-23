@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react"
-import {styled, Theme} from "@mui/material/styles"
-import {Box, Button, Container, IconButton, Typography} from "@mui/material"
-import {SxProps} from "@mui/system/"
+import {styled} from "@mui/material/styles"
+import {Box, Container, Grid, IconButton, Typography} from "@mui/material"
 import "./home.scss"
 import {HashLink} from "react-router-hash-link"
 import Particles from "react-particles-js"
@@ -31,8 +30,8 @@ function Home() {
             <Box sx={{height: "100vh"}} className="center">
               <div className="logo-container">
                 <div className="main-logo"/>
-                <Typography variant="h2" sx={{fontFamily: "Poppins", fontWeight: "bold"}}>Triumph Team</Typography>
-                <Typography variant="h3" sx={{fontFamily: "Poppins", fontWeight: "200", marginTop: "25px"}}>
+                <Typography variant="h2" sx={{fontWeight: "bold"}}>Triumph Team</Typography>
+                <Typography variant="h3" sx={{fontWeight: "100", marginTop: "25px"}}>
                   A development team with a passion for <HashLink to="#plugins"
                                                                   className="gradient-text">plugins</HashLink>, <HashLink
                     to="#libraries" className="gradient-text">libraries</HashLink>, and much <HashLink to="#more"
@@ -43,7 +42,7 @@ function Home() {
                 <HomeButton onClick={() => openLink("https://github.com/TriumphTeam")}><i
                     className="fab fa-github"/></HomeButton>
               </div>
-              <HashLink to="#test" className="scroll-link">
+              <HashLink to="#plugins" className="scroll-link">
                 <div className="scroll-down">
                   <span className="text">Projects</span>
                   <div className="chevron"/>
@@ -55,7 +54,9 @@ function Home() {
           </Container>
         </div>
         <Box sx={{height: "100vh", width: "100%"}} className="center">
-          <Typography variant="h3" id="plugins">Plugins</Typography>
+          <Grid container spacing={5}>
+            <Grid item sm={12}><Typography variant="h3" id="plugins">Plugins</Typography></Grid>
+          </Grid>
         </Box>
       </>
 

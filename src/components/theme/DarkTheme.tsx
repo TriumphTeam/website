@@ -37,6 +37,6 @@ export const darkTheme = createTheme({
     },
   },
   typography: {
-    fontFamily: `"Roboto", sans-serif`,
+    fontFamily: `"Poppins", sans-serif`,
   },
 })
