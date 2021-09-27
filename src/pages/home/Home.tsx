@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from "react"
-import {styled} from "@mui/material/styles"
-import {Box, Container, Grid, IconButton, Typography} from "@mui/material"
-import "./home.scss"
+import {Box, Container, Grid, Typography} from "@mui/material"
 import {HashLink} from "react-router-hash-link"
-import Particles from "react-particles-js"
+import CircleParticle from "../../components/particles/CircleParticle"
+import "./home.scss"
+import BigIconButton from "../../components/buttons/BigIconButton"
+import {openLink} from "../../components/utils/Utilities"
+import ProjectGroup from "../../components/card/ProjectGroup"
 
 function Home() {
   const [scrollOffSet, setScrollOffSet] = useState(0)
@@ -15,37 +17,38 @@ function Home() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const openLink = (link: string) => {
-    window.open(link)
-  }
+  const plugins: number[] = []
+  const libraries = [1, 2, 3]
 
   return (
       <>
         <div className="parent">
           <div className="bg-circles" style={{transform: `translateY(${scrollOffSet * 0.2}px)`}}>
-            <Particle/>
+            <CircleParticle/>
           </div>
           <div className="bg-hollow-circles" style={{transform: `translateY(${scrollOffSet * 0.5}px)`}}/>
           <Container>
             <Box sx={{height: "100vh"}} className="center">
-              <Grid container>
+              <Grid container className="text-container">
                 <Grid item xs={12}>
                   <div className="main-logo"/>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="h2" sx={{fontWeight: "bold"}}>Triumph Team</Typography>
                   <Typography variant="h3" sx={{fontWeight: "100", marginTop: "25px"}}>
-                    A development team with a passion for <HashLink to="#plugins"
-                                                                    className="gradient-text">plugins</HashLink>, <HashLink
-                      to="#libraries" className="gradient-text">libraries</HashLink>, and much <HashLink to="#more"
-                                                                                                         className="gradient-text">more</HashLink>.
+                    A development team with a passion for <HashLink to="#plugins">plugins</HashLink>, <HashLink
+                      to="#libraries">libraries</HashLink>, and much <HashLink to="#more">more</HashLink>.
                   </Typography>
                 </Grid>
-                <Grid item xs={12}>
-                  <HomeButton onClick={() => openLink("https://mattstudios.me/discord")}><i
-                      className="fab fa-discord"/></HomeButton>
-                  <HomeButton onClick={() => openLink("https://github.com/TriumphTeam")}><i
-                      className="fab fa-github"/></HomeButton>
+                <Grid item xs={12} sx={{
+                  "& button": {
+                    margin: "50px 15px",
+                  },
+                }}>
+                  <BigIconButton onClick={() => openLink("https://mattstudios.me/discord")}><i
+                      className="fab fa-discord"/></BigIconButton>
+                  <BigIconButton onClick={() => openLink("https://github.com/TriumphTeam")}><i
+                      className="fab fa-github"/></BigIconButton>
                 </Grid>
               </Grid>
               <HashLink to="#plugins" className="scroll-link">
@@ -59,70 +62,26 @@ function Home() {
             </Box>
           </Container>
         </div>
-        <Box sx={{height: "100vh", width: "100%"}} className="center">
-          <Grid container spacing={5}>
-            <Grid item sm={12}><Typography variant="h3" id="plugins">Plugins</Typography></Grid>
+        <Container sx={{textAlign: "center"}}>
+          <Grid container justifyContent="center" alignItems="center" spacing={3}>
+            <Grid item xs={12}><Typography variant="h3" id="plugins" sx={{padding: "50px"}}>Plugins</Typography></Grid>
+            <ProjectGroup tempArray={plugins}/>
           </Grid>
-        </Box>
+          <Grid container justifyContent="center" alignItems="center" spacing={3}>
+            <Grid item xs={12}>
+              <Typography variant="h3" id="libraries" sx={{padding: "50px"}}>Libraries</Typography>
+            </Grid>
+            <ProjectGroup tempArray={libraries}/>
+          </Grid>
+        </Container>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
       </>
-
   )
 }
-
-const HomeButton = styled(IconButton)({
-  width: "75px",
-  background: "#1D1D1F",
-  borderRadius: "15px",
-  padding: "15px",
-  fontSize: "2.5em",
-  margin: "50px 15px",
-  transition: "ease 0.25s",
-  "&:hover": {
-    transform: "scale(1.1)",
-  },
-})
-
-const Particle = () => <Particles
-    params={{
-      particles: {
-        color: {
-          value: "#26c885",
-        },
-        links: {
-          enable: false,
-        },
-        size: {
-          value: 50,
-          animation: {
-            enable: false,
-          },
-          random: {
-            enable: true,
-            minimumValue: 5,
-          },
-        },
-        opacity: {
-          value: 0.3,
-          random: {
-            enable: true,
-            minimumValue: 0.005,
-          },
-          animation: {
-            enable: false,
-          },
-        },
-        move: {
-          speed: 0.1,
-        },
-        number: {
-          density: {
-            enable: false,
-          },
-          value: 15,
-        },
-      },
-
-    }}
-/>
 
 export default Home

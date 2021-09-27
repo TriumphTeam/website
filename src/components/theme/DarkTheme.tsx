@@ -28,8 +28,7 @@ export const darkTheme = createTheme({
       main: "red"
     },
     secondary: {
-      // TODO change
-      main: green[500],
+      main: "#1D1D1F",
     },
     text: {
       primary: "#FFFFFF",
