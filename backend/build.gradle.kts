@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.30-M1"
-    kotlin("plugin.serialization") version "1.5.30-M1"
+    kotlin("jvm") version "1.5.31"
+    kotlin("plugin.serialization") version "1.5.31"
 }
 
 group = "dev.triumphteam"
@@ -23,7 +23,7 @@ subprojects {
     }
 
     // TODO organize versions mess
-    val ktorVersion = "1.6.0"
+    val ktorVersion = "1.6.3"
     val logbackVersion = "1.2.1"
     val junitVersion = "5.6.0"
     val assertjVersion = "3.19.0"
@@ -42,7 +42,7 @@ subprojects {
     tasks {
         withType<KotlinCompile> {
             kotlinOptions {
-                jvmTarget = "15"
+                jvmTarget = "16"
                 freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
             }
         }
