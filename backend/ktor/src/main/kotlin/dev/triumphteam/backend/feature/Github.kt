@@ -43,7 +43,7 @@ class Github(
 
             if (CONFIG[Settings.REPO].latestCommit == latestCommit.sha && !repoFolder.listFiles().isNullOrEmpty()) {
                 log { "No new commits found." }
-                return@launch
+                //return@launch
             }
 
             log { "New commit found." }

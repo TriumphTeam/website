@@ -1,16 +1,7 @@
 import {createTheme, Theme} from "@mui/material/styles"
-import {green} from "@mui/material/colors"
 
 declare module "@mui/material/styles" {
   interface DefaultTheme extends Theme {
-  }
-
-  interface Palette {
-    neutral: Palette['primary'];
-  }
-
-  interface PaletteOptions {
-    neutral: PaletteOptions['primary'];
   }
 }
 
@@ -23,9 +14,6 @@ export const darkTheme = createTheme({
     },
     primary: {
       main: "#3498db",
-    },
-    neutral: {
-      main: "red"
     },
     secondary: {
       main: "#1D1D1F",

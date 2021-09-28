@@ -23,11 +23,9 @@ import org.commonmark.node.SoftLineBreak
 import org.commonmark.node.StrongEmphasis
 import org.commonmark.node.Text
 import org.commonmark.node.ThematicBreak
-import org.commonmark.parser.Parser
 import org.commonmark.renderer.NodeRenderer
 import org.commonmark.renderer.html.HtmlNodeRendererContext
-import org.commonmark.renderer.html.HtmlRenderer
-import java.lang.reflect.Method
+import kotlin.time.ExperimentalTime
 
 
 class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractVisitor(), NodeRenderer {
@@ -336,8 +334,9 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
 
 }
 
-fun main() {
-    val parser = Parser.builder().build()
+@ExperimentalTime
+suspend fun main() {
+    /*val parser = Parser.builder().build()
     val htmlRenderer = HtmlRenderer.builder().nodeRendererFactory(::MarkdownRenderer).build()
     val markdown = parser.parse(
         """
@@ -362,5 +361,5 @@ fun main() {
     )
     println(htmlRenderer.render(markdown))
     val method: Method = null!!
-    method.invoke("")
+    method.invoke("")*/
 }

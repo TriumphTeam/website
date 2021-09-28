@@ -4,10 +4,10 @@ import dev.triumphteam.backend.LOGGER
 import dev.triumphteam.backend.config.BeanFactory
 import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.database.Projects
-import dev.triumphteam.markdown.summary.Entry
-import dev.triumphteam.markdown.summary.Header
-import dev.triumphteam.markdown.summary.Item
-import dev.triumphteam.markdown.summary.UnorderedList
+import dev.triumphteam.backend.project.summary.Entry
+import dev.triumphteam.backend.project.summary.Header
+import dev.triumphteam.backend.project.summary.Item
+import dev.triumphteam.backend.project.summary.UnorderedList
 import io.ktor.application.ApplicationCall
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO

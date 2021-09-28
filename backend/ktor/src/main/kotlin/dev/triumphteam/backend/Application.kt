@@ -6,7 +6,6 @@ import dev.triumphteam.backend.config.Settings
 import dev.triumphteam.backend.database.Contents
 import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.database.Projects
-import dev.triumphteam.backend.database.Summaries
 import io.ktor.application.Application
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
@@ -29,7 +28,6 @@ fun main() {
     transaction {
         SchemaUtils.create(
             Projects,
-            Summaries,
             Pages,
             Contents,
         )

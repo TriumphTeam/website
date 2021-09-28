@@ -7,11 +7,10 @@ import org.jetbrains.exposed.sql.ReferenceOption
 
 object Projects : IntIdTable() {
     val name = varchar("name", 255)
-}
-
-object Summaries : IntIdTable() {
-    val project = reference("project", Projects, ReferenceOption.CASCADE, ReferenceOption.CASCADE)
-    val content = text("content")
+    val type = uinteger("type").default(0u)
+    val color = varchar("color", 255)
+    val github = varchar("github", 1024)
+    val summary = text("summary")
 }
 
 object Pages : IntIdTable() {

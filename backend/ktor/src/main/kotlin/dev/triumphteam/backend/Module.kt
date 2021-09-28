@@ -7,15 +7,12 @@ package dev.triumphteam.backend
 
 import dev.triumphteam.backend.database.Contents
 import dev.triumphteam.backend.database.Pages
-import dev.triumphteam.backend.database.Projects
-import dev.triumphteam.backend.database.Summaries
 import dev.triumphteam.backend.events.GithubPush
 import dev.triumphteam.backend.feature.Github
 import dev.triumphteam.backend.feature.Project
 import dev.triumphteam.backend.feature.listening
 import dev.triumphteam.backend.func.JSON
 import dev.triumphteam.backend.func.getPage
-import dev.triumphteam.backend.func.getProject
 import dev.triumphteam.backend.func.log
 import dev.triumphteam.backend.func.makeClient
 import dev.triumphteam.backend.location.Api
@@ -76,7 +73,7 @@ fun Application.module() {
     routing {
 
         get<Api.Summary> { location ->
-            val summary = transaction {
+            /*val summary = transaction {
                 val project = getProject(location.project) ?: return@transaction null
 
                 Summaries.select {
@@ -87,7 +84,7 @@ fun Application.module() {
                 return@get
             }
 
-            call.respondText(summary[Summaries.content], ContentType.Application.Json)
+            call.respondText(summary[Summaries.content], ContentType.Application.Json)*/
         }
 
         get<Api.Page> { location ->

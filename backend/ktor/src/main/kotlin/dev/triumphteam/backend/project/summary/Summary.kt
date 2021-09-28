@@ -1,4 +1,4 @@
-package dev.triumphteam.markdown.summary
+package dev.triumphteam.backend.project.summary
 
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName

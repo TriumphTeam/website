@@ -17,10 +17,9 @@ dependencies {
     implementation("io.ktor:ktor-server-sessions:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
-    implementation("io.ktor:ktor-client-serialization:$ktorVersion")
 
-    implementation("com.ryanharter.ktor:ktor-moshi:1.0.1")
-    implementation("io.ktor:ktor-gson:$ktorVersion")
+    implementation("io.ktor:ktor-client-serialization:$ktorVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
 
     implementation("me.mattstudios:triumph-config:1.0.5-SNAPSHOT")
 
