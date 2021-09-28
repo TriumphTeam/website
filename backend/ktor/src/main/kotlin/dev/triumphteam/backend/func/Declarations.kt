@@ -4,6 +4,7 @@ import dev.triumphteam.backend.LOGGER
 import dev.triumphteam.backend.config.BeanFactory
 import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.database.Projects
+import dev.triumphteam.backend.project.projectType
 import dev.triumphteam.backend.project.summary.Entry
 import dev.triumphteam.backend.project.summary.Header
 import dev.triumphteam.backend.project.summary.Item
@@ -21,6 +22,7 @@ import kotlinx.serialization.modules.subclass
 import me.mattstudios.config.properties.Property
 import net.lingala.zip4j.core.ZipFile
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
 import java.io.File
@@ -124,14 +126,14 @@ fun folder(path: Path): File {
     return folder
 }
 
-fun getProject(projectName: String): ResultRow? {
+fun getProject(type: String, projectName: String): ResultRow? {
     return Projects.select {
-        Projects.name eq projectName
+        Projects.name eq projectName and (Projects.type eq type.projectType)
     }.firstOrNull()
 }
 
-fun getPage(projectName: String, page: String): ResultRow? {
-    val project = getProject(projectName) ?: return null
+fun getPage(type: String, projectName: String, page: String): ResultRow? {
+    val project = getProject(type, projectName) ?: return null
 
     return Pages.select {
         Pages.project eq project[Projects.id]

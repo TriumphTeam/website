@@ -15,3 +15,15 @@ data class ProjectOptions(
     val color: List<String>,
     val github: String,
 )
+
+val String.projectType: UInt
+    get() = when (this) {
+        "library" -> 1u
+        else -> 0u
+    }
+
+val UInt.projectType: String
+    get() = when (this) {
+        1u -> "library"
+        else -> "plugin"
+    }

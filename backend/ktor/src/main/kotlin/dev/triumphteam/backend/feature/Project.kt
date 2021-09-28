@@ -59,7 +59,7 @@ class Project {
     fun loadAll(repoFolder: File) = CoroutineScope(IO).launch {
         val projects = repoFolder.listFiles()?.filter { it.isDirectory } ?: return@launch
         projects.forEach folder@{ projectTypeFile ->
-            projectTypeFile.listFiles()?.forEach { projectFile ->
+            projectTypeFile.listFiles()?.filter { it.isDirectory }?.forEach { projectFile ->
                 // Gets the current project name
                 val projectName = projectFile.name
 
@@ -87,7 +87,7 @@ class Project {
                     }.firstOrNull()?.get(Projects.id)
                         ?: Projects.insertAndGetId {
                             it[name] = projectName
-                            it[type] = when(projectTypeFile.name) {
+                            it[type] = when (projectTypeFile.name) {
                                 "libraries" -> 1u
                                 else -> 0u
                             }

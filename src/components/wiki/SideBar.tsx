@@ -20,10 +20,10 @@ export type Entry =
 export const SideBar: React.FC<{ url: string }> = ({url}) => {
   const classes = useStyles()
 
-  const {project, page} = useParams<{ type?: string, project?: string, page?: string }>()
+  const {type, project, page} = useParams<{ type?: string, project?: string, page?: string }>()
 
   // API call for the summary data
-  const {data: summary, error} = useSWR<Entry[]>(`/summary/${project}`)
+  const {data: summary, error} = useSWR<Entry[]>(`${type}/summary/${project}`)
 
   // TODO right now this will redirect on any error, might wanna change to only 404 or something
   if (error) return <Redirect to="/404"/>

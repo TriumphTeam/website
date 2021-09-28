@@ -13,10 +13,10 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
   const classes = useStyles()
 
   // Simply for getting the current path url
-  const {project, page} = useParams<{ type?: string, project?: string, page?: string }>()
+  const {type, project, page} = useParams<{ type?: string, project?: string, page?: string }>()
 
   // API data
-  const {data, error} = useSWR<ContentData>(`/content/${project}/${page}`)
+  const {data, error} = useSWR<ContentData>(`${type}/content/${project}/${page}`)
 
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {

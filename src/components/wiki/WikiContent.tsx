@@ -23,10 +23,10 @@ export const WikiContent: React.FC<{ url: string }> = ({url}) => {
   const [registered, setRegistered] = useState(false)
 
   // Simply for getting the current path url
-  const {project, page} = useParams<{ type?: string, project?: string, page?: string }>()
+  const {type, project, page} = useParams<{ type?: string, project?: string, page?: string }>()
 
   // API data
-  const {data, error} = useSWR(`/page/${project}/${page}`)
+  const {data, error} = useSWR(`${type}/page/${project}/${page}`)
 
   // Sets up all code highlighting
   useEffect(() => {

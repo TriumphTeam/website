@@ -17,7 +17,7 @@ export default function Wiki() {
   const url = `/${type}/${project}`
 
   // Guarantees it's a valid type
-  if (type !== "lib" && type !== "plugin") return <Redirect to="/404"/>
+  if (type !== "library" && type !== "plugin") return <Redirect to="/404"/>
 
   return (
       <>

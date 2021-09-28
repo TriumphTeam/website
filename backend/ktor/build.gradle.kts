@@ -4,7 +4,7 @@ plugins {
 }
 
 val ktorVersion = "1.6.3"
-val exposedVersion = "0.30.1"
+val exposedVersion = "0.35.1"
 
 dependencies {
     implementation(project(":markdown"))
