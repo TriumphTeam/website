@@ -27,3 +27,9 @@ val UInt.projectType: String
         1u -> "library"
         else -> "plugin"
     }
+
+fun String.toSingularProjectType() = when (this) {
+    "libraries" -> "library"
+    "plugins" -> "plugin"
+    else -> null
+}

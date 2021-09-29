@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react"
+import "./home.scss"
 import {Box, Container, Grid, Typography} from "@mui/material"
 import {HashLink} from "react-router-hash-link"
 import CircleParticle from "../../components/particles/CircleParticle"
-import "./home.scss"
 import BigIconButton from "../../components/buttons/BigIconButton"
 import {openLink} from "../../components/utils/Utilities"
 import ProjectGroup from "../../components/card/ProjectGroup"
@@ -45,10 +45,12 @@ function Home() {
                     margin: "50px 15px",
                   },
                 }}>
-                  <BigIconButton onClick={() => openLink("https://mattstudios.me/discord")}><i
-                      className="fab fa-discord"/></BigIconButton>
-                  <BigIconButton onClick={() => openLink("https://github.com/TriumphTeam")}><i
-                      className="fab fa-github"/></BigIconButton>
+                  <BigIconButton onClick={() => openLink("https://mattstudios.me/discord")}>
+                    <i className="fab fa-discord"/>
+                  </BigIconButton>
+                  <BigIconButton onClick={() => openLink("https://github.com/TriumphTeam")}>
+                    <i className="fab fa-github"/>
+                  </BigIconButton>
                 </Grid>
               </Grid>
               <HashLink to="#plugins" className="scroll-link">

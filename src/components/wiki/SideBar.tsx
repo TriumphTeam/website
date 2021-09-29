@@ -4,15 +4,16 @@ import {Theme} from "@mui/material/styles"
 import {alpha} from "@mui/material"
 import Drawer from "@mui/material/Drawer"
 import InputBase from "@mui/material/InputBase"
-import Toolbar from "@mui/material/Toolbar"
 import {SideBarSize} from "../axios/Types"
 import {Link, Redirect, useParams} from "react-router-dom"
 import useSWR from "swr"
+import Logo from "../../imgs/logo.png"
+import Button from "@mui/material/Button"
 
 /**
  * Entry type for easy mapping the summary API call
  */
-export type Entry =
+type Entry =
     | { type: "HEADER", literal: string, }
     | { type: "ITEM", literal: string, destination: string }
     | { type: "LIST", children: Entry[] }
@@ -33,7 +34,8 @@ export const SideBar: React.FC<{ url: string }> = ({url}) => {
 
   // Could use some improvement make it more DRY
   const renderItem = (destination: string, literal: string, key: string) => {
-    if (isActive(destination)) return <li key={key}><Link className={classes.active} to={destination}>{literal}</Link></li>
+    if (isActive(destination)) return <li key={key}><Link className={classes.active} to={destination}>{literal}</Link>
+    </li>
     return <li key={key}><Link to={destination}>{literal}</Link></li>
   }
 
@@ -54,12 +56,18 @@ export const SideBar: React.FC<{ url: string }> = ({url}) => {
   // TODO move search bar to its own component
   return (
       <Drawer
-          className={classes.drawer}
-          variant="permanent"
-          classes={{
-            paper: classes.drawerPaper,
+          className="side-bar"
+          sx={{
+            width: SideBarSize,
+            flexShrink: 0,
+            "& .MuiDrawer-paper": {
+              width: SideBarSize,
+              border: "none",
+            },
           }}
+          variant="permanent"
       >
+        <Link to=""><img src={Logo} alt="logo"/></Link>
         <div className={classes.search}>
           <div className={classes.searchIcon}><i className="fas fa-search"/></div>
           <InputBase
@@ -92,10 +100,6 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
       root: {
         display: "flex",
-      },
-      drawer: {
-        width: SideBarSize,
-        flexShrink: 0,
       },
       drawerPaper: {
         width: SideBarSize,
@@ -183,7 +187,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         marginRight: "auto",
         marginLeft: "auto",
-        marginTop: "25px",
+        marginTop: "15px",
         marginBottom: "15px",
         width: "80%",
       },
@@ -214,7 +218,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       lastSpace: {
         height: "20%",
-      }
+      },
     }),
 )
 

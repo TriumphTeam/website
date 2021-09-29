@@ -12,6 +12,8 @@ import dev.triumphteam.backend.func.PROJECT_FILE_NAME
 import dev.triumphteam.backend.func.checksum
 import dev.triumphteam.backend.func.warn
 import dev.triumphteam.backend.project.ProjectData
+import dev.triumphteam.backend.project.projectType
+import dev.triumphteam.backend.project.toSingularProjectType
 import dev.triumphteam.markdown.content.ContentRenderer
 import dev.triumphteam.markdown.html.MarkdownRenderer
 import io.ktor.application.Application
@@ -59,6 +61,8 @@ class Project {
     fun loadAll(repoFolder: File) = CoroutineScope(IO).launch {
         val projects = repoFolder.listFiles()?.filter { it.isDirectory } ?: return@launch
         projects.forEach folder@{ projectTypeFile ->
+            val projectType = projectTypeFile.name.toSingularProjectType() ?: return@folder
+
             projectTypeFile.listFiles()?.filter { it.isDirectory }?.forEach { projectFile ->
                 // Gets the current project name
                 val projectName = projectFile.name
@@ -87,10 +91,7 @@ class Project {
                     }.firstOrNull()?.get(Projects.id)
                         ?: Projects.insertAndGetId {
                             it[name] = projectName
-                            it[type] = when (projectTypeFile.name) {
-                                "libraries" -> 1u
-                                else -> 0u
-                            }
+                            it[type] = projectType.projectType
 
                             val options = projectData.options
                             it[color] = options.color.joinToString(";")
@@ -106,7 +107,7 @@ class Project {
 
                         // Doesn't exist, insert
                         if (content == null) {
-                            insertPage(projectId, pageFile, projectFile)
+                            insertPage(projectId, pageFile, projectFile, projectTypeFile.name)
                             return@pages
                         }
 
@@ -115,7 +116,7 @@ class Project {
 
                         // Delete existing one
                         Pages.deleteWhere { Pages.id eq content[Pages.id] }
-                        insertPage(projectId, pageFile, projectFile)
+                        insertPage(projectId, pageFile, projectFile, projectTypeFile.name)
                     }
                 }
             }
@@ -123,7 +124,7 @@ class Project {
     }
 
     // TODO attempt batch insert
-    private fun insertPage(projectId: EntityID<Int>, pageFile: File, projectFile: File) {
+    private fun insertPage(projectId: EntityID<Int>, pageFile: File, projectFile: File, typeName: String) {
         val markdown = parser.parse(pageFile.readText())
 
         val pageId = Pages.insertAndGetId {
@@ -131,7 +132,7 @@ class Project {
             // TODO make sure name doesn't have spaces
             it[url] = pageFile.nameWithoutExtension
             it[content] = htmlRenderer.render(markdown)
-            it[github] = githubLink(projectFile.name, pageFile.name)
+            it[github] = githubLink(typeName, projectFile.name, pageFile.name)
             it[checksum] = pageFile.checksum()
         }
 
@@ -148,10 +149,10 @@ class Project {
         }
     }
 
-    private fun githubLink(project: String, page: String): String {
+    private fun githubLink(typeName: String, project: String, page: String): String {
         val repo = CONFIG[Settings.REPO]
         return """
-            https://github.com/${repo.name}/${repo.githubPath}/$project/$page
+            https://github.com/${repo.name}/${repo.githubPath}/${typeName}/$project/$page
         """.trimIndent()
     }
 

@@ -1,12 +1,13 @@
 import React from "react"
-import SideBar from "../components/wiki/SideBar"
+import "./wiki.scss"
+import SideBar from "../../components/wiki/SideBar"
 import {createStyles, makeStyles} from "@mui/styles"
 import {Theme} from "@mui/material/styles"
 import {Redirect, useParams} from "react-router-dom"
-import WikiBody from "../components/wiki/WikiContent"
+import WikiBody from "../../components/wiki/WikiContent"
 import {Grid} from "@mui/material"
-import TableOfContents from "../components/wiki/TableOfContents"
-import {SideBarSize} from "../components/axios/Types"
+import TableOfContents from "../../components/wiki/TableOfContents"
+import {SideBarSize} from "../../components/axios/Types"
 
 export default function Wiki() {
   const classes = useStyles()

@@ -6,7 +6,7 @@ import Home from "./pages/home/Home"
 import {darkTheme} from "./components/theme/DarkTheme"
 import {SWRConfig} from "swr"
 import NotFound from "./pages/NotFound"
-import Wiki from "./pages/Wiki"
+import Wiki from "./pages/wiki/Wiki"
 import api from "./components/axios/Api"
 
 import "./global.scss"
