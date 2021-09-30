@@ -5,7 +5,7 @@ import {createStyles, makeStyles} from "@mui/styles"
 import {Theme} from "@mui/material/styles"
 import {Redirect, useParams} from "react-router-dom"
 import WikiBody from "../../components/wiki/WikiContent"
-import {Grid} from "@mui/material"
+import {Container, Grid} from "@mui/material"
 import TableOfContents from "../../components/wiki/TableOfContents"
 import {SideBarSize} from "../../components/axios/Types"
 

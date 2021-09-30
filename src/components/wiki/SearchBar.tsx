@@ -13,6 +13,7 @@ const SearchBar = () => {
               sx={{
                 background: (theme) => alpha(theme.palette.common.white, 0.025),
                 borderRadius: "10px",
+                transition: "ease 0.3s",
                 "&:hover": {
                   background: (theme) => alpha(theme.palette.common.white, 0.05),
                 },
