@@ -19,7 +19,6 @@ type Entry =
     | { type: "LIST", children: Entry[] }
 
 export const SideBar: React.FC<{ url: string }> = ({url}) => {
-  const classes = useStyles()
 
   const {type, project, page} = useParams<{ type?: string, project?: string, page?: string }>()
 
@@ -34,7 +33,7 @@ export const SideBar: React.FC<{ url: string }> = ({url}) => {
 
   // Could use some improvement make it more DRY
   const renderItem = (destination: string, literal: string, key: string) => {
-    if (isActive(destination)) return <li key={key}><Link className={classes.active} to={destination}>{literal}</Link>
+    if (isActive(destination)) return <li key={key}><Link className="active" to={destination}>{literal}</Link>
     </li>
     return <li key={key}><Link to={destination}>{literal}</Link></li>
   }
@@ -103,13 +102,5 @@ const containerSx: SxProps<Theme> = {
     color: (theme) => `${theme.palette.primary.main} !important`,
   },
 }
-
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-      active: {
-        color: `${theme.palette.primary.main} !important`,
-      },
-    }),
-)
 
 export default SideBar

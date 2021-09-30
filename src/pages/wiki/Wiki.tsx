@@ -1,17 +1,13 @@
 import React from "react"
 import "./wiki.scss"
 import SideBar from "../../components/wiki/SideBar"
-import {createStyles, makeStyles} from "@mui/styles"
-import {Theme} from "@mui/material/styles"
 import {Redirect, useParams} from "react-router-dom"
 import WikiBody from "../../components/wiki/WikiContent"
-import {Container, Grid} from "@mui/material"
+import {Box, Grid} from "@mui/material"
 import TableOfContents from "../../components/wiki/TableOfContents"
 import {SideBarSize} from "../../components/axios/Types"
 
 export default function Wiki() {
-  const classes = useStyles()
-
   // Url data
   const {type, project} = useParams<{ type?: string, project?: string, optionalPage?: string }>()
 
@@ -21,9 +17,17 @@ export default function Wiki() {
   if (type !== "library" && type !== "plugin") return <Redirect to="/404"/>
 
   return (
-      <>
+      <Box sx={{
+        "& .active": {
+          color: (theme) => `${theme.palette.primary.main} !important`,
+          fontWeight: "bold",
+        },
+      }}>
         <SideBar url={url}/>
-        <main className={classes.content}>
+        <Box sx={{
+          padding: "15px",
+          marginLeft: SideBarSize,
+        }}>
           <Grid container spacing={4}>
             <Grid item xs={10}>
               <WikiBody url={url}/>
@@ -32,28 +36,7 @@ export default function Wiki() {
               <TableOfContents url={url}/>
             </Grid>
           </Grid>
-        </main>
-      </>
+        </Box>
+      </Box>
   )
 }
-
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-      root: {
-        display: "flex",
-      },
-      appBar: {
-        zIndex: theme.zIndex.drawer + 1,
-      },
-      drawerContainer: {
-        overflow: "auto",
-      },
-      content: {
-        padding: theme.spacing(3),
-        marginLeft: SideBarSize,
-      },
-      wikiBody: {
-        display: "inline-block",
-      },
-    }),
-)

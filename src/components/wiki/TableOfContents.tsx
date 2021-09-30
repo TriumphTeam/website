@@ -4,13 +4,12 @@ import {Theme} from "@mui/material/styles"
 import {Redirect, useParams} from "react-router-dom"
 import {HashLink} from "react-router-hash-link"
 import useSWR from "swr"
+import {Box} from "@mui/material"
 
 type ContentEntry = { literal: string, href: string, indent: number }
 type ContentData = { link: string, entries: ContentEntry[] }
 
 export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
-  // CSS styles
-  const classes = useStyles()
 
   // Simply for getting the current path url
   const {type, project, page} = useParams<{ type?: string, project?: string, page?: string }>()
@@ -25,13 +24,12 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
         if (entry.isIntersecting) {
           const element = document.querySelector(`#table-content a[id="${id}"]`)
           if (element != null) {
-            console.log(classes.active)
-            element.classList.add(classes.active)
+            element.classList.add("active")
           }
         } else {
           const element = document.querySelector(`#table-content a[id="${id}"]`)
           if (element != null) {
-            element.classList.remove(classes.active)
+            element.classList.remove("active")
           }
         }
       })
@@ -51,9 +49,9 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
   const indentation = (indent: number) => {
     switch (indent) {
       case 1:
-        return classes.level1
+        return "level-1"
       case 2:
-        return classes.level2
+        return "level-2"
       default:
         return ""
     }
@@ -62,9 +60,20 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
   // <div className={classes.editOn}><i className="fab fa-github-square"/> Edit on GitHub</div>
   // Sets the table of contents
   return (
-      <div className={classes.tableOfContent}>
-        <div className={classes.contentTitle}>On this page</div>
-        <ul id="table-content" className={classes.contentItems}>
+      <Box
+          className="table-of-content"
+          sx={{
+            "& a": {
+              color: (theme) => theme.palette.text.secondary,
+              transition: "opacity .1s, color .1s",
+            },
+            "& a:hover": {
+              color: (theme) => theme.palette.primary.main,
+            },
+          }}
+      >
+        <div className="on-page">On this page</div>
+        <ul id="table-content" className="content-items">
           {
             data?.entries?.map((entry, index) => {
               return <li
@@ -76,61 +85,8 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
             })
           }
         </ul>
-      </div>
+      </Box>
   )
 }
-
-const useStyles = makeStyles((theme: Theme) =>
-    // Pretty dumb solution for the indent but i'll think of something later
-    createStyles({
-      active: {
-        color: `${theme.palette.primary.main} !important`,
-        fontWeight: "bold",
-      },
-      tableOfContent: {
-        position: "fixed",
-        padding: "35px 5px",
-      },
-      contentTitle: {
-        fontSize: "1.3em",
-        fontWeight: "bold",
-        marginTop: 0,
-        marginBottom: "10px",
-      },
-      editOn: {
-        fontSize: "1.2em",
-        color: "#FFFFFFB3",
-      },
-      contentItems: {
-        padding: 0,
-        margin: 0,
-        listStyle: "none",
-        display: "block",
-        "& li": {
-          display: "block",
-          paddingTop: "5px",
-          paddingBottom: "5px",
-          fontSize: "1.1em",
-          lineHeight: 1.5,
-          "-webkit-transition": "opacity .1s,color .1s",
-          transition: "opacity .1s,color .1s",
-        },
-        "& a": {
-          color: "#FFFFFFB3",
-          "-webkit-transition": "opacity .1s,color .1s",
-          transition: "opacity .1s,color .1s",
-        },
-        "& a:hover": {
-          color: theme.palette.primary.main,
-        },
-      },
-      level1: {
-        paddingLeft: ".8em",
-      },
-      level2: {
-        paddingLeft: "1.6em",
-      },
-    }),
-)
 
 export default TableOfContents

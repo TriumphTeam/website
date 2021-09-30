@@ -69,9 +69,11 @@ export const WikiContent: React.FC<{ url: string }> = ({url}) => {
   if (error) return <Redirect to="/404"/>
 
   // Sets the content
-  return <>
-    <div id="page" className={classes.wikiContent} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(data)}}/>
-  </>
+  return <div
+      id="page"
+      className={classes.wikiContent}
+      dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(data)}}
+  />
 }
 
 const useStyles = makeStyles((theme: Theme) =>

@@ -1,2 +1,2 @@
 
-export const SideBarSize = 300
+export const SideBarSize = "300px"
