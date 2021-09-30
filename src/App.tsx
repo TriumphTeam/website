@@ -10,6 +10,7 @@ import Wiki from "./pages/wiki/Wiki"
 import api from "./components/axios/Api"
 
 import "./global.scss"
+//import "./fontawesome/fontawesome.scss"
 
 function ThemedApp() {
   return (

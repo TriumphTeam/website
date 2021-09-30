@@ -6,6 +6,8 @@ import CircleParticle from "../../components/particles/CircleParticle"
 import BigIconButton from "../../components/buttons/BigIconButton"
 import {openLink} from "../../components/utils/Utilities"
 import ProjectGroup from "../../components/card/ProjectGroup"
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
+import {faDiscord, faGithub} from "@fortawesome/free-brands-svg-icons"
 
 function Home() {
   const [scrollOffSet, setScrollOffSet] = useState(0)
@@ -46,10 +48,10 @@ function Home() {
                   },
                 }}>
                   <BigIconButton onClick={() => openLink("https://mattstudios.me/discord")}>
-                    <i className="fab fa-discord"/>
+                    <FontAwesomeIcon icon={faDiscord}/>
                   </BigIconButton>
                   <BigIconButton onClick={() => openLink("https://github.com/TriumphTeam")}>
-                    <i className="fab fa-github"/>
+                    <FontAwesomeIcon icon={faGithub}/>
                   </BigIconButton>
                 </Grid>
               </Grid>

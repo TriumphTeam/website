@@ -1,14 +1,14 @@
 import React from "react"
 import {createStyles, makeStyles} from "@mui/styles"
 import {Theme} from "@mui/material/styles"
-import {alpha} from "@mui/material"
+import {Container} from "@mui/material"
 import Drawer from "@mui/material/Drawer"
-import InputBase from "@mui/material/InputBase"
 import {SideBarSize} from "../axios/Types"
 import {Link, Redirect, useParams} from "react-router-dom"
 import useSWR from "swr"
 import Logo from "../../imgs/logo.png"
-import Button from "@mui/material/Button"
+import SearchBar from "./SearchBar"
+import {SxProps} from "@mui/system"
 
 /**
  * Entry type for easy mapping the summary API call
@@ -52,8 +52,6 @@ export const SideBar: React.FC<{ url: string }> = ({url}) => {
         </ul>
     )
   }
-
-  // TODO move search bar to its own component
   return (
       <Drawer
           className="side-bar"
@@ -67,20 +65,10 @@ export const SideBar: React.FC<{ url: string }> = ({url}) => {
           }}
           variant="permanent"
       >
-        <Link to=""><img src={Logo} alt="logo"/></Link>
-        <div className={classes.search}>
-          <div className={classes.searchIcon}><i className="fas fa-search"/></div>
-          <InputBase
-              placeholder="Search…"
-              classes={{
-                input: classes.inputInput,
-                root: classes.inputRoot,
-              }}
-              inputProps={{"aria-label": "search"}}
-          />
-        </div>
-        <div className={classes.drawerContainer}>
-          <div className={classes.sideList}>
+        <Link id="logo" to=""><img src={Logo} alt="logo"/></Link>
+        <SearchBar/>
+        <Container sx={containerSx}>
+          <div className="side-list">
             {
               summary?.map((entry, index) => {
                 if (entry.type === "ITEM") return renderItem(entry.destination, entry.literal, `${entry.destination}-${index}`)
@@ -89,135 +77,37 @@ export const SideBar: React.FC<{ url: string }> = ({url}) => {
                 return <></>
               })
             }
-            <div className={classes.lastSpace}/>
+            <div className="bottom-space"/>
           </div>
-        </div>
+        </Container>
       </Drawer>
   )
 }
 
+const containerSx: SxProps<Theme> = {
+  overflow: "hidden",
+  position: "sticky",
+  padding: "20px 0 !important",
+  maxHeight: "calc(100vh - 100px)",
+  "&::after": {
+    position: "absolute",
+    zIndex: 10,
+    left: 0,
+    width: "100%",
+    height: "10%",
+    content: `""`,
+    bottom: 0,
+    background: (theme) => `linear-gradient(180deg, ${theme.palette.background.default}00 0%, ${theme.palette.background.default}FF 50%)`,
+  },
+  "& a:hover": {
+    color: (theme) => `${theme.palette.primary.main} !important`,
+  },
+}
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
-      root: {
-        display: "flex",
-      },
-      drawerPaper: {
-        width: SideBarSize,
-        border: "none",
-      },
-      drawerContainer: {
-        overflow: "hidden",
-        width: "100%",
-        marginLeft: "auto",
-        marginRight: "auto",
-        position: "sticky",
-        padding: "20px 0",
-        maxHeight: "calc(100vh - 100px)",
-        "&::after": {
-          position: "absolute",
-          zIndex: 10,
-          left: 0,
-          width: "100%",
-          height: "10%",
-          content: `""`,
-          bottom: 0,
-          background: `linear-gradient(180deg, ${theme.palette.background.default}00 0%, ${theme.palette.background.default}FF 50%)`,
-        },
-      },
-      sideList: {
-        overflowY: "auto",
-        overflowX: "hidden",
-        height: "100vh",
-        padding: "0 15% 0 15%",
-        "&::-webkit-scrollbar": {
-          width: "0.5em",
-        },
-        "&::-webkit-scrollbar-track": {
-          boxShadow: `inset 0 0 6px rgba(0, 0, 0, 0.5)`,
-        },
-        "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "#3C3E41",
-          borderRadius: "25px",
-        },
-        "& h1": {
-          display: "flex",
-          border: 0,
-          textDecoration: "none",
-          fontWeight: "bold",
-          fontSize: "1.3em",
-        },
-        "& ul": {
-          padding: 0,
-          margin: 0,
-          marginBottom: "20%",
-          listStyle: "none",
-          display: "block",
-        },
-        "& li": {
-          flexFlow: "row nowrap",
-          padding: "6px 0",
-          fontSize: "1.15em",
-          lineHeight: 1.5,
-          placeItems: "center",
-          display: "list-item",
-          cursor: "pointer",
-        },
-        "& a": {
-          color: "#FFFFFFB3",
-          "-webkit-transition": "opacity .1s,color .1s",
-          transition: "opacity .1s,color .1s",
-        },
-        "& a:hover": {
-          color: theme.palette.primary.main,
-        },
-      },
-      content: {
-        flexGrow: 1,
-        padding: theme.spacing(3),
-      },
-      nested: {
-        paddingLeft: theme.spacing(4),
-      },
-      search: {
-        position: "relative",
-        borderRadius: theme.shape.borderRadius,
-        backgroundColor: alpha(theme.palette.common.white, 0.025),
-        "&:hover": {
-          backgroundColor: alpha(theme.palette.common.white, 0.05),
-        },
-        marginRight: "auto",
-        marginLeft: "auto",
-        marginTop: "15px",
-        marginBottom: "15px",
-        width: "80%",
-      },
-      searchIcon: {
-        padding: theme.spacing(0, 2),
-        height: "100%",
-        position: "absolute",
-        pointerEvents: "none",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      },
-      inputRoot: {
-        color: "inherit",
-      },
-      inputInput: {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create("width"),
-        width: "100%",
-        [theme.breakpoints.up("md")]: {
-          width: "20ch",
-        },
-      },
       active: {
         color: `${theme.palette.primary.main} !important`,
-      },
-      lastSpace: {
-        height: "20%",
       },
     }),
 )
