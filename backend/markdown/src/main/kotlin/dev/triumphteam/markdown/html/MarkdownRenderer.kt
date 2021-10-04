@@ -176,15 +176,19 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
     override fun visit(link: Link) {
         val attrs: MutableMap<String, String> = LinkedHashMap()
         var url = link.destination
+
         if (context.shouldSanitizeUrls()) {
             url = context.urlSanitizer().sanitizeLinkUrl(url)
             attrs["rel"] = "nofollow"
         }
+
         url = context.encodeUrl(url)
         attrs["href"] = url
-        if (link.title != null) {
-            attrs["title"] = link.title
+        if (link.title != null) attrs["title"] = link.title
+        if (!url.startsWith("/")) {
+            attrs["target"] = "_blank"
         }
+
         html.tag("a", getAttrs(link, "a", attrs))
         visitChildren(link)
         html.tag("/a")

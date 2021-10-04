@@ -5,7 +5,7 @@ import {Redirect, useParams} from "react-router-dom"
 import WikiBody from "../../components/wiki/content/WikiContent"
 import {Box, Grid} from "@mui/material"
 import TableOfContents from "../../components/wiki/TableOfContents"
-import {SideBarSize} from "../../components/axios/Types"
+import {SideBarSize} from "../../components/utils/Utilities"
 
 export default function Wiki() {
   // Url data
@@ -14,7 +14,7 @@ export default function Wiki() {
   const url = `/${type}/${project}`
 
   // Guarantees it's a valid type
-  if (type !== "library" && type !== "plugin") return <Redirect to="/404"/>
+  //if (type !== "library" && type !== "plugin") return <Redirect to="/404"/>
 
   return (
       <Box sx={{

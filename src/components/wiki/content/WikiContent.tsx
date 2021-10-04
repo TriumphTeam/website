@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 import {Redirect, useParams} from "react-router-dom"
 import useSWR from "swr"
-import {Box} from "@mui/material"
+import {Alert, Box} from "@mui/material"
 
 import Prism from "prismjs"
 import "prismjs/components/prism-java"
@@ -14,7 +14,8 @@ import "../toast.css"
 import "./content.scss"
 
 // Import DOMPurify
-const DOMPurify = require("dompurify")(window)
+// TODO think if should really use or not
+//const DOMPurify = require("dompurify")(window)
 
 export const WikiContent: React.FC<{ url: string }> = ({url}) => {
 
@@ -67,28 +68,30 @@ export const WikiContent: React.FC<{ url: string }> = ({url}) => {
   if (error) return <Redirect to="/404"/>
 
   // Sets the content
-  return <Box
-      sx={{
-        color: (theme) => theme.palette.text.secondary,
-        "& a": {
-          color: (theme) => theme.palette.primary.main,
-        },
-        "& h1": {
-          color: (theme) => theme.palette.text.primary,
-        },
-        "& h2": {
-          fontSize: "1.6em",
-          color: (theme) => theme.palette.text.primary,
-        },
-        "& h3": {
-          fontSize: "1.4em",
-          color: (theme) => theme.palette.text.primary,
-        },
-      }}
-      id="page"
-      className="wiki-content"
-      dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(data)}}
-  />
+  return <>
+    <Box
+        sx={{
+          color: (theme) => theme.palette.text.secondary,
+          "& a": {
+            color: (theme) => theme.palette.primary.main,
+          },
+          "& h1": {
+            color: (theme) => theme.palette.text.primary,
+          },
+          "& h2": {
+            fontSize: "1.6em",
+            color: (theme) => theme.palette.text.primary,
+          },
+          "& h3": {
+            fontSize: "1.4em",
+            color: (theme) => theme.palette.text.primary,
+          },
+        }}
+        id="page"
+        className="wiki-content"
+        dangerouslySetInnerHTML={{__html: data}}
+    />
+  </>
 }
 
 export default WikiContent
