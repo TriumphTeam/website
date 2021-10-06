@@ -1,3 +1,4 @@
+$subBackground: #17171A;
 
 .wiki-content {
   width: 70%;
@@ -96,7 +97,7 @@
     border-left: 4px solid;
     border-radius: 3px;
     align-items: center;
-    background: rgba(255, 255, 255, 0.01);
+    background: $subBackground;
 
     .hint-icon {
       display: flex;
@@ -135,6 +136,60 @@
     svg {
       fill: rgb(244, 67, 54);
     }
+  }
+
+  $borderColor: #28282d;
+
+  .content-tabs {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 25px 0;
+
+    input[type="radio"] {
+      display: none;
+
+      &:checked {
+        + label {
+          background: #17171A;
+          border-top: solid 1px $borderColor;
+          border-left: solid 1px $borderColor;
+          border-right: solid 1px $borderColor;
+
+          + .content-tab {
+            display: block;
+          }
+        }
+      }
+
+    }
+
+    label {
+      padding: 15px;
+      background: inherit;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      font-size: 0.9em;
+      cursor: pointer;
+      position: relative;
+      z-index: 10;
+      transform: translateY(1px);
+    }
+
+    .content-tab {
+      position: relative;
+      z-index: 0;
+      flex: 1 1 100%;
+      order: 1;
+      display: none;
+      width: 100%;
+      background: $subBackground;
+      padding: 25px;
+      border-bottom-right-radius: 15px;
+      border-bottom-left-radius: 15px;
+      border: solid 1px $borderColor;
+    }
+
   }
 
 }

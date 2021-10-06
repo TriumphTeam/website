@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 import {Redirect, useParams} from "react-router-dom"
 import useSWR from "swr"
-import {Alert, Box} from "@mui/material"
+import {Box} from "@mui/material"
 
 import Prism from "prismjs"
 import "prismjs/components/prism-java"
@@ -59,6 +59,7 @@ export const WikiContent: React.FC<{ url: string }> = ({url}) => {
         })
       })
     })
+
   }, [registered])
 
   // Redirects to introduction if no page is typed
@@ -93,5 +94,14 @@ export const WikiContent: React.FC<{ url: string }> = ({url}) => {
     />
   </>
 }
+
+/**
+ * dangerouslySetInnerHTML=
+ {
+    {
+      __html: data
+    }
+  }
+ */
 
 export default WikiContent

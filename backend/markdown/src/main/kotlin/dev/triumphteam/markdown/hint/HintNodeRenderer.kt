@@ -12,11 +12,11 @@ class HintNodeRenderer(
     private var html = context.writer
 
     override fun getNodeTypes(): Set<Class<out Node>> {
-        return setOf(HintBlockParser.HintBlock::class.java)
+        return setOf(HintBlock::class.java)
     }
 
     override fun render(node: Node) {
-        if (node !is HintBlockParser.HintBlock) return
+        if (node !is HintBlock) return
 
         html.line()
         html.tag("div", mapOf("class" to "hint hint-${node.type.name.lowercase()}"))

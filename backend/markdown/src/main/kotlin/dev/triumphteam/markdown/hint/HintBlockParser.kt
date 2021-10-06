@@ -1,26 +1,21 @@
 package dev.triumphteam.markdown.hint
 
-import org.commonmark.internal.util.Parsing
+import dev.triumphteam.markdown.CustomBlockParserFactory
+import dev.triumphteam.markdown.FenceBlock
+import dev.triumphteam.markdown.FenceBlockParser
 import org.commonmark.node.Block
-import org.commonmark.node.CustomBlock
-import org.commonmark.parser.block.AbstractBlockParser
-import org.commonmark.parser.block.AbstractBlockParserFactory
-import org.commonmark.parser.block.BlockContinue
-import org.commonmark.parser.block.BlockStart
-import org.commonmark.parser.block.MatchedBlockParser
-import org.commonmark.parser.block.ParserState
 
 private const val HINT_CHAR = '!'
 
 class HintBlockParser(
     type: HintType,
-    fenceLength: Int,
+    startFenceLength: Int,
     indent: Int
-) : AbstractBlockParser() {
+) : FenceBlockParser(HINT_CHAR) {
 
-    private var block = HintBlock(type, fenceLength, indent)
+    private var block = HintBlock(type, startFenceLength, fenceIndent = indent)
 
-    override fun getBlock(): Block {
+    override fun getBlock(): FenceBlock {
         return block
     }
 
@@ -32,56 +27,30 @@ class HintBlockParser(
         return block != null && block !is HintBlock
     }
 
-    override fun tryContinue(state: ParserState): BlockContinue? {
-        val nextNonSpace = state.nextNonSpaceIndex
-        var newIndex = state.index
-        val line = state.line.content
-        if (
-            state.indent < Parsing.CODE_BLOCK_INDENT &&
-            nextNonSpace < line.length &&
-            line[nextNonSpace] == HINT_CHAR &&
-            isClosing(line, nextNonSpace)
-        ) {
-            // closing fence - we're at end of line, so we can finalize now
-            return BlockContinue.finished()
-        }
+    class Factory : CustomBlockParserFactory<HintBlockParser>() {
+        override fun checkOpener(line: CharSequence, index: Int, indent: Int): HintBlockParser? {
+            var fenceLength = 0
+            val length = line.length
 
-        // skip optional spaces of fence indent
-        var i: Int = block.fenceIndent
-        val length = line.length
-        while (i > 0 && newIndex < length && line[newIndex] == ' ') {
-            newIndex++
-            i--
-        }
+            // No exclamations and no type
+            if (length < 3) return null
 
-        return BlockContinue.atIndex(newIndex)
-    }
-
-    private fun isClosing(line: CharSequence, index: Int): Boolean {
-        val fences = Parsing.skip(HINT_CHAR, line, index, line.length) - index
-        if (fences < 3) {
-            return false
-        }
-        // spec: The closing code fence [...] may be followed only by spaces, which are ignored.
-        val after = Parsing.skipSpaceTab(line, index + fences, line.length)
-        return after == line.length
-    }
-
-    class Factory : AbstractBlockParserFactory() {
-        override fun tryStart(state: ParserState, matchedBlockParser: MatchedBlockParser): BlockStart? {
-            val indent = state.indent
-            if (indent >= Parsing.CODE_BLOCK_INDENT) {
-                return BlockStart.none()
+            for (i in index until length) {
+                if (line[i] != HINT_CHAR) break
+                if (fenceLength >= 3) break
+                fenceLength++
             }
 
-            val nextNonSpace = state.nextNonSpaceIndex
-            val blockParser = checkOpener(state.line.content, nextNonSpace, indent) ?: return BlockStart.none()
+            val typeChar = line.getOrNull(3)
 
-            return BlockStart.of(blockParser).atIndex(nextNonSpace + blockParser.block.fenceLength)
+            if (fenceLength < 3) return null
+
+            if (typeChar != null) fenceLength++
+            val type = HintType.fromChar(line.getOrNull(3)) ?: return null
+
+            return HintBlockParser(type, fenceLength, indent)
         }
     }
-
-    data class HintBlock(val type: HintType, var fenceLength: Int, var fenceIndent: Int) : CustomBlock()
 
     enum class HintType(val icon: String) {
         INFO(INFO_ICON),
@@ -105,28 +74,12 @@ class HintBlockParser(
 
 }
 
-private fun checkOpener(line: CharSequence, index: Int, indent: Int): HintBlockParser? {
-    var fenceLength = 0
-    val length = line.length
-
-    // No exclamations and no type
-    if (length < 3) return null
-
-    for (i in index until length) {
-        if (line[i] != HINT_CHAR) break
-        if (fenceLength >= 3) break
-        fenceLength++
-    }
-
-    val typeChar = line.getOrNull(3)
-
-    if (fenceLength < 3) return null
-
-    if (typeChar != null) fenceLength++
-    val type = HintBlockParser.HintType.fromChar(line.getOrNull(3)) ?: return null
-
-    return HintBlockParser(type, fenceLength, indent)
-}
+data class HintBlock(
+    val type: HintBlockParser.HintType,
+    override var startFenceLength: Int,
+    override var endFenceLength: Int = 3,
+    override var fenceIndent: Int
+) : FenceBlock()
 
 private const val INFO_ICON = """
 <svg class="hint-svg-icon" focusable="false" viewBox="0 0 24 24" aria-hidden="true">

@@ -17,6 +17,7 @@ import dev.triumphteam.backend.project.toSingularProjectType
 import dev.triumphteam.markdown.content.ContentRenderer
 import dev.triumphteam.markdown.hint.HintExtension
 import dev.triumphteam.markdown.html.MarkdownRenderer
+import dev.triumphteam.markdown.tab.TabExtension
 import io.ktor.application.Application
 import io.ktor.application.ApplicationFeature
 import io.ktor.util.AttributeKey
@@ -50,7 +51,8 @@ class Project {
         AutolinkExtension.create(),
         TablesExtension.create(),
         TaskListItemsExtension.create(),
-        HintExtension()
+        HintExtension(),
+        TabExtension(),
     )
 
     private val parser = Parser.builder().extensions(extensions).build()
