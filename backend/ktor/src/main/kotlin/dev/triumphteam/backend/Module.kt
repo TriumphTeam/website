@@ -7,6 +7,7 @@ package dev.triumphteam.backend
 
 import dev.triumphteam.backend.events.GithubPush
 import dev.triumphteam.backend.feature.Github
+import dev.triumphteam.backend.feature.Placeholders
 import dev.triumphteam.backend.feature.Project
 import dev.triumphteam.backend.feature.listening
 import dev.triumphteam.backend.func.JSON
@@ -52,6 +53,8 @@ fun Application.module() {
     install(Github) { client = makeClient() }
     install(Project)
 
+    val placeholders = install(Placeholders)
+
     listening {
         on<GithubPush> {
             log { "Detected Github push." }
@@ -61,7 +64,7 @@ fun Application.module() {
 
     routing {
         summaryRoute()
-        pageRoute()
+        pageRoute(placeholders)
         pageContentRoute()
     }
 

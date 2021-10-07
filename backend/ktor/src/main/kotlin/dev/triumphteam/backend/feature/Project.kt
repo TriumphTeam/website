@@ -96,7 +96,7 @@ class Project {
                         ?: Projects.insertAndGetId {
                             it[name] = projectName
                             it[type] = projectType.projectType
-
+                            it[version] = "1.0"
                             val options = projectData.options
                             it[color] = options.color.joinToString(";")
                             it[github] = options.github

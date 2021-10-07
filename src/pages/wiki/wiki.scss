@@ -66,11 +66,10 @@
       line-height: 1.5;
       place-items: center;
       display: list-item;
-      cursor: pointer;
     }
 
     a {
-      color: #FFFFFFB3;
+      color: #BFC0C3;
       -webkit-transition: opacity .1s, color .1s;
       transition: opacity .1s, color .1s;
     }
@@ -85,6 +84,11 @@
 .table-of-content {
   position: fixed;
   padding: 35px 5px;
+
+  .edit-github {
+    padding: 10px;
+    margin-bottom: 20px;
+  }
 
   .on-page {
     font-size: 1.3em;

@@ -1,6 +1,7 @@
 package dev.triumphteam.backend.routing
 
 import dev.triumphteam.backend.database.Pages
+import dev.triumphteam.backend.feature.Placeholders
 import dev.triumphteam.backend.func.getPage
 import dev.triumphteam.backend.location.Api
 import io.ktor.application.call
@@ -12,9 +13,10 @@ import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.Routing
 import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.time.ExperimentalTime
 
 @OptIn(KtorExperimentalLocationsAPI::class)
-fun Routing.pageRoute() = get<Api.Page> { location ->
+fun Routing.pageRoute(placeholders: Placeholders) = get<Api.Page> { location ->
     val page = transaction {
         getPage(location.parent.type, location.project, location.page)?.get(Pages.content)
     } ?: run {
@@ -22,5 +24,5 @@ fun Routing.pageRoute() = get<Api.Page> { location ->
         return@get
     }
 
-    call.respondText(page, ContentType.Text.Html)
+    call.respondText(placeholders.replace(location.project, page), ContentType.Text.Html)
 }

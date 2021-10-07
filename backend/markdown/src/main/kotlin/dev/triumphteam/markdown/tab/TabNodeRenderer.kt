@@ -20,7 +20,6 @@ class TabNodeRenderer(
     }
 
     override fun render(node: Node) {
-        println(node)
         if (node is TabBlock) return renderTab(node)
         if (node is TabsBlock) return renderTabs(node)
     }

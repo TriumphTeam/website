@@ -11,6 +11,13 @@ code {
   color: #ABB2BF;
 }
 
+/**
+  TODO make this better
+ */
+pre > code {
+  padding: 0;
+}
+
 code[class*="language-"],
 pre[class*="language-"] {
   color: #FFA07A;

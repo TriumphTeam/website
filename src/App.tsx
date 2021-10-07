@@ -32,7 +32,7 @@ function App() {
         <ThemeProvider theme={darkTheme}>
           <CssBaseline/>
           <SWRConfig value={{
-            dedupingInterval: 5000,
+            dedupingInterval: 15000,
             fetcher: (url: string) => api.get(url).then(r => r.data),
             onErrorRetry: (error) => {
               if (error.status === 404) return

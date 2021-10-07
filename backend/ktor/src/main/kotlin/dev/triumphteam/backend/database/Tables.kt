@@ -7,6 +7,7 @@ import org.jetbrains.exposed.sql.ReferenceOption
 
 object Projects : IntIdTable() {
     val name = varchar("name", 255)
+    val version = varchar("version", 10)
     val type = uinteger("type").default(0u)
     val color = varchar("color", 255)
     val github = varchar("github", 1024)

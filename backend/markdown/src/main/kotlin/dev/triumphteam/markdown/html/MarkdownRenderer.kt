@@ -1,5 +1,6 @@
 package dev.triumphteam.markdown.html
 
+import org.commonmark.ext.task.list.items.TaskListItemMarker
 import org.commonmark.node.AbstractVisitor
 import org.commonmark.node.BlockQuote
 import org.commonmark.node.BulletList
@@ -25,7 +26,6 @@ import org.commonmark.node.Text
 import org.commonmark.node.ThematicBreak
 import org.commonmark.renderer.NodeRenderer
 import org.commonmark.renderer.html.HtmlNodeRendererContext
-import kotlin.time.ExperimentalTime
 
 
 class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractVisitor(), NodeRenderer {
@@ -132,7 +132,9 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
     }
 
     override fun visit(bulletList: BulletList) {
-        renderListBlock(bulletList, "ul", getAttrs(bulletList, "ul"))
+        val attributes = getAttrs(bulletList, "ul")
+        if (checkTaskList(bulletList)) attributes["class"] = "task-list"
+        renderListBlock(bulletList, "ul", attributes)
     }
 
     override fun visit(fencedCodeBlock: FencedCodeBlock) {
@@ -302,6 +304,12 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
         html.line()
     }
 
+    private tailrec fun checkTaskList(node: Node): Boolean {
+        val firstChild = node.firstChild ?: return false
+        if (firstChild is TaskListItemMarker) return true
+        return checkTaskList(firstChild)
+    }
+
     private fun isInTightList(paragraph: Paragraph): Boolean {
         val parent: Node? = paragraph.parent
         if (parent != null) {
@@ -343,34 +351,4 @@ class MarkdownRenderer(private val context: HtmlNodeRendererContext) : AbstractV
         )
     }
 
-}
-
-@ExperimentalTime
-suspend fun main() {
-    /*val parser = Parser.builder().build()
-    val htmlRenderer = HtmlRenderer.builder().nodeRendererFactory(::MarkdownRenderer).build()
-    val markdown = parser.parse(
-        """
-            # Header
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-            ## Sub header
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            
-            ### Test
-            Boyyyyy
-
-            # Header2
-            Hello
-
-            ## Sub2
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-            # Header 3
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        """.trimIndent()
-    )
-    println(htmlRenderer.render(markdown))
-    val method: Method = null!!
-    method.invoke("")*/
 }
