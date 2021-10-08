@@ -14,6 +14,9 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.get
+import io.ktor.http.takeFrom
 import io.ktor.request.receiveOrNull
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -81,6 +84,11 @@ private const val GITHUB_API = "https://api.github.com/"
 fun commits(repo: String) = "${GITHUB_API}repos/$repo/commits"
 
 /**
+ * Gets the commits path from the api
+ */
+fun releases(repo: String) = "${GITHUB_API}repos/$repo/releases/latest"
+
+/**
  * Simple logging function
  */
 fun log(message: () -> String) = LOGGER.info(message())
@@ -140,4 +148,17 @@ fun getPage(type: String, projectName: String, page: String): ResultRow? {
     }.andWhere {
         Pages.url eq page
     }.firstOrNull()
+}
+
+suspend inline fun <reified T> HttpClient.getOrNull(
+    urlString: String,
+    block: HttpRequestBuilder.() -> Unit = {}
+): T? = try {
+    get {
+        url.takeFrom(urlString)
+        block()
+    }
+} catch (exception: Exception) {
+    println(exception)
+    null
 }

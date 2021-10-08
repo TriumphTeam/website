@@ -6,10 +6,7 @@
 
 package dev.triumphteam.backend.feature
 
-import dev.triumphteam.backend.CONFIG
-import dev.triumphteam.backend.config.Settings
 import dev.triumphteam.backend.events.GithubEvent
-import dev.triumphteam.backend.events.GithubPush
 import dev.triumphteam.backend.func.receiveNullable
 import dev.triumphteam.backend.location.Webhook
 import io.ktor.application.Application
@@ -34,32 +31,34 @@ import kotlin.io.path.ExperimentalPathApi
 /**
  *  Listener feature for handling events
  */
-class Listener(val pipeline: Application) {
+class Listener(pipeline: Application) {
 
-    /**
-     * Handles the github events that are registered
-     */
-    inline fun <reified T : GithubEvent> on(crossinline action: Github.() -> Unit) {
+    val listeners = mutableListOf<GitHubResult.() -> Unit>()
+
+    init {
         pipeline.routing {
-            // For now just simple things, might add more later
-            if (T::class != GithubPush::class) return@routing
-
             post<Webhook> {
                 // TODO reject non github requests
                 val webhookData = call.receiveNullable<PushWebhook>() ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
+
                 // Always reply accepted, since it was handled
                 call.respond(HttpStatusCode.Accepted)
 
-                if (CONFIG[Settings.REPO].name != webhookData.repository.fullName) {
-                    return@post
+                listeners.forEach {
+                    it(GitHubResult(application.feature(Github), webhookData.repository.fullName))
                 }
-
-                action(application.feature(Github))
             }
         }
+    }
+
+    /**
+     * Handles the GitHub events that are registered
+     */
+    inline fun <reified T : GithubEvent> on(noinline action: GitHubResult.() -> Unit) {
+        listeners.add(action)
     }
 
     /**
@@ -87,6 +86,8 @@ class Listener(val pipeline: Application) {
     }
 
 }
+
+data class GitHubResult(val github: Github, val project: String)
 
 /**
  * Listening function to apply the feature just like the `routing` is done in the application

@@ -5,6 +5,7 @@
 
 package dev.triumphteam.backend
 
+import dev.triumphteam.backend.config.Settings
 import dev.triumphteam.backend.events.GithubPush
 import dev.triumphteam.backend.feature.Github
 import dev.triumphteam.backend.feature.Placeholders
@@ -58,7 +59,12 @@ fun Application.module() {
     listening {
         on<GithubPush> {
             log { "Detected Github push." }
-            checkRepository()
+
+            if (CONFIG[Settings.REPO].name != project) {
+                return@on
+            }
+
+            github.checkRepository()
         }
     }
 

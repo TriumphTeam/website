@@ -20,10 +20,12 @@ import dev.triumphteam.markdown.html.MarkdownRenderer
 import dev.triumphteam.markdown.tab.TabExtension
 import io.ktor.application.Application
 import io.ktor.application.ApplicationFeature
+import io.ktor.application.feature
 import io.ktor.util.AttributeKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import org.commonmark.ext.autolink.AutolinkExtension
@@ -44,7 +46,9 @@ import kotlin.io.path.ExperimentalPathApi
 
 @ExperimentalPathApi
 @OptIn(ExperimentalUnsignedTypes::class)
-class Project {
+class Project(application: Application) {
+
+    private val git = application.feature(Github)
 
     private val extensions = listOf(
         StrikethroughExtension.create(),
@@ -94,10 +98,16 @@ class Project {
                         Projects.name eq projectName
                     }.firstOrNull()?.get(Projects.id)
                         ?: Projects.insertAndGetId {
+                            val options = projectData.options
+
                             it[name] = projectName
                             it[type] = projectType.projectType
-                            it[version] = "1.0"
-                            val options = projectData.options
+
+                            val release = runBlocking {
+                                git.getRelease(options.github)
+                            }
+
+                            it[version] = release?.version ?: "Soon"
                             it[color] = options.color.joinToString(";")
                             it[github] = options.github
                             it[summary] = JSON.encodeToString(projectData.summary)
@@ -167,7 +177,7 @@ class Project {
         override val key = AttributeKey<Project>("Project")
 
         override fun install(pipeline: Application, configure: Project.() -> Unit): Project {
-            return Project().apply(configure)
+            return Project(pipeline).apply(configure)
         }
     }
 

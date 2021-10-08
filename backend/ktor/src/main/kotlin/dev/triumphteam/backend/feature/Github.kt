@@ -2,9 +2,12 @@ package dev.triumphteam.backend.feature
 
 import dev.triumphteam.backend.CONFIG
 import dev.triumphteam.backend.config.Settings
+import dev.triumphteam.backend.func.SCOPE
 import dev.triumphteam.backend.func.commits
 import dev.triumphteam.backend.func.folder
+import dev.triumphteam.backend.func.getOrNull
 import dev.triumphteam.backend.func.log
+import dev.triumphteam.backend.func.releases
 import dev.triumphteam.backend.func.unzipTo
 import io.ktor.application.Application
 import io.ktor.application.ApplicationFeature
@@ -13,9 +16,8 @@ import io.ktor.application.featureOrNull
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.util.AttributeKey
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.io.FileOutputStream
 import java.net.URL
@@ -36,7 +38,7 @@ class Github(
     }
 
     fun checkRepository() {
-        CoroutineScope(IO).launch {
+        SCOPE.launch {
 
             val latestCommit =
                 client.get<Array<Commit>>(commits(CONFIG[Settings.REPO].name)).firstOrNull() ?: return@launch
@@ -56,6 +58,10 @@ class Github(
             val project = application.featureOrNull(Project) ?: throw MissingApplicationFeatureException(Project.key)
             project.loadAll(repoFolder)
         }
+    }
+
+    suspend fun getRelease(repo: String): Release? {
+        return client.getOrNull(releases(repo))
     }
 
     private fun cloneRepository() {
@@ -103,3 +109,9 @@ class Github(
     }
 
 }
+
+@Serializable
+data class Release(
+    @SerialName("tag_name")
+    val version: String
+)
