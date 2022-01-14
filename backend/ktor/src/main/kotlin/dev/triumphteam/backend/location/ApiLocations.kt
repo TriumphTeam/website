@@ -9,16 +9,24 @@ import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import io.ktor.util.KtorExperimentalAPI
 
-@Location("/api/{type}")
-data class Api(val type: String) {
+@Location("/api")
+open class Api {
 
-    @Location("/summary/{project}")
-    data class Summary(val parent: Api, val project: String)
+    @Location("/projects")
+    open class Projects
 
-    @Location("/page/{project}/{page}")
-    data class Page(val parent: Api, val project: String, val page: String)
+    @Location("/project/{type}")
+    data class Project(val type: String) {
 
-    @Location("/content/{project}/{page}")
-    data class Content(val parent: Api, val project: String, val page: String)
+        @Location("/summary/{project}")
+        data class Summary(val parent: Project, val project: String)
+
+        @Location("/page/{project}/{page}")
+        data class Page(val parent: Project, val project: String, val page: String)
+
+        @Location("/content/{project}/{page}")
+        data class Content(val parent: Project, val project: String, val page: String)
+
+    }
 
 }

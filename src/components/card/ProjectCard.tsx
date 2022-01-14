@@ -1,16 +1,19 @@
 import React from "react"
 import {Box, Paper, Typography} from "@mui/material"
 import Button from "@mui/material/Button"
+import {Project} from "../utils/Utilities"
 
-const ProjectCard = () => {
+const ProjectCard: React.FC<{ project: Project }> = (prop) => {
+
+  const project = prop.project
 
   return (
       <Paper sx={projectCardSx} elevation={5}>
         <Box sx={{padding: "15px"}}>
           <img src="https://i.imgur.com/FxuMgmC.png"
                alt="project-logo"/>
-          <Typography variant="h5">Plugin Name</Typography>
-          <CardVersion version="2.0.1"/>
+          <Typography variant="h5">{project.name}</Typography>
+          <CardVersion version={project.version}/>
           <Button variant="contained" color="secondary">View</Button>
         </Box>
       </Paper>

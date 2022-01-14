@@ -25,7 +25,7 @@ export const WikiContent: React.FC<{ url: string }> = ({url}) => {
   const {type, project, page} = useParams<{ type?: string, project?: string, page?: string }>()
 
   // API data
-  const {data, error} = useSWR(`${type}/page/${project}/${page}`)
+  const {data, error} = useSWR(`project/${type}/page/${project}/${page}`)
 
   // Sets up all code highlighting
   useEffect(() => {

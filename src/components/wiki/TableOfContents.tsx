@@ -13,7 +13,7 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
   const {type, project, page} = useParams<{ type?: string, project?: string, page?: string }>()
 
   // API data
-  const {data, error} = useSWR<ContentData>(`${type}/content/${project}/${page}`)
+  const {data, error} = useSWR<ContentData>(`project/${type}/content/${project}/${page}`)
 
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {

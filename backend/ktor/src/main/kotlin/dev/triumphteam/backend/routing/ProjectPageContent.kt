@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 @OptIn(KtorExperimentalLocationsAPI::class)
-fun Routing.pageContentRoute() =  get<Api.Content> { location ->
+fun Routing.pageContentRoute() =  get<Api.Project.Content> { location ->
     val contentData = transaction {
         val page = getPage(location.parent.type, location.project, location.page) ?: return@transaction null
 

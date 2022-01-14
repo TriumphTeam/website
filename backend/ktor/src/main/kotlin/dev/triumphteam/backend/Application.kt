@@ -15,6 +15,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.File
 import java.nio.file.Paths
 
 // Application's logger
@@ -36,19 +37,19 @@ fun main() {
     embeddedServer(CIO, module = Application::module, port = 8000).start(true)
 }
 
+private val dataFolder = File("data")
+
 // Applications config
 val CONFIG = SettingsManager
-    .from(Paths.get("data", "config.yml"))
+    .from(Paths.get(dataFolder.absolutePath, "config.yml"))
     .configurationData(Settings::class.java)
     .create()
 
 // Hikari configuration from the config file
 private val hikariConfig = HikariConfig().apply {
-    val databaseConfig = CONFIG[Settings.DATABASE]
-    dataSourceClassName = "org.mariadb.jdbc.MariaDbDataSource"
-    jdbcUrl = "jdbc:mariadb://${databaseConfig.host}:${databaseConfig.port}/"
-    username = databaseConfig.username
-    password = databaseConfig.password
-    isAutoCommit = false
-    addDataSourceProperty("databaseName", databaseConfig.database)
+    val databaseFile = File(dataFolder, "kipp.db").apply {
+        if (!exists()) createNewFile()
+    }
+
+    jdbcUrl = "jdbc:sqlite:${databaseFile.absolutePath}/"
 }

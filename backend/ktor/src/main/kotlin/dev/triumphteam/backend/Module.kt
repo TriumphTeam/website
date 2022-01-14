@@ -16,6 +16,7 @@ import dev.triumphteam.backend.func.log
 import dev.triumphteam.backend.func.makeClient
 import dev.triumphteam.backend.routing.pageContentRoute
 import dev.triumphteam.backend.routing.pageRoute
+import dev.triumphteam.backend.routing.projectsRoute
 import dev.triumphteam.backend.routing.summaryRoute
 import io.ktor.application.Application
 import io.ktor.application.install
@@ -72,6 +73,7 @@ fun Application.module() {
         summaryRoute()
         pageRoute(placeholders)
         pageContentRoute()
+        projectsRoute()
     }
 
 }

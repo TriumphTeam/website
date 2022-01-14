@@ -1,10 +1,13 @@
 import ProjectCard from "./ProjectCard"
 import {Box, Grid} from "@mui/material"
 import React from "react"
+import {Project} from "../utils/Utilities"
 
-const ProjectGroup: React.FC<{ tempArray: number[] }> = (prop) => {
+const ProjectGroup: React.FC<{ projects: Project[] | undefined }> = (prop) => {
 
-  if (prop.tempArray.length === 0) return <Box sx={{
+  const projects = prop.projects
+
+  if (!projects || projects.length === 0) return <Box sx={{
     width: "50%",
     height: "300px",
     borderRadius: "15px",
@@ -15,10 +18,10 @@ const ProjectGroup: React.FC<{ tempArray: number[] }> = (prop) => {
   return (
       <>
         {
-          prop.tempArray.map(entry => {
+          projects.map(project => {
             return (
                 <Grid item xs={12} md={4}>
-                  <ProjectCard/>
+                  <ProjectCard project={project}/>
                 </Grid>
             )
           })

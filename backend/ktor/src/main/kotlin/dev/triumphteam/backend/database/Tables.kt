@@ -18,7 +18,7 @@ object Pages : IntIdTable() {
     val project = reference("project", Projects, ReferenceOption.CASCADE, ReferenceOption.CASCADE)
     val url = varchar("url", 255)
     val github = varchar("github", 2048)
-    val content = text("content", "utf8_general_ci")
+    val content = text("content")
     val checksum = varchar("checksum", 64)
 }
 

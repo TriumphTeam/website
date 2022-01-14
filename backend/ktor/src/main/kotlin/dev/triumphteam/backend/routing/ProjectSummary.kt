@@ -14,7 +14,7 @@ import io.ktor.routing.Routing
 import org.jetbrains.exposed.sql.transactions.transaction
 
 @OptIn(KtorExperimentalLocationsAPI::class)
-fun Routing.summaryRoute() = get<Api.Summary> { location ->
+fun Routing.summaryRoute() = get<Api.Project.Summary> { location ->
     val summary = transaction {
         val project = getProject(location.parent.type, location.project) ?: return@transaction null
 

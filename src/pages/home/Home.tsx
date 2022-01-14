@@ -4,14 +4,19 @@ import {Box, Container, Grid, Typography} from "@mui/material"
 import {HashLink} from "react-router-hash-link"
 import CircleParticle from "../../components/particles/CircleParticle"
 import BigIconButton from "../../components/buttons/BigIconButton"
-import {openLink} from "../../components/utils/Utilities"
+import {openLink, Projects} from "../../components/utils/Utilities"
 import ProjectGroup from "../../components/card/ProjectGroup"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faDiscord, faGithub} from "@fortawesome/free-brands-svg-icons"
+import useSWR from "swr"
+import {Redirect} from "react-router-dom"
 
-function Home() {
+const Home = () => {
   const [scrollOffSet, setScrollOffSet] = useState(0)
   const handleScroll = () => setScrollOffSet(window.scrollY)
+
+  // API data
+  const {data: projects, error} = useSWR<Projects>(`projects`)
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll)
@@ -19,8 +24,8 @@ function Home() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const plugins: number[] = []
-  const libraries = [1, 2, 3]
+  // TODO right now this will redirect on any error, might wanna change to only 404 or something
+  if (error) return <Redirect to="/404"/>
 
   return (
       <>
@@ -69,13 +74,13 @@ function Home() {
         <Container sx={{textAlign: "center"}}>
           <Grid container justifyContent="center" alignItems="center" spacing={3}>
             <Grid item xs={12}><Typography variant="h3" id="plugins" sx={{padding: "50px"}}>Plugins</Typography></Grid>
-            <ProjectGroup tempArray={plugins}/>
+            <ProjectGroup projects={projects?.plugin}/>
           </Grid>
           <Grid container justifyContent="center" alignItems="center" spacing={3}>
             <Grid item xs={12}>
               <Typography variant="h3" id="libraries" sx={{padding: "50px"}}>Libraries</Typography>
             </Grid>
-            <ProjectGroup tempArray={libraries}/>
+            <ProjectGroup projects={projects?.library}/>
           </Grid>
         </Container>
         <br/>

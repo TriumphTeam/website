@@ -31,7 +31,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
-    implementation("org.mariadb.jdbc:mariadb-java-client:2.7.2")
+    implementation("org.xerial:sqlite-jdbc:3.36.0")
 
     // Testing
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")

@@ -13,10 +13,9 @@ import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.Routing
 import org.jetbrains.exposed.sql.transactions.transaction
-import kotlin.time.ExperimentalTime
 
 @OptIn(KtorExperimentalLocationsAPI::class)
-fun Routing.pageRoute(placeholders: Placeholders) = get<Api.Page> { location ->
+fun Routing.pageRoute(placeholders: Placeholders) = get<Api.Project.Page> { location ->
     val page = transaction {
         getPage(location.parent.type, location.project, location.page)?.get(Pages.content)
     } ?: run {
