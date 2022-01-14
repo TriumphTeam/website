@@ -17,16 +17,25 @@ import org.jetbrains.exposed.sql.transactions.transaction
 fun Routing.projectsRoute() = get<Api.Projects> {
     val projects = transaction {
         Projects.selectAll().asSequence().map {
+            val id = it[Projects.id]
             val type = if (it[Projects.type] == 0u) "plugin" else "library"
             val name = it[Projects.name]
+            val icon = it[Projects.icon]
             val version = it[Projects.version]
+            val color = it[Projects.color]
 
-            type to Project(name, version)
-        }.groupBy({it.first}, {it.second})
+            type to Project(id, name, icon, version, color.split(";"))
+        }.groupBy({ it.first }, { it.second })
     }
 
     call.respond(projects)
 }
 
 @Serializable
-private data class Project(val name: String, val version: String)
+private data class Project(
+    val id: String,
+    val name: String,
+    val icon: String,
+    val version: String,
+    val color: List<String>,
+)

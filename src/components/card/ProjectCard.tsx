@@ -3,31 +3,31 @@ import {Box, Paper, Typography} from "@mui/material"
 import Button from "@mui/material/Button"
 import {Project} from "../utils/Utilities"
 
-const ProjectCard: React.FC<{ project: Project }> = (prop) => {
+const ProjectCard: React.FC<{ type: string, project: Project }> = (prop) => {
 
   const project = prop.project
 
   return (
       <Paper sx={projectCardSx} elevation={5}>
         <Box sx={{padding: "15px"}}>
-          <img src="https://i.imgur.com/FxuMgmC.png"
+          <img src={project.icon}
                alt="project-logo"/>
           <Typography variant="h5">{project.name}</Typography>
-          <CardVersion version={project.version}/>
-          <Button variant="contained" color="secondary">View</Button>
+          <CardVersion version={project.version} color={project.color}/>
+          <Button variant="contained" color="secondary" href={`${prop.type}/${project.id}`}>View</Button>
         </Box>
       </Paper>
   )
 
 }
 
-const CardVersion: React.FC<{ version: string }> = (prop) => {
+const CardVersion: React.FC<{ version: string, color: string[] }> = (prop) => {
   return (
       <div className="card-version">
         <Typography
             variant="subtitle1"
             sx={{
-              background: "-webkit-linear-gradient(0deg, #00F260C8, #0575E6C8)",
+              background: `-webkit-linear-gradient(0deg, ${prop.color.join(", ")})`,
               margin: "auto",
               borderRadius: "5px",
               padding: "0 15px",

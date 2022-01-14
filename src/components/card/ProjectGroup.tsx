@@ -3,7 +3,7 @@ import {Box, Grid} from "@mui/material"
 import React from "react"
 import {Project} from "../utils/Utilities"
 
-const ProjectGroup: React.FC<{ projects: Project[] | undefined }> = (prop) => {
+const ProjectGroup: React.FC<{ type: string, projects: Project[] | undefined }> = (prop) => {
 
   const projects = prop.projects
 
@@ -21,7 +21,7 @@ const ProjectGroup: React.FC<{ projects: Project[] | undefined }> = (prop) => {
           projects.map(project => {
             return (
                 <Grid item xs={12} md={4}>
-                  <ProjectCard project={project}/>
+                  <ProjectCard type={prop.type} project={project}/>
                 </Grid>
             )
           })

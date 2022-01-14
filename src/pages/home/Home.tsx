@@ -74,13 +74,13 @@ const Home = () => {
         <Container sx={{textAlign: "center"}}>
           <Grid container justifyContent="center" alignItems="center" spacing={3}>
             <Grid item xs={12}><Typography variant="h3" id="plugins" sx={{padding: "50px"}}>Plugins</Typography></Grid>
-            <ProjectGroup projects={projects?.plugin}/>
+            <ProjectGroup type="plugin" projects={projects?.plugin}/>
           </Grid>
           <Grid container justifyContent="center" alignItems="center" spacing={3}>
             <Grid item xs={12}>
               <Typography variant="h3" id="libraries" sx={{padding: "50px"}}>Libraries</Typography>
             </Grid>
-            <ProjectGroup projects={projects?.library}/>
+            <ProjectGroup type="library" projects={projects?.library}/>
           </Grid>
         </Container>
         <br/>

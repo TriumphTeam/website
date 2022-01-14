@@ -39,6 +39,7 @@ import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.replace
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -73,13 +74,13 @@ class Project(application: Application) {
 
             projectTypeFile.listFiles()?.filter { it.isDirectory }?.forEach { projectFile ->
                 // Gets the current project name
-                val projectName = projectFile.name
+                val projectId = projectFile.name
 
                 val projectData = projectFile.listFiles()?.find { it.name == PROJECT_FILE_NAME }.let {
                     val projectJson = it ?: run {
                         // Removes the project as it's invalid or unavailable
                         transaction {
-                            Projects.deleteWhere { Projects.name eq projectName }
+                            Projects.deleteWhere { Projects.id eq projectId }
                         }
 
                         warn { "Could not find summary for project ${projectFile.name}, ignoring!" }
@@ -94,34 +95,33 @@ class Project(application: Application) {
                     ?: return@forEach
 
                 transaction {
-                    val projectId = Projects.select {
-                        Projects.name eq projectName
-                    }.firstOrNull()?.get(Projects.id)
-                        ?: Projects.insertAndGetId {
-                            val options = projectData.options
+                    val id = Projects.replace {
+                        val options = projectData.options
 
-                            it[name] = projectName
-                            it[type] = projectType.projectType
+                        it[Projects.id] = projectId
+                        it[name] = options.name
+                        it[icon] = options.icon
+                        it[type] = projectType.projectType
 
-                            val release = runBlocking {
-                                git.getRelease(options.github)
-                            }
-
-                            it[version] = release?.version ?: "Soon"
-                            it[color] = options.color.joinToString(";")
-                            it[github] = options.github
-                            it[summary] = JSON.encodeToString(projectData.summary)
+                        val release = runBlocking {
+                            git.getRelease(options.github)
                         }
+
+                        it[version] = release?.version ?: "Soon"
+                        it[color] = options.color.joinToString(";")
+                        it[github] = options.github
+                        it[summary] = JSON.encodeToString(projectData.summary)
+                    }[Projects.id]
 
                     mdFiles.filter { it.name != PROJECT_FILE_NAME }.forEach pages@{ pageFile ->
                         val content = Pages
-                            .select { Pages.project eq projectId }
+                            .select { Pages.project eq id }
                             .andWhere { Pages.url eq pageFile.nameWithoutExtension }
                             .firstOrNull()
 
                         // Doesn't exist, insert
                         if (content == null) {
-                            insertPage(projectId, pageFile, projectFile, projectTypeFile.name)
+                            insertPage(id, pageFile, projectFile, projectTypeFile.name)
                             return@pages
                         }
 
@@ -130,7 +130,7 @@ class Project(application: Application) {
 
                         // Delete existing one
                         Pages.deleteWhere { Pages.id eq content[Pages.id] }
-                        insertPage(projectId, pageFile, projectFile, projectTypeFile.name)
+                        insertPage(id, pageFile, projectFile, projectTypeFile.name)
                     }
                 }
             }
@@ -138,7 +138,7 @@ class Project(application: Application) {
     }
 
     // TODO attempt batch insert
-    private fun insertPage(projectId: EntityID<Int>, pageFile: File, projectFile: File, typeName: String) {
+    private fun insertPage(projectId: String, pageFile: File, projectFile: File, typeName: String) {
         val markdown = parser.parse(pageFile.readText())
 
         val pageId = Pages.insertAndGetId {

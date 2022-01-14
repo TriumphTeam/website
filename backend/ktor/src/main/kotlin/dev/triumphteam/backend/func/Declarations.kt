@@ -25,9 +25,12 @@ import kotlinx.serialization.modules.subclass
 import me.mattstudios.config.properties.Property
 import net.lingala.zip4j.core.ZipFile
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.andWhere
+import org.jetbrains.exposed.sql.replace
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -134,14 +137,14 @@ fun folder(path: Path): File {
     return folder
 }
 
-fun getProject(type: String, projectName: String): ResultRow? {
+fun getProject(type: String, projectId: String): ResultRow? {
     return Projects.select {
-        Projects.name eq projectName and (Projects.type eq type.projectType)
+        Projects.id eq projectId and (Projects.type eq type.projectType)
     }.firstOrNull()
 }
 
-fun getPage(type: String, projectName: String, page: String): ResultRow? {
-    val project = getProject(type, projectName) ?: return null
+fun getPage(type: String, projectId: String, page: String): ResultRow? {
+    val project = getProject(type, projectId) ?: return null
 
     return Pages.select {
         Pages.project eq project[Projects.id]
@@ -158,7 +161,6 @@ suspend inline fun <reified T> HttpClient.getOrNull(
         url.takeFrom(urlString)
         block()
     }
-} catch (exception: Exception) {
-    println(exception)
+} catch (ignored: Exception) {
     null
 }
