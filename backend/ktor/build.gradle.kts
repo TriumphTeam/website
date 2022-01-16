@@ -36,3 +36,11 @@ dependencies {
     // Testing
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
 }
+
+tasks {
+
+    application {
+        mainClass.set("dev.triumphteam.backend.ApplicationKt")
+    }
+
+}

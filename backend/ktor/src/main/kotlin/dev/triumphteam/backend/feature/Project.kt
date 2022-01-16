@@ -9,6 +9,7 @@ import dev.triumphteam.backend.database.Projects
 import dev.triumphteam.backend.func.JSON
 import dev.triumphteam.backend.func.MARKDOWN_FILE_EXTENSION
 import dev.triumphteam.backend.func.PROJECT_FILE_NAME
+import dev.triumphteam.backend.func.PROJECT_ICON_NAME
 import dev.triumphteam.backend.func.checksum
 import dev.triumphteam.backend.func.warn
 import dev.triumphteam.backend.project.ProjectData
@@ -34,7 +35,6 @@ import org.commonmark.ext.gfm.tables.TablesExtension
 import org.commonmark.ext.task.list.items.TaskListItemsExtension
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
@@ -72,35 +72,44 @@ class Project(application: Application) {
         projects.forEach folder@{ projectTypeFile ->
             val projectType = projectTypeFile.name.toSingularProjectType() ?: return@folder
 
-            projectTypeFile.listFiles()?.filter { it.isDirectory }?.forEach { projectFile ->
+            projectTypeFile.listFiles()?.filter { it.isDirectory }?.forEach { projectFolder ->
                 // Gets the current project name
-                val projectId = projectFile.name
+                val projectId = projectFolder.name
 
-                val projectData = projectFile.listFiles()?.find { it.name == PROJECT_FILE_NAME }.let {
+                val projectData = projectFolder.listFiles()?.find { it.name == PROJECT_FILE_NAME }.let {
                     val projectJson = it ?: run {
                         // Removes the project as it's invalid or unavailable
                         transaction {
                             Projects.deleteWhere { Projects.id eq projectId }
                         }
 
-                        warn { "Could not find summary for project ${projectFile.name}, ignoring!" }
+                        warn { "Could not find summary for project ${projectFolder.name}, ignoring!" }
                         return@forEach
                     }
 
                     JSON.decodeFromString<ProjectData>(projectJson.readText())
                 }
 
-                val mdFiles = projectFile.listFiles()
+                val hasIcon = projectFolder.listFiles()?.any { it.name == PROJECT_ICON_NAME } ?: false
+
+                if (!hasIcon) {
+                    warn { "Could not find icon for project ${projectFolder.name}, ignoring!" }
+                    return@forEach
+                }
+
+                val mdFiles = projectFolder.listFiles()
                     ?.filter { it.extension == MARKDOWN_FILE_EXTENSION }
                     ?: return@forEach
 
                 transaction {
                     val id = Projects.replace {
                         val options = projectData.options
+                        val repo = CONFIG[Settings.REPO]
 
                         it[Projects.id] = projectId
                         it[name] = options.name
-                        it[icon] = options.icon
+                        it[icon] =
+                            "https://github.com/${repo.name}/raw/main/${projectTypeFile.name}/${projectFolder.name}/${PROJECT_ICON_NAME}"
                         it[type] = projectType.projectType
 
                         val release = runBlocking {
@@ -121,7 +130,7 @@ class Project(application: Application) {
 
                         // Doesn't exist, insert
                         if (content == null) {
-                            insertPage(id, pageFile, projectFile, projectTypeFile.name)
+                            insertPage(id, pageFile, projectFolder, projectTypeFile.name)
                             return@pages
                         }
 
@@ -130,7 +139,7 @@ class Project(application: Application) {
 
                         // Delete existing one
                         Pages.deleteWhere { Pages.id eq content[Pages.id] }
-                        insertPage(id, pageFile, projectFile, projectTypeFile.name)
+                        insertPage(id, pageFile, projectFolder, projectTypeFile.name)
                     }
                 }
             }

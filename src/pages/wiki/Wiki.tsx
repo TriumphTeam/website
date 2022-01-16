@@ -1,11 +1,12 @@
 import React from "react"
 import "./wiki.scss"
 import SideBar from "../../components/wiki/SideBar"
-import {Redirect, useParams} from "react-router-dom"
+import {useParams} from "react-router-dom"
 import WikiBody from "../../components/wiki/content/WikiContent"
 import {Box, Grid} from "@mui/material"
 import TableOfContents from "../../components/wiki/TableOfContents"
 import {SideBarSize} from "../../components/utils/Utilities"
+import Footer from "../../components/footer/Footer"
 
 export default function Wiki() {
   // Url data
@@ -37,6 +38,7 @@ export default function Wiki() {
             </Grid>
           </Grid>
         </Box>
+        <Footer/>
       </Box>
   )
 }

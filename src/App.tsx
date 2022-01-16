@@ -1,6 +1,6 @@
 import React from "react"
 import {CssBaseline} from "@mui/material"
-import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
+import {StyledEngineProvider, ThemeProvider} from "@mui/material/styles"
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom"
 import Home from "./pages/home/Home"
 import {darkTheme} from "./components/theme/DarkTheme"
@@ -10,6 +10,7 @@ import Wiki from "./pages/wiki/Wiki"
 import api from "./components/axios/Api"
 
 import "./global.scss"
+
 //import "./fontawesome/fontawesome.scss"
 
 function ThemedApp() {
@@ -27,23 +28,23 @@ function ThemedApp() {
 
 function App() {
   return (
-    <React.Fragment>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={darkTheme}>
-          <CssBaseline/>
-          <SWRConfig value={{
-            dedupingInterval: 15000,
-            fetcher: (url: string) => api.get(url).then(r => r.data),
-            onErrorRetry: (error) => {
-              if (error.status === 404) return
-            },
-          }}>
-            <ThemedApp/>
-          </SWRConfig>
-        </ThemeProvider>
-      </StyledEngineProvider>
-    </React.Fragment>
-  );
+      <React.Fragment>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={darkTheme}>
+            <CssBaseline/>
+            <SWRConfig value={{
+              dedupingInterval: 15000,
+              fetcher: (url: string) => api.get(url).then(r => r.data),
+              onErrorRetry: (error) => {
+                if (error.status === 404) return
+              },
+            }}>
+              <ThemedApp/>
+            </SWRConfig>
+          </ThemeProvider>
+        </StyledEngineProvider>
+      </React.Fragment>
+  )
 }
 
 export default App

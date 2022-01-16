@@ -10,22 +10,20 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faDiscord, faGithub} from "@fortawesome/free-brands-svg-icons"
 import useSWR from "swr"
 import {Redirect} from "react-router-dom"
+import Footer from "../../components/footer/Footer"
 
 const Home = () => {
   const [scrollOffSet, setScrollOffSet] = useState(0)
   const handleScroll = () => setScrollOffSet(window.scrollY)
 
   // API data
-  const {data: projects, error} = useSWR<Projects>(`projects`)
+  const {data: projects} = useSWR<Projects>(`projects`)
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll)
 
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
-
-  // TODO right now this will redirect on any error, might wanna change to only 404 or something
-  if (error) return <Redirect to="/404"/>
 
   return (
       <>
@@ -44,7 +42,7 @@ const Home = () => {
                   <Typography variant="h2" sx={{fontWeight: "bold"}}>Triumph Team</Typography>
                   <Typography variant="h3" sx={{fontWeight: "100", marginTop: "25px"}}>
                     A development team with a passion for <HashLink to="#plugins">plugins</HashLink>, <HashLink
-                      to="#libraries">libraries</HashLink>, and much <HashLink to="#more">more</HashLink>.
+                      to="#libraries">libraries</HashLink>, and much <a>more</a>.
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sx={{
@@ -83,12 +81,7 @@ const Home = () => {
             <ProjectGroup type="library" projects={projects?.library}/>
           </Grid>
         </Container>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
+        <Footer/>
       </>
   )
 }

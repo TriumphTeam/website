@@ -20,7 +20,7 @@ const ProjectGroup: React.FC<{ type: string, projects: Project[] | undefined }> 
         {
           projects.map(project => {
             return (
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={4} key={project.id}>
                   <ProjectCard type={prop.type} project={project}/>
                 </Grid>
             )

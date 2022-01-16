@@ -23,5 +23,6 @@ fun Routing.pageRoute(placeholders: Placeholders) = get<Api.Project.Page> { loca
         return@get
     }
 
+
     call.respondText(placeholders.replace(location.project, page), ContentType.Text.Html)
 }

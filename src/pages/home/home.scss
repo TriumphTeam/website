@@ -16,6 +16,10 @@
   position: relative;
   max-width: 100%;
 
+  .text-container {
+    cursor: default;
+  }
+
   .text-container a {
     font-weight: bold;
     background: -webkit-linear-gradient(0deg, #00F260, #0575E6);

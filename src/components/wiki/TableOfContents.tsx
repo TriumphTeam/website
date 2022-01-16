@@ -73,7 +73,7 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
         {
           // TODO Style this better
         }
-        <div className="edit-github"><Link to="">Edit on GitHub</Link></div>
+        <div className="edit-github"><a target="_blank" href={data?.link ?? ""}>Edit on GitHub</a></div>
         <div className="on-page">On this page</div>
         <ul id="table-content" className="content-items">
           {

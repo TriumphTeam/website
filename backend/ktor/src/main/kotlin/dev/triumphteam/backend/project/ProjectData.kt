@@ -12,7 +12,6 @@ data class ProjectData(
 @Serializable
 data class ProjectOptions(
     val name: String,
-    val icon: String,
     val color: List<String>,
     val github: String,
 )
