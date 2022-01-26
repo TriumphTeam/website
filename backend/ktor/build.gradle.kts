@@ -1,6 +1,6 @@
 plugins {
-    id("com.github.johnrengelman.shadow") version "7.0.0"
     application
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 val ktorVersion = "1.6.3"

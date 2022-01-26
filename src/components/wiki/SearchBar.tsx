@@ -7,7 +7,7 @@ const SearchBar = () => {
       freeSolo
       id="free-solo-2-demo"
       disableClearable
-      options={["search1", "search2"]}
+      options={[]}
       renderInput={(params) => (
           <TextField
               sx={{

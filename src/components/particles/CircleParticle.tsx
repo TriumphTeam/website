@@ -5,7 +5,7 @@ const CircleParticle = () => <Particles
     params={{
       particles: {
         color: {
-          value: "#26c885",
+          value: "#7F4AA7",
         },
         links: {
           enable: false,

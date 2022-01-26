@@ -3,7 +3,7 @@ package dev.triumphteam.backend.routing
 import dev.triumphteam.backend.database.Contents
 import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.func.getPage
-import dev.triumphteam.backend.location.Api
+import dev.triumphteam.backend.location.ProjectLocation
 import dev.triumphteam.markdown.content.ContentData
 import dev.triumphteam.markdown.content.ContentEntry
 import io.ktor.application.call
@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 @OptIn(KtorExperimentalLocationsAPI::class)
-fun Routing.pageContentRoute() =  get<Api.Project.Content> { location ->
+fun Routing.pageContentRoute() =  get<ProjectLocation.ContentLocation> { location ->
     val contentData = transaction {
         val page = getPage(location.parent.type, location.project, location.page) ?: return@transaction null
 

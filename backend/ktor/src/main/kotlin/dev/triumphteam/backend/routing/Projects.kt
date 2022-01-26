@@ -1,20 +1,18 @@
 package dev.triumphteam.backend.routing
 
 import dev.triumphteam.backend.database.Projects
-import dev.triumphteam.backend.location.Api
+import dev.triumphteam.backend.location.ProjectsLocation
 import io.ktor.application.call
-import io.ktor.http.ContentType
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.get
 import io.ktor.response.respond
-import io.ktor.response.respondText
 import io.ktor.routing.Routing
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 @OptIn(KtorExperimentalLocationsAPI::class)
-fun Routing.projectsRoute() = get<Api.Projects> {
+fun Routing.projectsRoute() = get<ProjectsLocation> {
     val projects = transaction {
         Projects.selectAll().asSequence().map {
             val id = it[Projects.id]

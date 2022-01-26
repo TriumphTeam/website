@@ -1,5 +1,5 @@
 import React, {useEffect} from "react"
-import {Link, Redirect, useParams} from "react-router-dom"
+import {Redirect, useParams} from "react-router-dom"
 import {HashLink} from "react-router-hash-link"
 import useSWR from "swr"
 import {Box} from "@mui/material"
@@ -73,7 +73,7 @@ export const TableOfContents: React.FC<{ url: string }> = ({url}) => {
         {
           // TODO Style this better
         }
-        <div className="edit-github"><a target="_blank" href={data?.link ?? ""}>Edit on GitHub</a></div>
+        <div className="edit-github"><a target="_blank" rel="noreferrer" href={data?.link ?? ""}>Edit on GitHub</a></div>
         <div className="on-page">On this page</div>
         <ul id="table-content" className="content-items">
           {

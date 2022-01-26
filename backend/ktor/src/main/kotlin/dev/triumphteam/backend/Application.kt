@@ -6,6 +6,7 @@ import dev.triumphteam.backend.config.Settings
 import dev.triumphteam.backend.database.Contents
 import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.database.Projects
+import dev.triumphteam.backend.func.log
 import io.ktor.application.Application
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
@@ -35,6 +36,7 @@ fun main() {
     }
 
     embeddedServer(CIO, module = Application::module, port = 8000).start(true)
+    log { "Server started" }
 }
 
 private val dataFolder = File("data")
@@ -47,7 +49,7 @@ val CONFIG = SettingsManager
 
 // Hikari configuration from the config file
 private val hikariConfig = HikariConfig().apply {
-    val databaseFile = File(dataFolder, "kipp.db").apply {
+    val databaseFile = File(dataFolder, "data.db").apply {
         if (!exists()) createNewFile()
     }
 

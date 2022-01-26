@@ -45,7 +45,6 @@ import kotlin.time.Duration.Companion.minutes
 fun Application.module() {
     install(CORS) {
         method(HttpMethod.Get)
-        method(HttpMethod.Post)
         header(HttpHeaders.Authorization)
         header(HttpHeaders.AccessControlAllowOrigin)
         allowCredentials = true

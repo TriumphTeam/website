@@ -64,7 +64,7 @@ export const SideBar: React.FC<{ url: string }> = ({url}) => {
           }}
           variant="permanent"
       >
-        <Link id="logo" to=""><img src={Logo} alt="logo"/></Link>
+        <Link id="logo" to="/"><img src={Logo} alt="logo"/></Link>
         <SearchBar/>
         <Container sx={containerSx}>
           <div className="side-list">

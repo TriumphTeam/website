@@ -3,7 +3,7 @@ package dev.triumphteam.backend.routing
 import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.feature.Placeholders
 import dev.triumphteam.backend.func.getPage
-import dev.triumphteam.backend.location.Api
+import dev.triumphteam.backend.location.ProjectLocation
 import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -15,7 +15,7 @@ import io.ktor.routing.Routing
 import org.jetbrains.exposed.sql.transactions.transaction
 
 @OptIn(KtorExperimentalLocationsAPI::class)
-fun Routing.pageRoute(placeholders: Placeholders) = get<Api.Project.Page> { location ->
+fun Routing.pageRoute(placeholders: Placeholders) = get<ProjectLocation.PageLocation> { location ->
     val page = transaction {
         getPage(location.parent.type, location.project, location.page)?.get(Pages.content)
     } ?: run {

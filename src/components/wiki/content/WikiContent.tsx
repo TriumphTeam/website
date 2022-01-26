@@ -24,8 +24,13 @@ export const WikiContent: React.FC<{ url: string }> = ({url}) => {
   // Simply for getting the current path url
   const {type, project, page} = useParams<{ type?: string, project?: string, page?: string }>()
 
+  // Redirects to introduction if no page is typed
+  const finalPage = !page ? "introduction" : page
+
+  console.log(finalPage)
+  console.log(`project/${type}/page/${project}/${finalPage}`)
   // API data
-  const {data, error} = useSWR(`project/${type}/page/${project}/${page}`)
+  const {data, error} = useSWR(`project/${type}/page/${project}/${finalPage}`)
 
   // Sets up all code highlighting
   useEffect(() => {
@@ -61,9 +66,6 @@ export const WikiContent: React.FC<{ url: string }> = ({url}) => {
     })
 
   }, [registered])
-
-  // Redirects to introduction if no page is typed
-  if (page == null) return <Redirect to={`${url}/introduction`}/>
 
   // TODO right now this will redirect on any error, might wanna change to only 404 or something
   if (error) return <Redirect to="/404"/>

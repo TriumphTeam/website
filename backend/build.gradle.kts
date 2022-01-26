@@ -11,7 +11,7 @@ version = "1.0-SNAPSHOT"
 allprojects {
     repositories {
         mavenCentral()
-        maven("https://repo.mattstudios.me/artifactory/public/")
+        maven("https://repo.triumphteam.dev/snapshots/")
     }
 }
 

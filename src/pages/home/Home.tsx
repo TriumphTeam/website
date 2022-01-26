@@ -9,7 +9,6 @@ import ProjectGroup from "../../components/card/ProjectGroup"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faDiscord, faGithub} from "@fortawesome/free-brands-svg-icons"
 import useSWR from "swr"
-import {Redirect} from "react-router-dom"
 import Footer from "../../components/footer/Footer"
 
 const Home = () => {
@@ -39,10 +38,10 @@ const Home = () => {
                   <div className="main-logo"/>
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography variant="h2" sx={{fontWeight: "bold"}}>Triumph Team</Typography>
+                  <Typography variant="h2" sx={{fontWeight: "bold"}}>TRIUMPH<span className="test"> </span>TEAM</Typography>
                   <Typography variant="h3" sx={{fontWeight: "100", marginTop: "25px"}}>
                     A development team with a passion for <HashLink to="#plugins">plugins</HashLink>, <HashLink
-                      to="#libraries">libraries</HashLink>, and much <a>more</a>.
+                      to="#libraries">libraries</HashLink>, and much <span className="gradient">more</span>.
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sx={{

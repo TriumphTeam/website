@@ -8,7 +8,7 @@ package dev.triumphteam.backend.feature
 
 import dev.triumphteam.backend.events.GithubEvent
 import dev.triumphteam.backend.func.receiveNullable
-import dev.triumphteam.backend.location.Webhook
+import dev.triumphteam.backend.location.WebhookLocation
 import io.ktor.application.Application
 import io.ktor.application.ApplicationFeature
 import io.ktor.application.application
@@ -37,7 +37,7 @@ class Listener(pipeline: Application) {
 
     init {
         pipeline.routing {
-            post<Webhook> {
+            post<WebhookLocation> {
                 // TODO reject non github requests
                 val webhookData = call.receiveNullable<PushWebhook>() ?: run {
                     call.respond(HttpStatusCode.BadRequest)

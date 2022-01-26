@@ -9,4 +9,4 @@ import io.ktor.locations.Location
  * Location for listening to the webhook
  */
 @Location("webhook")
-class Webhook
+class WebhookLocation

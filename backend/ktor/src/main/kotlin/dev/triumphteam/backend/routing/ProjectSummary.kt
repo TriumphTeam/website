@@ -2,7 +2,7 @@ package dev.triumphteam.backend.routing
 
 import dev.triumphteam.backend.database.Projects
 import dev.triumphteam.backend.func.getProject
-import dev.triumphteam.backend.location.Api
+import dev.triumphteam.backend.location.ProjectLocation
 import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -14,7 +14,7 @@ import io.ktor.routing.Routing
 import org.jetbrains.exposed.sql.transactions.transaction
 
 @OptIn(KtorExperimentalLocationsAPI::class)
-fun Routing.summaryRoute() = get<Api.Project.Summary> { location ->
+fun Routing.summaryRoute() = get<ProjectLocation.SummaryLocation> { location ->
     val summary = transaction {
         val project = getProject(location.parent.type, location.project) ?: return@transaction null
 
