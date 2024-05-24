@@ -18,6 +18,9 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.http.takeFrom
 import io.ktor.request.receiveOrNull
+import io.ktor.server.application.ApplicationCall
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -67,6 +70,9 @@ val JSON = Json {
     prettyPrint = true
     serializersModule = serializer
 }
+
+@OptIn(ExperimentalSerializationApi::class)
+val HOCON = Hocon
 
 /**
  * The original [receiveOrNull] still throws JsonException from Kotlinx.Serialization

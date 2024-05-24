@@ -21,5 +21,4 @@ abstract class CustomBlockParserFactory<P : FenceBlockParser> : AbstractBlockPar
 
         return BlockStart.of(blockParser).atIndex(nextNonSpace + blockParser.block.startFenceLength)
     }
-
 }

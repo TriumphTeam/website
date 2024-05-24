@@ -51,7 +51,8 @@ import Prism from "prismjs"
     ],
     "label": [
       {
-        pattern: /(?<=\w)(@\w+)/,
+        ///(?<=\w)(@\w+)/,
+        pattern: /\b(@\w+)/,
         greedy: true,
       },
     ],
@@ -63,7 +64,8 @@ import Prism from "prismjs"
     ],
     "infix": [
       {
-        pattern: /(?<=\w\s)(\w+)(?=\s\w)/,
+        // (?<=\w\s)(\w+)(?=\s\w)
+        pattern: /\b\s(\w+)(?=\s\w)/,
         greedy: false,
       },
     ],

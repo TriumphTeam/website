@@ -9,6 +9,7 @@ code {
   border-radius: .3em;
   background: #282C34;
   color: #ABB2BF;
+  font-family: "Fira Code", monospace;
 }
 
 /**
@@ -96,8 +97,13 @@ pre::-webkit-scrollbar-thumb {
 }
 
 .token.class-name,
+.annotation,
 .token.object {
   color: #35BBCA;
+}
+
+.token.annotation, .token.annotation.ponctuation {
+  color: #61AEEF;
 }
 
 .token.function,

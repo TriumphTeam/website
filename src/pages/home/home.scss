@@ -1,4 +1,7 @@
-@import url('https://fonts.cdnfonts.com/css/moon-20');
+@font-face {
+  font-family: "Moon 2.0";
+  src: local("Moon 2.0"), url(/fonts/Moon2.0-Light.otf) format('otf');
+}
 
 .main-logo {
   width: 20em;
