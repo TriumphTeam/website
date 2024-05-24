@@ -27,8 +27,6 @@ export const WikiContent: React.FC<{ url: string }> = ({url}) => {
   // Redirects to introduction if no page is typed
   const finalPage = !page ? "introduction" : page
 
-  console.log(finalPage)
-  console.log(`project/${type}/page/${project}/${finalPage}`)
   // API data
   const {data, error} = useSWR(`project/${type}/page/${project}/${finalPage}`)
 
@@ -50,7 +48,7 @@ export const WikiContent: React.FC<{ url: string }> = ({url}) => {
       if (!(target instanceof Element)) return
       const element = target as Element
       if (element.id !== "copy") return
-      console.log("clicked?")
+
       const parent = element.parentElement
       if (parent == null) return
       if (!(parent instanceof HTMLPreElement)) return
@@ -82,11 +80,11 @@ export const WikiContent: React.FC<{ url: string }> = ({url}) => {
             color: (theme) => theme.palette.text.primary,
           },
           "& h2": {
-            fontSize: "1.6em",
+            fontSize: "1.4em",
             color: (theme) => theme.palette.text.primary,
           },
           "& h3": {
-            fontSize: "1.4em",
+            fontSize: "1.2em",
             color: (theme) => theme.palette.text.primary,
           },
         }}

@@ -55,5 +55,4 @@ abstract class FenceBlockParser(private val skipCharacter: Char) : AbstractBlock
 
         return endIndex
     }
-
 }

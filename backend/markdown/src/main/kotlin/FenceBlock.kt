@@ -7,5 +7,4 @@ abstract class FenceBlock : CustomBlock() {
     abstract var startFenceLength: Int
     abstract var endFenceLength: Int
     abstract var fenceIndent: Int
-
 }

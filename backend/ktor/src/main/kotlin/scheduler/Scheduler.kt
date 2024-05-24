@@ -1,9 +1,9 @@
 package dev.triumphteam.backend.scheduler
 
-import io.ktor.application.Application
-import io.ktor.application.ApplicationFeature
-import io.ktor.application.featureOrNull
-import io.ktor.application.install
+import io.ktor.server.application.Application
+import io.ktor.server.application.Plugin
+import io.ktor.server.application.install
+import io.ktor.server.application.pluginOrNull
 import io.ktor.util.AttributeKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -110,7 +110,7 @@ class Scheduler : CoroutineScope {
     /**
      * Feature companion, which is a factory for the [Scheduler].
      */
-    companion object Feature : ApplicationFeature<Application, Scheduler, Scheduler> {
+    companion object Feature : Plugin<Application, Scheduler, Scheduler> {
 
         /**
          * The locale [AttributeKey].
@@ -131,7 +131,7 @@ class Scheduler : CoroutineScope {
  * Runs task after a given duration.
  */
 fun Application.runTaskIn(time: Duration, task: suspend () -> Unit) {
-    val scheduler = featureOrNull(Scheduler) ?: install(Scheduler)
+    val scheduler = pluginOrNull(Scheduler) ?: install(Scheduler)
     return scheduler.runTaskIn(time, task)
 }
 
@@ -139,7 +139,7 @@ fun Application.runTaskIn(time: Duration, task: suspend () -> Unit) {
  * Runs a task at a given date time.
  */
 fun Application.runTaskAt(date: LocalDateTime, task: suspend () -> Unit) {
-    val scheduler = featureOrNull(Scheduler) ?: install(Scheduler)
+    val scheduler = pluginOrNull(Scheduler) ?: install(Scheduler)
     return scheduler.runTaskAt(date, task)
 }
 
@@ -147,7 +147,7 @@ fun Application.runTaskAt(date: LocalDateTime, task: suspend () -> Unit) {
  * Runs a task at a given time.
  */
 fun Application.runTaskAt(time: LocalTime, task: suspend () -> Unit) {
-    val scheduler = featureOrNull(Scheduler) ?: install(Scheduler)
+    val scheduler = pluginOrNull(Scheduler) ?: install(Scheduler)
     return scheduler.runTaskAt(time.atDate(LocalDateTime.now().toLocalDate()), task)
 }
 
@@ -155,7 +155,7 @@ fun Application.runTaskAt(time: LocalTime, task: suspend () -> Unit) {
  * Runs task every `x` duration after `y` duration.
  */
 fun Application.runTaskEvery(period: Duration, delay: Duration = 0.seconds, task: suspend () -> Unit) {
-    val scheduler = featureOrNull(Scheduler) ?: install(Scheduler)
+    val scheduler = pluginOrNull(Scheduler) ?: install(Scheduler)
     return scheduler.runTaskEvery(period, delay, task)
 }
 
@@ -163,7 +163,7 @@ fun Application.runTaskEvery(period: Duration, delay: Duration = 0.seconds, task
  * Runs task every given days at a given time.
  */
 fun Application.runTaskEvery(days: Set<DayOfWeek>, at: LocalTime, task: suspend () -> Unit) {
-    val scheduler = featureOrNull(Scheduler) ?: install(Scheduler)
+    val scheduler = pluginOrNull(Scheduler) ?: install(Scheduler)
     return scheduler.runTaskEvery(days, at, task)
 }
 
@@ -171,7 +171,7 @@ fun Application.runTaskEvery(days: Set<DayOfWeek>, at: LocalTime, task: suspend 
  * Runs task every given days at a given time.
  */
 fun Application.runTaskEvery(vararg days: DayOfWeek, at: LocalTime, task: suspend () -> Unit) {
-    val scheduler = featureOrNull(Scheduler) ?: install(Scheduler)
+    val scheduler = pluginOrNull(Scheduler) ?: install(Scheduler)
     return scheduler.runTaskEvery(days.toCollection(EnumSet.noneOf(DayOfWeek::class.java)), at, task)
 }
 
@@ -179,6 +179,6 @@ fun Application.runTaskEvery(vararg days: DayOfWeek, at: LocalTime, task: suspen
  * Runs task every given day at a given time.
  */
 fun Application.runTaskEvery(day: DayOfWeek, at: LocalTime, task: suspend () -> Unit) {
-    val scheduler = featureOrNull(Scheduler) ?: install(Scheduler)
+    val scheduler = pluginOrNull(Scheduler) ?: install(Scheduler)
     return scheduler.runTaskEvery(EnumSet.of(day), at, task)
 }
