@@ -59,7 +59,7 @@ private fun HTML.renderFullPage() {
         content()
 
         script {
-            src = "/static/scripts/i_hate.js"
+            src = "/static/scripts/script.js"
         }
     }
 }
