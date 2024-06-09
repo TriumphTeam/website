@@ -1,6 +1,6 @@
 package dev.triumphteam.backend.pages.docs
 
-import dev.triumphteam.backend.pages.docs.components.dropDownChoose
+import dev.triumphteam.backend.pages.docs.components.dropDown
 import dev.triumphteam.backend.pages.docs.components.search
 import dev.triumphteam.backend.pages.setupHead
 import io.ktor.http.HttpStatusCode
@@ -20,6 +20,7 @@ import kotlinx.html.img
 import kotlinx.html.link
 import kotlinx.html.script
 import kotlinx.html.title
+import java.time.LocalDate
 
 public fun Routing.docsRoutes() {
 
@@ -52,18 +53,79 @@ private fun HTML.renderFullPage() {
 
     body {
 
-        classes = setOf("bg-docs-bg", "overflow-hidden", "text-white")
+        classes = setOf("bg-docs-bg", "overflow-hidden", "text-white", "flex gap-4")
 
         sideBar()
+        content()
+
+        script {
+            src = "/static/scripts/i_hate.js"
+        }
+    }
+}
+
+private fun FlowContent.content() {
+    // Content area
+    div {
+
+        classes = setOf("flex-initial", "w-screen h-screen", "p-12")
+
+        // Actual content
+        div {
+            classes = setOf("h-full", "w-full", "flex", "justify-center")
+            div {
+
+                classes = setOf("w-3/4")
+                +"Content area"
+            }
+        }
+
+        // Footer
+        div {
+
+            classes = setOf("text-xs", "text-center")
+            +"Copyright © ${LocalDate.now().year}, TriumphTeam. All Rights Reserved."
+        }
+    }
+
+    // Right side, bar area
+    div {
+
+        classes = setOf("flex-none", "w-80 h-screen", "px-6", "py-16")
+
+        div {
+            classes = setOf("py-4", "px-2")
+            a {
+                href = "#"
+                classes = setOf("w-full", "text-white/75", "text-sm")
+                +"Edit this page on GitHub"
+            }
+        }
+
+        h1 {
+            classes = setOf("text-2xl", "font-bold", "py-2")
+            +"On this page"
+        }
+
+        repeat(4) {
+            div {
+                classes = setOf("py-1")
+
+                a {
+                    href = "#"
+                    classes = setOf("text-white/75 text-lg")
+                    +"Option $it"
+                }
+            }
+        }
     }
 }
 
 private fun FlowContent.sideBar() {
-
     div {
 
         classes = setOf(
-            "sticky",
+            "flex-none",
             "w-72",
             "h-screen",
             // "bg-indigo-500",
@@ -91,7 +153,7 @@ private fun FlowContent.sideBar() {
             div {
                 classes = setOf("col-span-1")
 
-                dropDownChoose()
+                dropDown()
             }
         }
 

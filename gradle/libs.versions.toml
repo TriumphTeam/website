@@ -1,6 +1,6 @@
 [versions]
 # kotlin
-kotlin = "2.0.0-RC2"
+kotlin = "2.0.0"
 serialization = "1.6.3"
 coroutines = "1.8.0"
 

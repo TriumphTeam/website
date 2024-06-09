@@ -5,8 +5,9 @@ import kotlinx.html.a
 import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.i
+import kotlinx.html.id
 
-public fun FlowContent.dropDownChoose() {
+public fun FlowContent.dropDown() {
     div {
         classes = setOf("mx-auto", "max-w-sm", "flex", "select-none")
 
@@ -28,8 +29,9 @@ public fun FlowContent.dropDownChoose() {
         }
 
         // Drop-down menu
-        // FUCK THIS DROP DOWN SHIT
         div {
+            id = "version-select-button"
+
             div {
 
                 classes = setOf(
@@ -62,6 +64,7 @@ public fun FlowContent.dropDownChoose() {
             }
 
             div {
+                id = "version-select"
                 classes = setOf("hidden", "bg-search-bg", "absolute", "w-38", "py-1", "mt-1", "rounded-lg")
 
                 repeat(4) {

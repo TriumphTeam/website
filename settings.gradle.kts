@@ -7,7 +7,7 @@ rootProject.name = "website"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-include("ktor")
+include("backend")
 include("markdown")
 
 
