@@ -1,10 +1,5 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.backend.common.serialization.KotlinIrLinker
-import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrLink
-import tasks.PrepareJs
-
 plugins {
-    id("backend.multiplatform")
+    id("backend.base")
     id("io.ktor.plugin") version "2.3.10"
 }
 val main = "dev.triumphteam.backend.ApplicationKt"
@@ -14,39 +9,19 @@ application {
     mainClass.set(main)
 }
 
-kotlin {
-    explicitApi()
+dependencies {
+    implementation(projects.common)
 
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
-    }
+    implementation(libs.bundles.logger)
+    implementation(libs.bundles.ktor.client)
+    implementation(libs.bundles.ktor.server)
 
-    jvm {
-        withJava()
-    }
-
-    js(IR) {
-        browser()
-        binaries.executable()
-    }
-
-    sourceSets {
-
-        jvmMain {
-            dependencies {
-                implementation(libs.bundles.logger)
-                implementation(libs.bundles.ktor.client)
-                implementation(libs.bundles.ktor.server)
-
-                implementation("com.google.guava:guava:30.1.1-jre")
-            }
-        }
-    }
+    implementation("com.google.guava:guava:30.1.1-jre")
 }
 
 tasks {
 
-    val prepareJs = register<PrepareJs>("prepareJs") {
+    /*val prepareJs = register<PrepareJs>("prepareJs") {
 
         val jsTask = named<Copy>("jsBrowserDistribution").get()
         val resourcesTask = named<Copy>("processResources").get()
@@ -68,5 +43,5 @@ tasks {
 
     jar {
         dependsOn(prepareJs)
-    }
+    }*/
 }

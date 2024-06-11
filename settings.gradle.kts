@@ -8,7 +8,8 @@ rootProject.name = "website"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include("backend")
-include("markdown")
+include("docs")
+include("common")
 
 
 fun includeProject(name: String) {
