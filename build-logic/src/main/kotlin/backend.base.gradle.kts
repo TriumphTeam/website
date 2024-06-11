@@ -3,6 +3,7 @@ import org.gradle.accessors.dm.LibrariesForLibs
 val libs = the<LibrariesForLibs>()
 
 plugins {
+    id("backend.configure")
     kotlin("jvm")
     kotlin("plugin.serialization")
 }
@@ -19,6 +20,8 @@ dependencies {
 }
 
 kotlin {
+    explicitApi()
+
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
     }

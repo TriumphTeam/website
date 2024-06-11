@@ -13,6 +13,9 @@ commonmark = "0.18.0"
 # Logging
 log4j = "2.20.0"
 
+# Other
+commons = "1.8.0"
+
 [libraries]
 # Core
 logger = { module = "org.slf4j:slf4j-api", version.ref = "logger" }
@@ -27,6 +30,7 @@ ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "kto
 ktor-server-cio = { module = "io.ktor:ktor-server-cio-jvm", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-server-cors = { module = "io.ktor:ktor-server-cors", version.ref = "ktor" }
+ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
 ktor-server-resources = { module = "io.ktor:ktor-server-resources", version.ref = "ktor" }
 ktor-server-negociation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-server-header = { module = "io.ktor:ktor-server-forwarded-header", version.ref = "ktor" }
@@ -43,6 +47,7 @@ ktor-resources = { module = "io.ktor:ktor-resources", version.ref = "ktor" }
 # Ktor client
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-jetty = { module = "io.ktor:ktor-client-jetty", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 ktor-client-negociation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
@@ -59,6 +64,9 @@ commonmark-list = { module = "org.commonmark:commonmark-ext-task-list-items", ve
 # Logger
 logger-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 logger-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
+
+# Other
+commons-cli = { module = "commons-cli:commons-cli", version.ref = "commons" }
 
 # build
 build-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -81,6 +89,7 @@ ktor-server = [
     "ktor-server-cio",
     "ktor-server-netty",
     "ktor-server-cors",
+    "ktor-server-auth",
     "ktor-server-resources",
     "ktor-server-negociation",
     "ktor-server-header",
@@ -89,11 +98,12 @@ ktor-server = [
     "ktor-server-html",
     "ktor-server-caching-headers",
     "ktor-server-default-headers",
-    "ktor-server-css"
+    "ktor-server-css",
 ]
 ktor-client = [
     "ktor-client-core",
     "ktor-client-cio",
+    "ktor-client-jetty",
     "ktor-client-auth",
     "ktor-client-negociation",
     "ktor-client-json",
