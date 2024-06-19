@@ -7,7 +7,7 @@ import kotlinx.html.div
 import kotlinx.html.i
 import kotlinx.html.id
 
-public fun FlowContent.dropDown() {
+public fun FlowContent.dropDown(versions: Set<String>, current: String) {
     div {
         classes = setOf("mx-auto", "max-w-sm", "flex", "select-none")
 
@@ -54,7 +54,7 @@ public fun FlowContent.dropDown() {
                     "font-bold",
                 )
 
-                +"2.x.x"
+                +current
 
                 i {
                     classes = setOf("fa-solid", "fa-chevron-down", "pl-4", "text-xs", "align-middle")
@@ -65,6 +65,7 @@ public fun FlowContent.dropDown() {
                 id = "version-select"
                 classes = setOf("hidden", "bg-search-bg", "absolute", "w-38", "py-1", "mt-1", "rounded-lg")
 
+                // TODO
                 repeat(4) {
                     a {
                         href = "#"

@@ -1,7 +1,7 @@
 package dev.triumphteam.backend
 
+import dev.triumphteam.backend.api.apiRoutes
 import dev.triumphteam.backend.api.auth.TriumphPrincipal
-import dev.triumphteam.backend.api.auth.apiRoutes
 import dev.triumphteam.backend.website.websiteRoutes
 import dev.triumphteam.website.JsonSerializer
 import io.ktor.http.CacheControl
@@ -44,12 +44,8 @@ public fun Application.module() {
     install(CallLogging)
 
     install(CORS) {
-        allowMethod(HttpMethod.Options)
-        allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Post)
         allowMethod(HttpMethod.Get)
-        allowMethod(HttpMethod.Delete)
-        allowMethod(HttpMethod.Patch)
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Authorization)
     }
@@ -63,7 +59,7 @@ public fun Application.module() {
     }
 
     install(DefaultHeaders) {
-        header("X-Engine", "Ktor") // will send this header with each response
+        header("X-Engine", "Ktor")
     }
     install(ForwardedHeaders)
     install(XForwardedHeaders)

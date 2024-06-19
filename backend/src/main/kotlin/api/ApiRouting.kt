@@ -1,4 +1,4 @@
-package dev.triumphteam.backend.api.auth
+package dev.triumphteam.backend.api
 
 import dev.triumphteam.website.api.Api
 import dev.triumphteam.website.project.Repository
@@ -18,11 +18,12 @@ public fun Routing.apiRoutes() {
 
     authenticate("bearer") {
         post<Api.Setup> {
-            val body = runCatching {
+            runCatching {
                 call.receive<Repository>()
             }.fold(
-                onSuccess = {
+                onSuccess = { (editPath, projects) ->
                     // Handle parsing
+                    setupRepository(editPath, projects)
                     call.respond(HttpStatusCode.Accepted)
                 },
                 onFailure = {

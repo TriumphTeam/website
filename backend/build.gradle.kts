@@ -15,8 +15,9 @@ dependencies {
     implementation(libs.bundles.logger)
     implementation(libs.bundles.ktor.client)
     implementation(libs.bundles.ktor.server)
+    implementation(libs.bundles.database)
 
-    implementation("com.google.guava:guava:30.1.1-jre")
+    implementation(libs.caffeine)
 }
 
 tasks {
