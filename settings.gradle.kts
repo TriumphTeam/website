@@ -10,6 +10,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include("backend")
 include("docs")
 include("common")
+include("script")
 
 
 fun includeProject(name: String) {

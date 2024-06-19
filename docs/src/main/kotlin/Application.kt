@@ -5,17 +5,23 @@ import dev.triumphteam.website.JsonSerializer
 import dev.triumphteam.website.api.Api
 import dev.triumphteam.website.docs.markdown.MarkdownRenderer
 import dev.triumphteam.website.docs.markdown.content.ContentRenderer
+import dev.triumphteam.website.docs.markdown.highlight.language.languages.KotlinLanguage
+import dev.triumphteam.website.docs.markdown.highlight.language.LanguageDefinition
+import dev.triumphteam.website.docs.markdown.highlight.language.languages.GroovyLanguage
+import dev.triumphteam.website.docs.markdown.highlight.language.languages.JavaLanguage
+import dev.triumphteam.website.docs.markdown.highlight.language.languages.XmlLanguage
 import dev.triumphteam.website.docs.markdown.hint.HintExtension
 import dev.triumphteam.website.docs.markdown.tab.TabExtension
 import dev.triumphteam.website.docs.serialization.GroupConfig
+import dev.triumphteam.website.docs.serialization.PageConfig
 import dev.triumphteam.website.docs.serialization.ProjectConfig
 import dev.triumphteam.website.docs.serialization.RepoSettings
 import dev.triumphteam.website.docs.serialization.VersionConfig
+import dev.triumphteam.website.project.DocVersion
+import dev.triumphteam.website.project.Navigation
 import dev.triumphteam.website.project.Page
-import dev.triumphteam.website.project.PageContent
-import dev.triumphteam.website.project.PageGroup
+import dev.triumphteam.website.project.PageSummary
 import dev.triumphteam.website.project.Project
-import dev.triumphteam.website.project.ProjectVersion
 import dev.triumphteam.website.project.Repository
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -24,12 +30,9 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.resources.Resources
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.bearerAuth
-import io.ktor.client.request.get
-import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import org.apache.commons.cli.DefaultParser
@@ -68,13 +71,43 @@ private val logger: Logger = LoggerFactory.getLogger("docs")
 
 public suspend fun main(args: Array<String>) {
 
+    val code = """
+        <dependency test="hello fucker">
+            <groupId>dev.triumphteam</groupId>
+            <artifactId>triumph-gui</artifactId> <!-- Replace package here here -->
+            <version>3.1.7</version>
+        </dependency>
+    """.trimIndent()
+
+    val language: LanguageDefinition = XmlLanguage
+
+    // val structures = highlights.getCodeStructure().flatten()
+    // TODO: FIGURE OUT HOW TO DEAL WITH HTML SYMBOLS
+    val highlights = language.captureHighlights(code)
+    val injectedCode = buildString {
+        code.forEachIndexed { index, char ->
+            val structure = highlights[index]
+            /*if ((structure?.size ?: 0) > 1) {
+                println(structure)
+            }*/
+            structure?.forEach { append(it.createTag()) }
+            append(char)
+        }
+        highlights.filterKeys { it >= code.length }.forEach { (_, struct) ->
+            struct.forEach { append(it.createTag()) }
+        }
+    }
+
+    println(injectedCode.replace("<<", "&lt;<").replace(">>", ">&gt;"))
+
+    return
     val options = DefaultParser().parse(
         Options().apply {
             addOption(Option.builder("i").longOpt("input").hasArg().required().build())
             addOption(Option.builder("b").longOpt("bearer").hasArg().required().build())
             addOption(Option.builder("u").longOpt("url").hasArg().required().build())
         },
-        args
+        args,
     )
 
     // Grab paths to work with
@@ -113,13 +146,15 @@ public suspend fun main(args: Array<String>) {
                 projectHome = parsedProjectConfig.projectHome,
                 versions = parseVersions(files.filter(File::isDirectory), inputPath),
             ).also {
-                logger.info("Parsed project '$${it.id}', with versions: ${it.versions.map(ProjectVersion::ref)}!")
+                logger.info("Parsed project '$${it.id}', with versions: ${it.versions.map(DocVersion::reference)}!")
             }
         }
     )
 
     logger.info("Paring complete!")
     logger.info("Uploading..")
+
+    // println(JsonSerializer.encode<Repository>(repo))
 
     val client = HttpClient(CIO) {
         install(Resources)
@@ -146,7 +181,7 @@ public suspend fun main(args: Array<String>) {
     client.close()
 }
 
-private fun parseVersions(versionDirs: List<File>, parentDir: File): List<ProjectVersion> {
+private fun parseVersions(versionDirs: List<File>, parentDir: File): List<DocVersion> {
     return versionDirs.mapNotNull { versionDir ->
 
         val files = versionDir.listFiles() ?: emptyArray()
@@ -156,40 +191,54 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File): List<Projec
 
         val parsedVersionConfig = HoconSerializer.from<VersionConfig>(versionConfig)
 
-        ProjectVersion(
-            ref = parsedVersionConfig.ref,
-            status = parsedVersionConfig.status,
-            groups = parseGroups(files.filter(File::isDirectory), parentDir),
-        )
-    }
-}
+        val navigationCollector = NavigationCollector()
+        val pageCollector = PageCollector()
 
-private fun parseGroups(groupDirs: List<File>, parentDir: File): List<PageGroup> {
-    return groupDirs.mapNotNull { groupDir ->
+        files.filter(File::isDirectory).sortedBy(File::getName).forEach { groupDir ->
+            val groupFiles = groupDir.listFiles() ?: emptyArray()
+            val groupConfig = groupFiles.find("group.conf") {
+                "Found group folder without a 'group.conf' file, skipping it!"
+            } ?: return@mapNotNull null
 
-        val files = groupDir.listFiles() ?: emptyArray()
-        val groupConfig = files.find("group.conf") {
-            "Found group folder without a 'group.conf' file, skipping it!"
-        } ?: return@mapNotNull null
+            val parsedGroupConfig = HoconSerializer.from<GroupConfig>(groupConfig)
+            navigationCollector.collect(Navigation.Group(parsedGroupConfig.header, parsedGroupConfig.mapPages()))
 
-        val parsedVersionConfig = HoconSerializer.from<GroupConfig>(groupConfig)
+            val filesMap = groupFiles.associateBy(File::nameWithoutExtension)
+            parsedGroupConfig.pages.map(PageConfig::link).forEach { link ->
+                val pageFile = requireNotNull(filesMap[link]) {
+                    "Could not find file named '$link', make sure the file is created before adding it to the group config."
+                }
 
-        PageGroup(
-            header = parsedVersionConfig.header,
-            pages = files.filter { it.extension == "md" }.map { mdFile ->
+                if (pageFile.nameWithoutExtension.contains(" ")) {
+                    error("Page name cannot contain spaces.")
+                }
 
-                val parsedFile = mdParser.parse(mdFile.readText())
+                val parsedFile = mdParser.parse(pageFile.readText())
 
-                Page(
-                    id = mdFile.nameWithoutExtension.lowercase(),
-                    html = htmlRenderer.render(parsedFile),
-                    content = PageContent(
-                        path = mdFile.relativeTo(parentDir).path,
-                        entries = contentRenderer.render(parsedFile),
-                    ),
+                pageCollector.collect(
+                    Page(
+                        id = pageFile.nameWithoutExtension.lowercase(),
+                        content = htmlRenderer.render(parsedFile),
+                        summary = PageSummary(
+                            path = pageFile.relativeTo(parentDir).path,
+                            entries = contentRenderer.render(parsedFile),
+                        )
+                    )
                 )
             }
+        }
+
+        DocVersion(
+            reference = parsedVersionConfig.reference,
+            recommended = parsedVersionConfig.recommended,
+            stable = parsedVersionConfig.stable,
+            navigation = navigationCollector.collection(),
+            pages = pageCollector.collection(),
         )
+    }.also { docVersions ->
+        require(docVersions.count(DocVersion::recommended) == 1) {
+            "Only 1 recommended version is allowed per project."
+        }
     }
 }
 

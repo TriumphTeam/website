@@ -3,6 +3,11 @@ import org.w3c.dom.Node
 import org.w3c.dom.events.Event
 
 public fun main() {
+    versionDropdownListeners()
+    println("many puss ass and some bussy")
+}
+
+private fun versionDropdownListeners() {
     val hiddenClass = "hidden"
     val dropdownId = "version-select"
     val buttonId = "version-select-button"

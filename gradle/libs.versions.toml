@@ -2,13 +2,18 @@
 # kotlin
 kotlin = "2.0.0"
 serialization = "1.6.3"
-coroutines = "1.8.0"
 
 # Core
-logger = "2.0.13"
 ktor = "2.3.10"
 ktor-css = "1.0.0-pre.754"
 commonmark = "0.18.0"
+caffeine = "3.1.8"
+highlights = "0.9.0"
+
+# Database
+exposed = "0.51.1"
+hikari = "5.1.0"
+postgress = "42.7.3"
 
 # Logging
 log4j = "2.20.0"
@@ -17,13 +22,16 @@ log4j = "2.20.0"
 commons = "1.8.0"
 
 [libraries]
-# Core
-logger = { module = "org.slf4j:slf4j-api", version.ref = "logger" }
+
+# Database
+exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
+postgress = { module = "org.postgresql:postgresql", version.ref = "postgress" }
 
 # Kotlin
 serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 serialization-hocon = { module = "org.jetbrains.kotlinx:kotlinx-serialization-hocon", version.ref = "serialization" }
-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 
 # Ktor server
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
@@ -67,6 +75,8 @@ logger-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.r
 
 # Other
 commons-cli = { module = "commons-cli:commons-cli", version.ref = "commons" }
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
+highlights = { module = "dev.snipme:highlights", version.ref = "highlights" }
 
 # build
 build-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -75,14 +85,15 @@ build-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", ve
 [bundles]
 build = [
     "build-kotlin",
-    "build-serialization"
+    "build-serialization",
 ]
 commonmark = [
     "commonmark",
     "commonmark-autolink",
     "commonmark-strikethrough",
     "commonmark-tables",
-    "commonmark-list"
+    "commonmark-list",
+    "highlights",
 ]
 ktor-server = [
     "ktor-server-core",
@@ -112,5 +123,11 @@ ktor-client = [
 ]
 logger = [
     "logger-core",
-    "logger-impl"
+    "logger-impl",
+]
+database = [
+    "exposed-dao",
+    "exposed-jdbc",
+    "hikari",
+    "postgress",
 ]

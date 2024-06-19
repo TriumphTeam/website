@@ -1,5 +1,6 @@
 package dev.triumphteam.backend.website.pages.home
 
+import dev.triumphteam.backend.api.database.ProjectEntity
 import dev.triumphteam.backend.website.pages.home.resource.Home
 import dev.triumphteam.backend.website.pages.setupHead
 import io.ktor.server.application.call
@@ -18,17 +19,32 @@ import kotlinx.html.i
 import kotlinx.html.img
 import kotlinx.html.link
 import kotlinx.html.title
+import org.jetbrains.exposed.sql.transactions.transaction
 
 public fun Routing.homeRoutes() {
 
     get<Home> {
         call.respondHtml {
-            fullPage()
+            val projects = transaction {
+                ProjectEntity.all().map { project ->
+                    // val versions = DocVersionEntity.find { DocVersions.project eq project.id }
+
+                    ProjectDisplay(
+                        id = project.id.value,
+                        name = project.name,
+                        icon = project.icon,
+                        description = "eat a dick",
+                        version = "1.0.0"
+                    )
+                }
+            }
+
+            fullPage(projects)
         }
     }
 }
 
-private fun HTML.fullPage() {
+private fun HTML.fullPage(projects: List<ProjectDisplay>) {
 
     setupHead {
 
@@ -59,7 +75,7 @@ private fun HTML.fullPage() {
 
             logoArea()
             centerArea()
-            projectsArea()
+            projectsArea(projects)
         }
     }
 }
@@ -134,7 +150,7 @@ private fun FlowContent.socialButton(direction: BorderDirection, icon: String) {
     }
 }
 
-private fun FlowContent.projectsArea() {
+private fun FlowContent.projectsArea(projects: List<ProjectDisplay>) {
     div {
         classes = setOf(
             "col-start-1",
@@ -154,14 +170,17 @@ private fun FlowContent.projectsArea() {
             "px-16"
         )
 
-        projectCard(CardSide.LEFT)
-        projectCard(CardSide.RIGHT)
+        projects.chunked(2).forEach { projects ->
+            projects.forEachIndexed { index, project ->
+                projectCard(project, CardSide.fromIndex(index))
+            }
+        }
     }
 }
 
-private fun FlowContent.projectCard(side: CardSide) {
+private fun FlowContent.projectCard(project: ProjectDisplay, side: CardSide) {
     a {
-        href = "/docs"
+        href = "/docs/${project.id}"
 
         classes = setOf(
             "col-span-1",
@@ -187,7 +206,7 @@ private fun FlowContent.projectCard(side: CardSide) {
 
             classes = setOf("col-span-1", "grid", "content-center")
 
-            img(src = "/static/images/test.png", classes = "w-20")
+            img(src = project.icon, classes = "w-20")
         }
 
         // Descriptions
@@ -206,18 +225,18 @@ private fun FlowContent.projectCard(side: CardSide) {
 
             h1 {
                 classes = setOf("col-span-1", "sans-bold", "text-2xl", "w-full")
-                +"Project Name"
+                +project.name
             }
 
             div {
                 classes = setOf("col-span-1", "bg-primary", "py-1", "px-3", "rounded-md")
-                +"1.0.0"
+                +project.version
             }
 
             h2 {
                 classes = setOf("col-span-1", "sans-bold", "text-sm", "w-full")
 
-                +"Small description of the project"
+                +project.description
             }
         }
     }
@@ -225,8 +244,22 @@ private fun FlowContent.projectCard(side: CardSide) {
 
 private enum class CardSide(val clazz: String) {
     LEFT("justify-self-end"), RIGHT("justify-self-start");
+
+    companion object {
+        fun fromIndex(index: Int): CardSide {
+            return if (index % 2 == 0) LEFT else RIGHT
+        }
+    }
 }
 
 private enum class BorderDirection(val clazz: String) {
     LEFT("border-left"), RIGHT("border-right");
 }
+
+private data class ProjectDisplay(
+    val id: String,
+    val name: String,
+    val icon: String,
+    val description: String,
+    val version: String,
+)
