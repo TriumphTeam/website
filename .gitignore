@@ -123,3 +123,7 @@ gradle-app.setting
 .kotlin/
 data/
 test-module/
+
+backend/src/main/resources/static/scripts/script.js
+
+backend/src/main/resources/static/scripts/script.js.map

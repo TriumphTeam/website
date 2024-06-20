@@ -21,6 +21,18 @@ body {
     border-radius: 25px;
 }
 
+.sidebar-content::after {
+    position: absolute;
+    z-index: 10;
+    left: 0;
+    width: 100%;
+    height: 10%;
+    content: "";
+    bottom: 0;
+    background: linear-gradient(rgba(20, 20, 23, 0) 0%, rgb(20, 20, 23) 50%);
+    pointer-events: none;
+}
+
 .weird-max-height {
     max-height: calc(100vh - 500px);
 }
