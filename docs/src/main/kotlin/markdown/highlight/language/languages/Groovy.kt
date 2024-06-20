@@ -27,6 +27,7 @@ private val GROOVY_KEYWORDS = """
 """.trimIndent().split(",").map(String::trim).map { "\\b$it\\b".toRegex() }
 
 public object GroovyLanguage : LanguageDefinition(
+    name = "groovy",
     components = listOf(
         SLASH_COMMENT_COMPONENT,
         MULTILINE_COMMENT_COMPONENT,

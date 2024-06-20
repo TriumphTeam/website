@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class Repository(
-    public val editPath: String,
     public val projects: List<Project>,
 )
 
@@ -33,7 +32,7 @@ public data class Navigation(public val groups: List<Group>) {
     public data class Group(public val header: String, public val pages: List<Page>)
 
     @Serializable
-    public data class Page(public val header: String, public val link: String)
+    public data class Page(public val header: String, public val id: String)
 }
 
 @Serializable

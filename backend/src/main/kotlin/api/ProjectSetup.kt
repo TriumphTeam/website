@@ -6,7 +6,7 @@ import dev.triumphteam.backend.api.database.ProjectEntity
 import dev.triumphteam.website.project.Project
 import org.jetbrains.exposed.sql.transactions.transaction
 
-public fun setupRepository(editPath: String, projects: List<Project>) {
+public fun setupRepository(projects: List<Project>) {
     transaction {
         projects.forEach { project ->
 

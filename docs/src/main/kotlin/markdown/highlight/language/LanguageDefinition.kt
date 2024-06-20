@@ -4,13 +4,30 @@ import dev.triumphteam.website.docs.markdown.highlight.GenericStart
 import dev.triumphteam.website.docs.markdown.highlight.Highlight
 import dev.triumphteam.website.docs.markdown.highlight.HighlightStep
 import dev.triumphteam.website.docs.markdown.highlight.HighlightType
+import dev.triumphteam.website.docs.markdown.highlight.escapeHtml
+import dev.triumphteam.website.docs.markdown.highlight.language.languages.GroovyLanguage
+import dev.triumphteam.website.docs.markdown.highlight.language.languages.JavaLanguage
+import dev.triumphteam.website.docs.markdown.highlight.language.languages.KotlinLanguage
+import dev.triumphteam.website.docs.markdown.highlight.language.languages.XmlLanguage
 
 public abstract class LanguageDefinition(
-    private val components: List<LanguageHighlightComponent>,
+    public val name: String = "",
+    private val components: List<LanguageHighlightComponent> = emptyList(),
     private val globalValidator: List<HighlightValidator> = emptyList(),
     private val stepValidator: List<StepValidator> = emptyList(),
     private val allowDuplicate: Boolean = false,
 ) {
+
+    public companion object {
+
+        public fun fromString(language: String?): LanguageDefinition = when (language) {
+            "kt", "kotlin" -> KotlinLanguage
+            "java" -> JavaLanguage
+            "groovy" -> GroovyLanguage
+            "xml" -> XmlLanguage
+            else -> Empty
+        }
+    }
 
     public fun captureHighlights(code: String): Map<Int, Collection<HighlightStep>> {
         val highlights = components.flatMap { it.highlight(code) }.toMutableList()
@@ -44,6 +61,22 @@ public abstract class LanguageDefinition(
             if (allowDuplicate) values else values.toSet()
         }
     }
+
+    public fun highlightCode(code: String): String {
+        val highlights = captureHighlights(code)
+        return buildString {
+            code.forEachIndexed { index, char ->
+                val steps = highlights[index]
+                steps?.forEach { append(it.createTag()) }
+                append(char.escapeHtml())
+            }
+            highlights.filterKeys { it >= code.length }.forEach { (_, step) ->
+                step.forEach { append(it.createTag()) }
+            }
+        }
+    }
+
+    public data object Empty : LanguageDefinition()
 }
 
 public sealed interface HighlightValidator {
@@ -105,6 +138,17 @@ public sealed interface StepValidator {
                 HighlightType.TYPE -> false
                 HighlightType.END -> false
                 else -> steps.any { it.type == HighlightType.TYPE }
+            }
+        }
+    }
+
+    public data object KeywordAndFunction : StepValidator {
+
+        override fun shouldRemove(current: HighlightStep, steps: List<HighlightStep>): Boolean {
+            return when (current.type) {
+                HighlightType.KEYWORD -> false
+                HighlightType.END -> false
+                else -> steps.any { it.type == HighlightType.KEYWORD }
             }
         }
     }

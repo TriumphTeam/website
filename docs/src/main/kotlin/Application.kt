@@ -5,11 +5,6 @@ import dev.triumphteam.website.JsonSerializer
 import dev.triumphteam.website.api.Api
 import dev.triumphteam.website.docs.markdown.MarkdownRenderer
 import dev.triumphteam.website.docs.markdown.content.ContentRenderer
-import dev.triumphteam.website.docs.markdown.highlight.language.languages.KotlinLanguage
-import dev.triumphteam.website.docs.markdown.highlight.language.LanguageDefinition
-import dev.triumphteam.website.docs.markdown.highlight.language.languages.GroovyLanguage
-import dev.triumphteam.website.docs.markdown.highlight.language.languages.JavaLanguage
-import dev.triumphteam.website.docs.markdown.highlight.language.languages.XmlLanguage
 import dev.triumphteam.website.docs.markdown.hint.HintExtension
 import dev.triumphteam.website.docs.markdown.tab.TabExtension
 import dev.triumphteam.website.docs.serialization.GroupConfig
@@ -58,10 +53,8 @@ private val DEFAULT_EXTENSIONS = listOf(
     TabExtension.create(),
 )
 
-private val htmlRenderer = HtmlRenderer.builder()
-    .nodeRendererFactory(::MarkdownRenderer)
-    .extensions(DEFAULT_EXTENSIONS)
-    .build()
+private val htmlRenderer =
+    HtmlRenderer.builder().nodeRendererFactory(::MarkdownRenderer).extensions(DEFAULT_EXTENSIONS).build()
 
 private val contentRenderer = ContentRenderer()
 
@@ -71,36 +64,6 @@ private val logger: Logger = LoggerFactory.getLogger("docs")
 
 public suspend fun main(args: Array<String>) {
 
-    val code = """
-        <dependency test="hello fucker">
-            <groupId>dev.triumphteam</groupId>
-            <artifactId>triumph-gui</artifactId> <!-- Replace package here here -->
-            <version>3.1.7</version>
-        </dependency>
-    """.trimIndent()
-
-    val language: LanguageDefinition = XmlLanguage
-
-    // val structures = highlights.getCodeStructure().flatten()
-    // TODO: FIGURE OUT HOW TO DEAL WITH HTML SYMBOLS
-    val highlights = language.captureHighlights(code)
-    val injectedCode = buildString {
-        code.forEachIndexed { index, char ->
-            val structure = highlights[index]
-            /*if ((structure?.size ?: 0) > 1) {
-                println(structure)
-            }*/
-            structure?.forEach { append(it.createTag()) }
-            append(char)
-        }
-        highlights.filterKeys { it >= code.length }.forEach { (_, struct) ->
-            struct.forEach { append(it.createTag()) }
-        }
-    }
-
-    println(injectedCode.replace("<<", "&lt;<").replace(">>", ">&gt;"))
-
-    return
     val options = DefaultParser().parse(
         Options().apply {
             addOption(Option.builder("i").longOpt("input").hasArg().required().build())
@@ -126,36 +89,34 @@ public suspend fun main(args: Array<String>) {
         HoconSerializer.from<RepoSettings>(requireNotNull(inputFiles.find { it.name == "settings.conf" }))
 
     // Navigate through file structure and parse all projects
-    val repo = Repository(
-        editPath = repoSettings.editPath,
-        projects = inputFiles.mapNotNull { projectDir ->
-            // Ignore non-directory files
-            if (!projectDir.isDirectory) return@mapNotNull null
+    val repo = Repository(projects = inputFiles.mapNotNull { projectDir ->
+        // Ignore non-directory files
+        if (!projectDir.isDirectory) return@mapNotNull null
 
-            val files = projectDir.listFiles() ?: emptyArray()
-            val projectConfig = files.find("project.conf") {
-                "Found project folder without a 'project.conf' file, skipping it!"
-            } ?: return@mapNotNull null
+        val files = projectDir.listFiles() ?: emptyArray()
+        val projectConfig = files.find("project.conf") {
+            "Found project folder without a 'project.conf' file, skipping it!"
+        } ?: return@mapNotNull null
 
-            val parsedProjectConfig = HoconSerializer.from<ProjectConfig>(projectConfig)
+        val parsedProjectConfig = HoconSerializer.from<ProjectConfig>(projectConfig)
 
-            Project(
-                id = parsedProjectConfig.id,
-                name = parsedProjectConfig.name,
-                icon = parsedProjectConfig.icon,
-                projectHome = parsedProjectConfig.projectHome,
-                versions = parseVersions(files.filter(File::isDirectory), inputPath),
-            ).also {
-                logger.info("Parsed project '$${it.id}', with versions: ${it.versions.map(DocVersion::reference)}!")
-            }
+        Project(
+            id = parsedProjectConfig.id,
+            name = parsedProjectConfig.name,
+            icon = parsedProjectConfig.icon,
+            projectHome = parsedProjectConfig.projectHome,
+            versions = parseVersions(files.filter(File::isDirectory), inputPath, repoSettings),
+        ).also {
+            logger.info("Parsed project '$${it.id}', with versions: ${it.versions.map(DocVersion::reference)}!")
         }
-    )
+    })
 
     logger.info("Paring complete!")
     logger.info("Uploading..")
 
-    // println(JsonSerializer.encode<Repository>(repo))
+    println(JsonSerializer.encode<Repository>(repo))
 
+    return
     val client = HttpClient(CIO) {
         install(Resources)
         install(ContentNegotiation) {
@@ -181,7 +142,7 @@ public suspend fun main(args: Array<String>) {
     client.close()
 }
 
-private fun parseVersions(versionDirs: List<File>, parentDir: File): List<DocVersion> {
+private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings: RepoSettings): List<DocVersion> {
     return versionDirs.mapNotNull { versionDir ->
 
         val files = versionDir.listFiles() ?: emptyArray()
@@ -220,7 +181,7 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File): List<DocVer
                         id = pageFile.nameWithoutExtension.lowercase(),
                         content = htmlRenderer.render(parsedFile),
                         summary = PageSummary(
-                            path = pageFile.relativeTo(parentDir).path,
+                            path = "${repoSettings.editPath.removeSuffix("/")}/${pageFile.relativeTo(parentDir).path}",
                             entries = contentRenderer.render(parsedFile),
                         )
                     )

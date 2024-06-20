@@ -2,21 +2,21 @@ package dev.triumphteam.website.docs.markdown.highlight
 
 import dev.snipme.highlights.internal.isNewLine
 
-private val NEW_LINE_CHARS = setOf("\n", "\r", "\r\n")
+internal val NEW_LINE_CHARS = setOf("\n", "\r", "\r\n")
 
-public fun String.indicesOf(char: Char): Set<Int> {
+internal fun String.indicesOf(char: Char): Set<Int> {
     return indicesOf(char.toString())
 }
 
-public fun String.indicesOf(string: String): Set<Int> {
+internal fun String.indicesOf(string: String): Set<Int> {
     return indicesOf(string.toRegex(RegexOption.LITERAL)).map { it.first }.toSet()
 }
 
-public fun String.indicesOf(regex: Regex): Set<IntRange> {
+internal fun String.indicesOf(regex: Regex): Set<IntRange> {
     return regex.findAll(this).map { it.range }.toSet()
 }
 
-public fun Char.isNewLine(): Boolean {
+internal fun Char.isNewLine(): Boolean {
     return toString() in NEW_LINE_CHARS
 }
 
@@ -28,4 +28,14 @@ internal fun String.lengthToEOF(start: Int = 0): Int {
         endIndex++
     }
     return endIndex - start
+}
+
+internal fun Char.escapeHtml(): String {
+    return when (this) {
+        '&' -> "&amp;"
+        '<' -> "&lt;"
+        '>' -> "&gt;"
+        '\"' -> "&quot;"
+        else -> toString()
+    }
 }

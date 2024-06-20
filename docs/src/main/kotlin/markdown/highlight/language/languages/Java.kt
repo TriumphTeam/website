@@ -26,6 +26,7 @@ private val Java_KEYWORDS = """
 """.trimIndent().split(",").map(String::trim).map { "\\b$it\\b".toRegex() }
 
 public object JavaLanguage : LanguageDefinition(
+    name = "java",
     components = listOf(
         SLASH_COMMENT_COMPONENT,
         MULTILINE_COMMENT_COMPONENT,
@@ -53,6 +54,7 @@ public object JavaLanguage : LanguageDefinition(
     ),
     stepValidator = listOf(
         StepValidator.AnnotationAndFunction,
+        StepValidator.KeywordAndFunction,
         StepValidator.TypeAndFunction,
     ),
 )

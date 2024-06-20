@@ -24,6 +24,7 @@ import kotlinx.html.a
 import kotlinx.html.body
 import kotlinx.html.classes
 import kotlinx.html.div
+import kotlinx.html.footer
 import kotlinx.html.h1
 import kotlinx.html.img
 import kotlinx.html.link
@@ -80,26 +81,23 @@ private fun HTML.renderFullPage(project: ProjectData, version: Version, currentV
             rel = "stylesheet"
         }
 
+        link {
+            href = "/static/css/themes/one_dark.css"
+            rel = "stylesheet"
+        }
+
         title { +"TrimphTeam | ${project.name}" }
     }
 
     body {
 
-        classes = setOf("bg-docs-bg", "overflow-hidden", "text-white", "flex gap-4")
+        classes = setOf("bg-docs-bg", "text-white", "overflow-y-auto overflow-x-hidden")
 
         sideBar(project, version, currentVersion)
         content(currentVersion)
 
         script {
             src = "/static/scripts/script.js"
-        }
-
-        script {
-            src = "/static/scripts/prism.js"
-        }
-
-        script {
-            src = "/static/scripts/prism-kotlin-custom.js"
         }
     }
 }
@@ -108,14 +106,15 @@ private fun FlowContent.content(page: Page) {
     // Content area
     div {
 
-        classes = setOf("flex-initial", "w-screen h-screen", "p-12", "overflow-auto")
+        classes = setOf("w-screen h-screen", "px-[36em]", "pt-12", "grid grid-cols-1 gap-4")
 
         // Actual content
         div {
-            classes = setOf("h-full", "w-full", "flex", "justify-center", "wiki-content")
+            classes = setOf("h-full", "w-full")
+
             div {
 
-                classes = setOf("w-3/4")
+                classes = setOf("docs-content")
 
                 unsafe {
                     raw(page.content)
@@ -124,9 +123,9 @@ private fun FlowContent.content(page: Page) {
         }
 
         // Footer
-        div {
+        footer {
 
-            classes = setOf("text-xs", "text-center")
+            classes = setOf("text-xs", "text-center", "py-8", "self-end")
             +"Copyright © ${LocalDate.now().year}, TriumphTeam. All Rights Reserved."
         }
     }
@@ -134,12 +133,11 @@ private fun FlowContent.content(page: Page) {
     // Right side, bar area
     div {
 
-        classes = setOf("flex-none", "w-80 h-screen", "px-6", "py-16")
+        classes = setOf("fixed inset-y-0 right-0", "w-80 h-screen", "px-6", "py-16")
 
         div {
             classes = setOf("py-4", "px-2")
             a {
-                // TODO link!
                 href = page.summary.path
                 classes = setOf("w-full", "text-white/75", "text-sm")
                 +"Edit this page on GitHub"
@@ -153,11 +151,12 @@ private fun FlowContent.content(page: Page) {
 
         page.summary.entries.forEach { entry ->
             div {
-                classes = setOf("py-1")
 
-                // TODO: Indent
+                classes = setOf("py-1", "indent-${entry.indent * 4u}")
+
                 a {
-                    href = entry.href
+                    href = "#${entry.href}"
+
                     classes = setOf("text-white/75 text-lg")
                     +entry.literal
                 }
@@ -166,11 +165,11 @@ private fun FlowContent.content(page: Page) {
     }
 }
 
-private fun FlowContent.sideBar(project: ProjectData, version: Version, currentVersion: Page) {
+private fun FlowContent.sideBar(project: ProjectData, version: Version, currentPage: Page) {
     div {
 
         classes = setOf(
-            "flex-none",
+            "fixed",
             "w-72",
             "h-screen",
             // "bg-indigo-500",
@@ -183,7 +182,7 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentV
 
         // Logo area
         div {
-            classes = setOf("col-span-1", "grid", "grid-cols-1", "gap-4", "w-full", "justify-items-center")
+            classes = setOf("col-span-1", "grid", "grid-cols-1", "gap-4", "w-full", "justify-items-center", "h-64")
 
             img(src = "/static/images/logo.png", classes = "col-span-1 w-36")
 
@@ -208,10 +207,11 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentV
             classes = setOf(
                 "col-span-1",
                 "w-full",
-                "h-screen",
+                "h-full",
                 "px-4",
                 "overflow-y-auto",
                 "overflow-x-hidden",
+                // "weird-max-height",
             )
 
             div {
@@ -222,17 +222,27 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentV
                     "gap-10",
                 )
 
-                version.navigation.groups.forEach { group ->
-                    barHeader(group.header, group.pages)
+                repeat(1) {
+                    version.navigation.groups.forEach { group ->
+                        barHeader(group.header, group.pages, currentPage)
+                    }
                 }
             }
+        }
+
+        div {
+            classes = setOf(
+                "col-span-1",
+                "w-full",
+                "h-20",
+            )
         }
     }
 }
 
-private fun FlowContent.barHeader(text: String, pages: List<Navigation.Page>) {
+private fun FlowContent.barHeader(text: String, pages: List<Navigation.Page>, currentPage: Page) {
     div {
-        classes = setOf("h-full")
+        // classes = setOf("h-full")
 
         h1 {
             classes = setOf("text-white", "text-xl", "font-bold")
@@ -241,12 +251,17 @@ private fun FlowContent.barHeader(text: String, pages: List<Navigation.Page>) {
         }
 
         pages.forEach { page ->
-            page(page.header, page.link)
+            page(page.header, page.id, page.id == currentPage.id)
         }
     }
 }
 
-private fun FlowContent.page(text: String, link: String) {
+private fun FlowContent.page(text: String, link: String, isCurrentPage: Boolean) {
+    val color = if (isCurrentPage) {
+        "text-primary"
+    } else {
+        "text-white/70"
+    }
     div {
 
         classes = setOf("pt-2")
@@ -254,7 +269,7 @@ private fun FlowContent.page(text: String, link: String) {
         a {
             href = link
 
-            classes = setOf("text-white/70", "text-lg", "hover:text-primary", "transition ease-in-out delay-100")
+            classes = setOf(color, "text-lg", "hover:text-primary", "transition ease-in-out delay-100")
 
             +text
         }

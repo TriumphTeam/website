@@ -10,6 +10,7 @@ import dev.triumphteam.website.docs.markdown.highlight.language.highlighter.Punc
 import dev.triumphteam.website.docs.markdown.highlight.language.highlighter.RegexHighlighter
 
 public object XmlLanguage : LanguageDefinition(
+    name = "xml",
     components = listOf(
         STRING_COMPONENT,
         CHAR_COMPONENT,

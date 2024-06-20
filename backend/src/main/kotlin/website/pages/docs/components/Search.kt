@@ -11,7 +11,7 @@ import kotlinx.html.input
 
 public fun FlowContent.search() {
     div {
-        classes = setOf("flex", "items-center", "max-w-md", "mx-auto", "bg-search-bg", "rounded-lg")
+        classes = setOf("flex", "items-center", "max-w-md", "mx-auto", "bg-search-bg", "rounded-lg", "h-12")
 
         div {
             classes = setOf("w-full")

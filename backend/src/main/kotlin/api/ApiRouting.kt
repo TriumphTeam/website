@@ -21,9 +21,9 @@ public fun Routing.apiRoutes() {
             runCatching {
                 call.receive<Repository>()
             }.fold(
-                onSuccess = { (editPath, projects) ->
+                onSuccess = { (projects) ->
                     // Handle parsing
-                    setupRepository(editPath, projects)
+                    setupRepository(projects)
                     call.respond(HttpStatusCode.Accepted)
                 },
                 onFailure = {

@@ -29,12 +29,13 @@ private val KOTLIN_KEYWORDS = """
 """.trimIndent().split(",").map(String::trim).map { "\\b$it\\b".toRegex() }
 
 public object KotlinLanguage : LanguageDefinition(
+    name = "kotlin",
     components = listOf(
         SLASH_COMMENT_COMPONENT,
         MULTILINE_COMMENT_COMPONENT,
         STRING_COMPONENT,
         CHAR_COMPONENT,
-        PunctuationHighlighter("{}()[].-=+-*$?<>:;&|".toList()),
+        PunctuationHighlighter("{}()[].,-=+-*$?<>:;&|".toList()),
         RegexHighlighter(type = HighlightType.KEYWORD, expressions = KOTLIN_KEYWORDS),
         RegexHighlighter(
             type = HighlightType.FUNCTION,
@@ -64,5 +65,6 @@ public object KotlinLanguage : LanguageDefinition(
     stepValidator = listOf(
         StepValidator.AnnotationAndFunction,
         StepValidator.TypeAndFunction,
+        StepValidator.KeywordAndFunction,
     ),
 )
