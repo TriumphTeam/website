@@ -1,5 +1,6 @@
 package dev.triumphteam.website.docs.markdown
 
+import dev.triumphteam.website.docs.markdown.highlight.language.LanguageDefinition
 import org.commonmark.ext.task.list.items.TaskListItemMarker
 import org.commonmark.node.AbstractVisitor
 import org.commonmark.node.BlockQuote
@@ -137,19 +138,7 @@ public class MarkdownRenderer(private val context: HtmlNodeRendererContext) : Ab
     }
 
     override fun visit(fencedCodeBlock: FencedCodeBlock) {
-        val literal = fencedCodeBlock.literal
-        val attributes: MutableMap<String, String> = LinkedHashMap()
-        val info = fencedCodeBlock.info
-        if (info != null && info.isNotEmpty()) {
-            val space = info.indexOf(" ")
-            val language = if (space == -1) {
-                info
-            } else {
-                info.substring(0, space)
-            }
-            attributes["class"] = "language-$language"
-        }
-        renderCodeBlock(literal, fencedCodeBlock, attributes)
+        renderCodeBlock(fencedCodeBlock.literal, fencedCodeBlock, (fencedCodeBlock.info ?: "").trim())
     }
 
     override fun visit(htmlBlock: HtmlBlock) {
@@ -171,7 +160,7 @@ public class MarkdownRenderer(private val context: HtmlNodeRendererContext) : Ab
     }
 
     override fun visit(indentedCodeBlock: IndentedCodeBlock) {
-        renderCodeBlock(indentedCodeBlock.literal, indentedCodeBlock, emptyMap())
+        renderCodeBlock(indentedCodeBlock.literal, indentedCodeBlock)
     }
 
     override fun visit(link: Link) {
@@ -280,13 +269,25 @@ public class MarkdownRenderer(private val context: HtmlNodeRendererContext) : Ab
         }
     }
 
-    private fun renderCodeBlock(literal: String, node: Node, attributes: Map<String, String>) {
+    private fun renderCodeBlock(literal: String, node: Node, language: String? = null) {
         html.line()
         html.tag("div", mapOf("id" to "code"))
         html.tag("pre", getAttrs(node, "pre"))
         appendCopy()
+
+        // Grab language definition to highlight the code
+        val languageDefinition = LanguageDefinition.fromString(language)
+        val attributes = when (languageDefinition) {
+            is LanguageDefinition.Empty -> emptyMap()
+            else -> mapOf("class" to "lang-${languageDefinition.name}")
+        }
+
         html.tag("code", getAttrs(node, "code", attributes))
-        html.text(literal)
+
+        // Highlight before appending
+        // It's appended as raw; highlighter will escape html already
+        html.raw(languageDefinition.highlightCode(literal))
+
         html.tag("/code")
         html.tag("/pre")
         html.tag("/div")

@@ -1,52 +1,86 @@
-.wiki-content {
-    width: 70%;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0 10px;
-    font-size: 1.3em
+.docs-content {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    color: rgba(255, 255, 255, 0.7);
 }
 
-.wiki-content section {
+.docs-content a {
+    color: #9B55BA;
+    transition: 0.3s;
+}
+
+.docs-content a:hover {
+    color: #bf67e5;
+}
+
+.docs-content * {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.docs-content img {
+    display: inline;
+}
+
+.docs-content section {
     scroll-margin-top: 100px
 }
 
-.wiki-content img {
+.docs-content img {
     max-width: 100%
 }
 
-.wiki-content blockquote {
+.docs-content blockquote {
     border-left: .25em solid #282c34;
     padding: 0 1em;
     margin: 0
 }
 
-.wiki-content hr {
+.docs-content hr {
+    padding: 0;
     border: 0;
     height: 1px;
     background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0))
 }
 
-.wiki-content ul {
+.docs-content ul {
     margin: 0 0 24px;
-    padding: 0 0 0 2em
+    padding: 0 0 0 2em;
+    list-style: initial;
 }
 
-.wiki-content h2:hover #hash {
+.docs-content li {
+    padding: 0;
+}
+
+.docs-content h1 {
+    font-size: 2em;
+    font-weight: 700;
+    padding: 0;
+    color: white;
+}
+
+.docs-content h2 {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: white;
+}
+
+.docs-content h2:hover #hash {
     opacity: .3
 }
 
-.wiki-content h3:hover #hash {
+.docs-content h3:hover #hash {
     opacity: .3
 }
 
-.wiki-content h4:hover #hash {
+.docs-content h4:hover #hash {
     opacity: .3
 }
 
-.wiki-content #hash {
+.docs-content #hash {
     position: absolute;
-    padding-right: 12px;
-    padding-left: 6px;
+    padding: 0 12px 0 6px;
     font-weight: 500;
     opacity: 0;
     text-align: right;
@@ -57,15 +91,15 @@
     color: #fff
 }
 
-.wiki-content #code {
+.docs-content #code {
     position: relative
 }
 
-.wiki-content #code:hover .copy-icon {
+.docs-content #code:hover .copy-icon {
     opacity: .2
 }
 
-.wiki-content .copy-icon {
+.docs-content .copy-icon {
     width: 20px;
     position: absolute;
     right: 0;
@@ -77,75 +111,79 @@
     cursor: pointer
 }
 
-.wiki-content .hint {
+.docs-content .hint {
     width: 100%;
     margin: 32px 0;
     display: flex;
     border-left: 4px solid;
     border-radius: 3px;
     align-items: center;
-    background: #17171a
+    background: #17171a;
 }
 
-.wiki-content .hint .hint-icon {
+.docs-content .hint * {
+    padding: 0;
+}
+
+.docs-content .hint .hint-icon {
     display: flex;
     width: 1.25em;
     margin: 10px
 }
 
-.wiki-content .hint-info {
+.docs-content .hint-info {
     border-color: #29b6f6
 }
 
-.wiki-content .hint-info svg {
+.docs-content .hint-info svg {
     fill: #29b6f6
 }
 
-.wiki-content .hint-success {
+.docs-content .hint-success {
     border-color: #66bb6a
 }
 
-.wiki-content .hint-success svg {
+.docs-content .hint-success svg {
     fill: #66bb6a
 }
 
-.wiki-content .hint-warning {
+.docs-content .hint-warning {
     border-color: #ffa726
 }
 
-.wiki-content .hint-warning svg {
+.docs-content .hint-warning svg {
     fill: #ffa726
 }
 
-.wiki-content .hint-error {
+.docs-content .hint-error {
     border-color: #f44336
 }
 
-.wiki-content .hint-error svg {
+.docs-content .hint-error svg {
     fill: #f44336
 }
 
-.wiki-content .task-list {
+.docs-content .task-list {
     list-style: none;
     margin: 0;
     padding: 0
 }
 
-.wiki-content table {
+.docs-content table {
     display: table;
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0
 }
 
-.wiki-content table tr {
+.docs-content table tr {
     color: inherit;
     display: table-row;
     vertical-align: middle;
     outline: 0
 }
 
-.wiki-content table td {
+.docs-content table td {
     font-size: .8em;
     line-height: 1.5rem;
     letter-spacing: .01071em;
@@ -156,7 +194,7 @@
     padding: 16px
 }
 
-.wiki-content table th {
+.docs-content table th {
     font-weight: bold;
     font-size: .9em;
     line-height: 1.5rem;
@@ -169,29 +207,29 @@
     background: #17171a
 }
 
-.wiki-content .content-tabs {
+.docs-content .content-tabs {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
     margin: 25px 0
 }
 
-.wiki-content .content-tabs input[type=radio] {
+.docs-content .content-tabs input[type=radio] {
     display: none
 }
 
-.wiki-content .content-tabs input[type=radio]:checked + label {
+.docs-content .content-tabs input[type=radio]:checked + label {
     background: #17171a;
     border-top: solid 1px #28282d;
     border-left: solid 1px #28282d;
     border-right: solid 1px #28282d
 }
 
-.wiki-content .content-tabs input[type=radio]:checked + label + .content-tab {
+.docs-content .content-tabs input[type=radio]:checked + label + .content-tab {
     display: block
 }
 
-.wiki-content .content-tabs label {
+.docs-content .content-tabs label {
     padding: 15px;
     background: inherit;
     border-top-left-radius: 10px;
@@ -207,7 +245,7 @@
     user-select: none
 }
 
-.wiki-content .content-tabs .content-tab {
+.docs-content .content-tabs .content-tab {
     position: relative;
     z-index: 0;
     flex: 1 1 100%;

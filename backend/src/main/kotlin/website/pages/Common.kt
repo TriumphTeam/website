@@ -1,8 +1,5 @@
 package dev.triumphteam.backend.website.pages
 
-import kotlinx.css.link
-import kotlinx.css.meta
-import kotlinx.css.script
 import kotlinx.html.HEAD
 import kotlinx.html.HTML
 import kotlinx.html.HtmlTagMarker
