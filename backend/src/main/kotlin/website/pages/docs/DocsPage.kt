@@ -173,8 +173,7 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
             "w-72",
             "h-screen",
             // "bg-indigo-500",
-            "grid",
-            "grid-cols-1",
+            "flex flex-col",
             "gap-6",
             "px-4",
             "justify-items-center",
@@ -182,7 +181,7 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
 
         // Logo area
         div {
-            classes = setOf("col-span-1", "grid", "grid-cols-1", "gap-4", "w-full", "justify-items-center", "h-64")
+            classes = setOf("grid", "grid-cols-1", "gap-4", "w-full", "justify-items-center", "h-64")
 
             img(src = "/static/images/logo.png", classes = "col-span-1 w-36")
 
@@ -205,12 +204,12 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
 
         div {
             classes = setOf(
-                "col-span-1",
                 "w-full",
                 "h-full",
                 "px-4",
                 "overflow-y-auto",
                 "overflow-x-hidden",
+                "sidebar-content",
                 // "weird-max-height",
             )
 
@@ -222,19 +221,21 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
                     "gap-10",
                 )
 
-                repeat(1) {
-                    version.navigation.groups.forEach { group ->
-                        barHeader(group.header, group.pages, currentPage)
-                    }
+                version.navigation.groups.forEach { group ->
+                    barHeader(group.header, group.pages, currentPage)
+                }
+
+                // Keeps it from overflowing on the bottom
+                div {
+                    classes = setOf("h-12")
                 }
             }
         }
 
         div {
             classes = setOf(
-                "col-span-1",
                 "w-full",
-                "h-20",
+                "h-8",
             )
         }
     }

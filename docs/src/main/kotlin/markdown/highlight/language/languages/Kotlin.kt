@@ -28,6 +28,12 @@ private val KOTLIN_KEYWORDS = """
     when,while,yield
 """.trimIndent().split(",").map(String::trim).map { "\\b$it\\b".toRegex() }
 
+// Common infix functions to highlight
+// Do not match if followed by =+-/* to prevent matching variables?
+private val KOTLIN_INFIX = """
+    version,to,and,or,xor,shl,shr,ushr,until,downTo,step
+""".trimIndent().split(",").map(String::trim).map { "\\b$it\\b(?!\\s*[=+-/*]\\s*)".toRegex() }
+
 public object KotlinLanguage : LanguageDefinition(
     name = "kotlin",
     components = listOf(
@@ -37,6 +43,7 @@ public object KotlinLanguage : LanguageDefinition(
         CHAR_COMPONENT,
         PunctuationHighlighter("{}()[].,-=+-*$?<>:;&|".toList()),
         RegexHighlighter(type = HighlightType.KEYWORD, expressions = KOTLIN_KEYWORDS),
+        RegexHighlighter(type = HighlightType.FUNCTION, expressions = KOTLIN_INFIX),
         RegexHighlighter(
             type = HighlightType.FUNCTION,
             expressions = listOf(
@@ -44,7 +51,6 @@ public object KotlinLanguage : LanguageDefinition(
                 LAMBDA_FUNCTION_REGEX, // Lambda calls
                 GENERIC_FUNCTION_REGEX, // Generics calls
                 GENERIC_LAMBDA_FUNCTION_REGEX, // Generics lambda calls
-                // TODO: "(?<=\\w\\s)(\\w+)(?=\\s\\w)".toRegex(), // infix calls
             ),
         ),
         TYPE_COMPONENT,
