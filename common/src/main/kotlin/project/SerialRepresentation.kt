@@ -43,7 +43,23 @@ public data class Page(
 )
 
 @Serializable
-public data class ContentEntry(val literal: String, val href: String, val indent: UInt)
+public data class SummaryEntry(
+    public val literal: String,
+    public val href: String,
+    public val children: List<SummaryEntry>,
+) {
+
+    public fun print(indent: Int) {
+        println(" ".repeat(indent) + "- $href")
+        children.forEach { it.print(indent + 2) }
+    }
+}
 
 @Serializable
-public data class PageSummary(val path: String, val entries: List<ContentEntry>)
+public data class PageSummary(public val path: String, public val entries: List<SummaryEntry>) {
+
+    public fun print() {
+        println("Path -> $path")
+        entries.forEach { it.print(2) }
+    }
+}

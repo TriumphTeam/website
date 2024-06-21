@@ -4,7 +4,6 @@ import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.classes
 import kotlinx.html.div
-import kotlinx.html.i
 import kotlinx.html.id
 
 public fun FlowContent.dropDown(versions: Set<String>, current: String) {
@@ -18,7 +17,7 @@ public fun FlowContent.dropDown(versions: Set<String>, current: String) {
                 "flex-shrink-0",
                 "items-center",
                 "rounded-s-lg",
-                "bg-search-bg", // TODO better background color
+                "bg-search-bg",
                 "px-4",
                 "py-2.5",
                 "text-center",
@@ -29,11 +28,18 @@ public fun FlowContent.dropDown(versions: Set<String>, current: String) {
         }
 
         // Drop-down menu
-        div {
-            id = "version-select-button"
+        div dropdown@{
 
             div {
 
+                id = "version-select-button"
+
+                val conditional = listOf(
+                    "hover:scale-105",
+                    "transition ease-in-out delay-100",
+                    "cursor-pointer",
+                )
+                
                 classes = setOf(
                     "inline-flex",
                     "flex-shrink-0",
@@ -41,29 +47,34 @@ public fun FlowContent.dropDown(versions: Set<String>, current: String) {
                     "gap-y-2",
                     "w-24",
                     "rounded-e-lg",
-                    "bg-gradient-to-r from-violet-500 to-fuchsia-500", // TODO better background color
-                    "hover:scale-105",
-                    "transition ease-in-out delay-100",
+                    "bg-primary",
                     "p-2.5",
                     "text-lg",
                     "focus:outline-none",
                     "border-0",
                     "align-middle",
-                    "justify-end",
-                    "cursor-pointer",
+                    "justify-center",
                     "font-bold",
-                )
+                    "text-center",
+                ).plus(if (versions.size <= 1) emptyList() else conditional)
 
                 +current
-
-                i {
-                    classes = setOf("fa-solid", "fa-chevron-down", "pl-4", "text-xs", "align-middle")
-                }
             }
+
+            if (versions.size <= 1) return@dropdown
 
             div {
                 id = "version-select"
-                classes = setOf("hidden", "bg-search-bg", "absolute", "w-38", "py-1", "mt-1", "rounded-lg")
+
+                classes = setOf(
+                    "invisible opacity-0 ease-in duration-150",
+                    "bg-search-bg",
+                    "absolute",
+                    "w-38",
+                    "py-1",
+                    "mt-1",
+                    "rounded-lg",
+                )
 
                 // TODO
                 repeat(4) {

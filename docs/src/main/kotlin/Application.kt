@@ -4,7 +4,7 @@ import dev.triumphteam.website.HoconSerializer
 import dev.triumphteam.website.JsonSerializer
 import dev.triumphteam.website.api.Api
 import dev.triumphteam.website.docs.markdown.MarkdownRenderer
-import dev.triumphteam.website.docs.markdown.content.ContentRenderer
+import dev.triumphteam.website.docs.markdown.summary.SummaryRenderer
 import dev.triumphteam.website.docs.markdown.hint.HintExtension
 import dev.triumphteam.website.docs.markdown.tab.TabExtension
 import dev.triumphteam.website.docs.serialization.GroupConfig
@@ -56,7 +56,7 @@ private val DEFAULT_EXTENSIONS = listOf(
 private val htmlRenderer =
     HtmlRenderer.builder().nodeRendererFactory(::MarkdownRenderer).extensions(DEFAULT_EXTENSIONS).build()
 
-private val contentRenderer = ContentRenderer()
+private val summaryRenderer = SummaryRenderer()
 
 private val mdParser = Parser.builder().extensions(DEFAULT_EXTENSIONS).build()
 
@@ -175,14 +175,13 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
                 }
 
                 val parsedFile = mdParser.parse(pageFile.readText())
-
                 pageCollector.collect(
                     Page(
                         id = pageFile.nameWithoutExtension.lowercase(),
                         content = htmlRenderer.render(parsedFile),
                         summary = PageSummary(
                             path = "${repoSettings.editPath.removeSuffix("/")}/${pageFile.relativeTo(parentDir).path}",
-                            entries = contentRenderer.render(parsedFile),
+                            entries = summaryRenderer.render(parsedFile),
                         )
                     )
                 )

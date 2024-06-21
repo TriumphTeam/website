@@ -19,4 +19,12 @@ kotlin {
         }
         binaries.executable()
     }
+
+    sourceSets {
+        jsMain {
+            dependencies {
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-browser:1.0.0-pre.760")
+            }
+        }
+    }
 }

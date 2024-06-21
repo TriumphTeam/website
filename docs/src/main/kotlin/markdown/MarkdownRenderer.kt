@@ -91,11 +91,7 @@ public class MarkdownRenderer(private val context: HtmlNodeRendererContext) : Ab
             }
         }
 
-        val parentId = sections[level - 1]
-        val currentId = buildString {
-            if (parentId != null) append(parentId).append("-")
-            append(HeaderIdRenderer().render(heading))
-        }
+        val currentId = HeaderIdRenderer().render(heading)
         html.tag("section", mapOf("id" to currentId))
         sections[level] = currentId
 

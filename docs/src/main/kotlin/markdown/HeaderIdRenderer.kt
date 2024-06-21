@@ -5,13 +5,16 @@ import org.commonmark.node.Heading
 import org.commonmark.node.Node
 import org.commonmark.node.Text
 
-public class HeaderIdRenderer : AbstractVisitor() {
+public abstract class TextBasedRenderer(
+    private val separator: String,
+    private val transform: ((String) -> CharSequence)? = null,
+) : AbstractVisitor() {
 
     private val texts = mutableListOf<String>()
 
     public fun render(node: Node): String {
         node.accept(this)
-        return texts.joinToString("-") { it.replace(" ", "-") }.lowercase()
+        return texts.joinToString(separator, transform = transform)
     }
 
     override fun visit(heading: Heading) {
@@ -21,5 +24,11 @@ public class HeaderIdRenderer : AbstractVisitor() {
     override fun visit(text: Text) {
         texts.add(text.literal)
     }
-
 }
+
+public class TextRenderer : TextBasedRenderer(separator = " ")
+
+public class HeaderIdRenderer : TextBasedRenderer(
+    separator = "-",
+    transform = { it.replace(" ", "-").lowercase() }
+)
