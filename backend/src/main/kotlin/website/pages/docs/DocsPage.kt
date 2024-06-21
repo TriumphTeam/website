@@ -9,9 +9,11 @@ import dev.triumphteam.backend.api.database.Pages
 import dev.triumphteam.backend.api.database.ProjectEntity
 import dev.triumphteam.backend.website.pages.docs.components.dropDown
 import dev.triumphteam.backend.website.pages.docs.components.search
+import dev.triumphteam.backend.website.pages.docs.components.toast
 import dev.triumphteam.backend.website.pages.setupHead
 import dev.triumphteam.website.project.Navigation
 import dev.triumphteam.website.project.PageSummary
+import dev.triumphteam.website.project.SummaryEntry
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.html.respondHtml
@@ -20,16 +22,20 @@ import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
 import kotlinx.html.FlowContent
 import kotlinx.html.HTML
+import kotlinx.html.UL
 import kotlinx.html.a
 import kotlinx.html.body
 import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.footer
 import kotlinx.html.h1
+import kotlinx.html.id
 import kotlinx.html.img
+import kotlinx.html.li
 import kotlinx.html.link
 import kotlinx.html.script
 import kotlinx.html.title
+import kotlinx.html.ul
 import kotlinx.html.unsafe
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -95,6 +101,7 @@ private fun HTML.renderFullPage(project: ProjectData, version: Version, currentV
 
         sideBar(project, version, currentVersion)
         content(currentVersion)
+        toast()
 
         script {
             src = "/static/scripts/script.js"
@@ -114,6 +121,7 @@ private fun FlowContent.content(page: Page) {
 
             div {
 
+                id = "content"
                 classes = setOf("docs-content")
 
                 unsafe {
@@ -149,17 +157,29 @@ private fun FlowContent.content(page: Page) {
             +"On this page"
         }
 
-        page.summary.entries.forEach { entry ->
-            div {
+        ul {
+            id = "summary"
+            classes = setOf("text-white/75 text-lg", "summary")
+            page.summary.entries.forEach{ entries(it, true) }
+        }
+    }
+}
 
-                classes = setOf("py-1", "indent-${entry.indent * 4u}")
+private fun UL.entries(entry: SummaryEntry, initial: Boolean = false) {
+    li {
 
-                a {
-                    href = "#${entry.href}"
+        if (initial) {
+            id = "summary-${entry.href}"
+        }
 
-                    classes = setOf("text-white/75 text-lg")
-                    +entry.literal
-                }
+        a {
+            href = "#${entry.href}"
+            +entry.literal
+        }
+
+        if (entry.children.isNotEmpty()) {
+            ul {
+                entry.children.forEach(::entries)
             }
         }
     }
@@ -243,7 +263,6 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
 
 private fun FlowContent.barHeader(text: String, pages: List<Navigation.Page>, currentPage: Page) {
     div {
-        // classes = setOf("h-full")
 
         h1 {
             classes = setOf("text-white", "text-xl", "font-bold")
