@@ -1,8 +1,11 @@
 package dev.triumphteam.backend.website.pages
 
+import kotlinx.html.FlowContent
 import kotlinx.html.HEAD
 import kotlinx.html.HTML
 import kotlinx.html.HtmlTagMarker
+import kotlinx.html.classes
+import kotlinx.html.div
 import kotlinx.html.head
 import kotlinx.html.link
 import kotlinx.html.meta
@@ -52,11 +55,25 @@ public fun HTML.setupHead(extra: HEAD.() -> Unit = {}) {
                         'card-bg-secondary': '#151515',
                         'docs-bg': '#141417',
                         'search-bg': '#202023',
+                      },
+                      backgroundImage: {
+                        'blur-effect': `url('/static/images/blur_effect.png')`,
                       }
                     }
                   }
                 }
             """.trimIndent()
         }
+    }
+}
+
+public fun FlowContent.backgroundBlob(properties: List<String>) {
+    div {
+        classes = setOf(
+            "absolute -z-10",
+            "bg-blur-effect",
+            "bg-cover",
+            "pointer-events-none",
+        ).plus(properties)
     }
 }

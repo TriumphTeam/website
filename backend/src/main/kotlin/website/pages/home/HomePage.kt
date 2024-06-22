@@ -1,6 +1,9 @@
 package dev.triumphteam.backend.website.pages.home
 
+import dev.triumphteam.backend.api.database.DocVersionEntity
+import dev.triumphteam.backend.api.database.DocVersions
 import dev.triumphteam.backend.api.database.ProjectEntity
+import dev.triumphteam.backend.website.pages.backgroundBlob
 import dev.triumphteam.backend.website.pages.home.resource.Home
 import dev.triumphteam.backend.website.pages.setupHead
 import io.ktor.server.application.call
@@ -14,11 +17,11 @@ import kotlinx.html.body
 import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.h1
-import kotlinx.html.h2
 import kotlinx.html.i
 import kotlinx.html.img
 import kotlinx.html.link
 import kotlinx.html.title
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 
 public fun Routing.homeRoutes() {
@@ -27,14 +30,16 @@ public fun Routing.homeRoutes() {
         call.respondHtml {
             val projects = transaction {
                 ProjectEntity.all().map { project ->
-                    // val versions = DocVersionEntity.find { DocVersions.project eq project.id }
+                    val version = DocVersionEntity.find {
+                        (DocVersions.project eq project.id) and (DocVersions.recommended eq true)
+                    }.first()
 
                     ProjectDisplay(
                         id = project.id.value,
                         name = project.name,
                         icon = project.icon,
-                        description = "eat a dick",
-                        version = "1.0.0"
+                        color = project.color,
+                        version = version.id.value,
                     )
                 }
             }
@@ -58,20 +63,43 @@ private fun HTML.fullPage(projects: List<ProjectDisplay>) {
 
     body {
 
-        classes = setOf("bg-black", "text-white", "w-screen", "h-full", "sans")
+        classes = setOf("bg-black", "text-white", "w-screen", "h-full", "sans", "overflow-x-hidden")
 
         // Add a "haze" effect to the screen
         div {
             classes = setOf("fixed", "w-screen", "h-screen", "bg-white/5", "pointer-events-none")
         }
 
-        div {
-            classes = setOf("blob")
-        }
-
         // Main grid
         div {
             classes = setOf("grid", "grid-cols-6", "gap-4", "justify-items-center")
+
+            backgroundBlob(
+                properties = listOf(
+                    "-translate-y-[400px]",
+                    "-translate-x-[300px]",
+                    "w-[50rem]",
+                    "h-[50rem]",
+                ),
+            )
+
+            backgroundBlob(
+                properties = listOf(
+                    "translate-y-[100px]",
+                    "translate-x-[400px]",
+                    "w-[60rem]",
+                    "h-[60rem]",
+                ),
+            )
+
+            backgroundBlob(
+                properties = listOf(
+                    "-translate-y-[200px]",
+                    "-translate-x-[700px]",
+                    "w-[90rem]",
+                    "h-[90rem]",
+                ),
+            )
 
             logoArea()
             centerArea()
@@ -167,87 +195,58 @@ private fun FlowContent.projectsArea(projects: List<ProjectDisplay>) {
             "justify-items-center",
             "projects-shape",
             "py-20",
-            "px-16"
+            "px-16",
+            "z-10",
         )
 
         projects.chunked(2).forEach { projects ->
-            projects.forEachIndexed { index, project ->
-                projectCard(project, CardSide.fromIndex(index))
-            }
+            projects.forEach(::projectCard)
         }
     }
 }
 
-private fun FlowContent.projectCard(project: ProjectDisplay, side: CardSide) {
+private fun FlowContent.projectCard(project: ProjectDisplay) {
     a {
         href = "/docs/${project.id}"
 
-        classes = setOf(
-            "col-span-1",
-            "grid",
-            "grid-cols-3",
-            "gap-0",
-            "justify-items-center",
-            "content-center",
-            "w-full",
-            "bg-card-bg-secondary",
-            "py-6",
-            "rounded-3xl",
-            "border-primary/50",
-            "border",
-            "transition ease-in-out delay-100",
-            "hover:scale-110",
-            "z-10",
-            side.clazz,
-        )
-
-        // Image
-        div {
-
-            classes = setOf("col-span-1", "grid", "content-center")
-
-            img(src = project.icon, classes = "w-20")
-        }
-
-        // Descriptions
         div {
             classes = setOf(
-                "col-span-2",
-                "w-full",
-                "grid",
-                "grid-cols-1",
-                "gap-1",
-                "justify-items-center",
-                "content-center",
-                "text-center",
-                "pr-4"
+                "col-span-1",
+                "flex flex-col justify-items-center gap-2",
+                "w-64",
+                "bg-card-bg-secondary",
+                "py-6",
+                "rounded-3xl",
+                "border-[${project.color}]/50",
+                "border",
+                "transition ease-in-out delay-100",
+                "hover:scale-110",
             )
 
-            h1 {
-                classes = setOf("col-span-1", "sans-bold", "text-2xl", "w-full")
-                +project.name
+            // Image
+            div {
+                classes = setOf("flex justify-center", "py-4")
+
+                img(src = project.icon, classes = "w-28")
             }
 
             div {
-                classes = setOf("col-span-1", "bg-primary", "py-1", "px-3", "rounded-md")
-                +project.version
+                classes = setOf("flex justify-center")
+                h1 {
+                    classes = setOf("sans-bold", "text-2xl")
+                    +project.name
+                }
             }
 
-            h2 {
-                classes = setOf("col-span-1", "sans-bold", "text-sm", "w-full")
+            div {
+                classes = setOf("flex justify-center")
 
-                +project.description
+                div {
+                    classes =
+                        setOf("bg-[${project.color}]", "py-1", "px-4", "rounded-md", "w-auto", "text-base", "text-lg")
+                    +project.version
+                }
             }
-        }
-    }
-}
-
-private enum class CardSide(val clazz: String) {
-    LEFT("justify-self-end"), RIGHT("justify-self-start");
-
-    companion object {
-        fun fromIndex(index: Int): CardSide {
-            return if (index % 2 == 0) LEFT else RIGHT
         }
     }
 }
@@ -260,6 +259,6 @@ private data class ProjectDisplay(
     val id: String,
     val name: String,
     val icon: String,
-    val description: String,
+    val color: String,
     val version: String,
 )

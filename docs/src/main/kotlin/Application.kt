@@ -4,8 +4,8 @@ import dev.triumphteam.website.HoconSerializer
 import dev.triumphteam.website.JsonSerializer
 import dev.triumphteam.website.api.Api
 import dev.triumphteam.website.docs.markdown.MarkdownRenderer
-import dev.triumphteam.website.docs.markdown.summary.SummaryRenderer
 import dev.triumphteam.website.docs.markdown.hint.HintExtension
+import dev.triumphteam.website.docs.markdown.summary.SummaryRenderer
 import dev.triumphteam.website.docs.markdown.tab.TabExtension
 import dev.triumphteam.website.docs.serialization.GroupConfig
 import dev.triumphteam.website.docs.serialization.PageConfig
@@ -104,6 +104,7 @@ public suspend fun main(args: Array<String>) {
             id = parsedProjectConfig.id,
             name = parsedProjectConfig.name,
             icon = parsedProjectConfig.icon,
+            color = parsedProjectConfig.color,
             projectHome = parsedProjectConfig.projectHome,
             versions = parseVersions(files.filter(File::isDirectory), inputPath, repoSettings),
         ).also {
