@@ -17,7 +17,9 @@ import dev.triumphteam.website.project.SummaryEntry
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.html.respondHtml
+import io.ktor.server.request.uri
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
 import kotlinx.html.FlowContent
@@ -65,7 +67,12 @@ public fun Routing.docsRoutes() {
         val pages = currentVersion.pages
         val page = when {
             paramPage != null -> pages[paramPage] ?: return@get call.respond(HttpStatusCode.NotFound)
-            else -> pages.values.firstOrNull() ?: return@get call.respond(HttpStatusCode.NotFound)
+            else -> {
+                // If the page doesn't exist, redirect to 404
+                val page = pages.values.firstOrNull() ?: return@get call.respond(HttpStatusCode.NotFound)
+                // If exist redirect to default
+                return@get call.respondRedirect("${call.request.uri}/${page.id}")
+            }
         }
 
         call.respondHtml {
@@ -160,7 +167,7 @@ private fun FlowContent.content(page: Page) {
         ul {
             id = "summary"
             classes = setOf("text-white/75 text-lg", "summary")
-            page.summary.entries.forEach{ entries(it, true) }
+            page.summary.entries.forEach { entries(it, true) }
         }
     }
 }
@@ -192,7 +199,6 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
             "fixed",
             "w-72",
             "h-screen",
-            // "bg-indigo-500",
             "flex flex-col",
             "gap-6",
             "px-4",
@@ -203,7 +209,10 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
         div {
             classes = setOf("grid", "grid-cols-1", "gap-4", "w-full", "justify-items-center", "h-64")
 
-            img(src = "/static/images/logo.png", classes = "col-span-1 w-36")
+            a {
+                href = "/"
+                img(src = "/static/images/logo.png", classes = "col-span-1 w-36")
+            }
 
             div {
                 classes = setOf("col-span-1", "text-center", "font-bold", "text-xl")
@@ -230,7 +239,6 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
                 "overflow-y-auto",
                 "overflow-x-hidden",
                 "sidebar-content",
-                // "weird-max-height",
             )
 
             div {

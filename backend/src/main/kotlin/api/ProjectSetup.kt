@@ -17,6 +17,7 @@ public fun setupRepository(projects: List<Project>) {
             val projectEntity = ProjectEntity.new(project.id) {
                 this.name = project.name
                 this.icon = project.icon
+                this.color = project.color
                 this.github = project.projectHome
             }
 
