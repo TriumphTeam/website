@@ -47,7 +47,7 @@ public fun FlowContent.dropDown(versions: Set<String>, current: String) {
                     "gap-y-2",
                     "w-24",
                     "rounded-e-lg",
-                    "bg-primary",
+                    "project-color-bg",
                     "p-2.5",
                     "text-lg",
                     "focus:outline-none",

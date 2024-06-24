@@ -22,6 +22,12 @@ import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
+import kotlinx.css.Color
+import kotlinx.css.CssBuilder
+import kotlinx.css.backgroundColor
+import kotlinx.css.color
+import kotlinx.css.properties.s
+import kotlinx.css.transitionDuration
 import kotlinx.html.FlowContent
 import kotlinx.html.HTML
 import kotlinx.html.UL
@@ -34,8 +40,9 @@ import kotlinx.html.h1
 import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.li
-import kotlinx.html.link
 import kotlinx.html.script
+import kotlinx.html.style
+import kotlinx.html.styleLink
 import kotlinx.html.title
 import kotlinx.html.ul
 import kotlinx.html.unsafe
@@ -49,7 +56,7 @@ private val projectCache: Cache<String, ProjectData> = Caffeine.newBuilder()
     .expireAfterWrite(5.minutes.toJavaDuration())
     .build()
 
-public fun Routing.docsRoutes() {
+public fun Routing.docsRoutes(developmentMode: Boolean) {
 
     get("/docs/{param...}") {
 
@@ -76,30 +83,53 @@ public fun Routing.docsRoutes() {
         }
 
         call.respondHtml {
-            renderFullPage(project, currentVersion, page)
+            renderFullPage(developmentMode, project, currentVersion, page)
         }
     }
 }
 
-private fun HTML.renderFullPage(project: ProjectData, version: Version, currentVersion: Page) {
-    setupHead {
+private fun HTML.renderFullPage(
+    developmentMode: Boolean,
+    project: ProjectData,
+    version: Version,
+    currentVersion: Page,
+) {
+    setupHead(developmentMode) {
 
-        link {
-            href = "/static/css/docs_style.css"
-            rel = "stylesheet"
-        }
-
-        link {
-            href = "/static/css/docs_content.css"
-            rel = "stylesheet"
-        }
-
-        link {
-            href = "/static/css/themes/one_dark.css"
-            rel = "stylesheet"
-        }
+        styleLink("/static/css/docs_style.css")
+        styleLink("/static/css/docs_content.css")
+        styleLink("/static/css/themes/one_dark.css")
 
         title { +"TrimphTeam | ${project.name}" }
+
+        style {
+            +CssBuilder().apply {
+                rule(".project-color-bg") {
+                    backgroundColor = Color(project.color)
+                }
+
+                rule(".project-color") {
+                    color = Color(project.color)
+                }
+
+                rule(".project-color-hover:hover") {
+                    color = Color(project.color)
+                }
+
+                rule(".docs-content a") {
+                    color = Color(project.color)
+                    transitionDuration = 0.3.s
+                }
+                rule(".docs-content a:hover") {
+                    color = Color("${project.color}C8")
+                }
+
+                rule(".summary-active *") {
+                    color = Color(project.color)
+                }
+
+            }.toString()
+        }
     }
 
     body {
@@ -125,6 +155,13 @@ private fun FlowContent.content(page: Page) {
         // Actual content
         div {
             classes = setOf("h-full", "w-full")
+
+            div {
+                classes = setOf(
+                    "absolute -z-10 w-[1700px] h-96 left-0 right-0 top-0 mx-auto",
+                    "bg-dots bg-cover opacity-85 pointer-events-none",
+                )
+            }
 
             div {
 
@@ -154,7 +191,8 @@ private fun FlowContent.content(page: Page) {
             classes = setOf("py-4", "px-2")
             a {
                 href = page.summary.path
-                classes = setOf("w-full", "text-white/75", "text-sm")
+                classes =
+                    setOf("w-full", "text-white/75", "text-sm", "transition ease-in-out delay-100 project-color-hover")
                 +"Edit this page on GitHub"
             }
         }
@@ -209,9 +247,13 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
         div {
             classes = setOf("grid", "grid-cols-1", "gap-4", "w-full", "justify-items-center", "h-64")
 
-            a {
-                href = "/"
-                img(src = "/static/images/logo.png", classes = "col-span-1 w-36")
+            div {
+                classes = setOf("flex items-center h-36 pt-4")
+
+                a {
+                    href = "/"
+                    img(src = project.icon, classes = "col-span-1 w-28")
+                }
             }
 
             div {
@@ -285,19 +327,19 @@ private fun FlowContent.barHeader(text: String, pages: List<Navigation.Page>, cu
 }
 
 private fun FlowContent.page(text: String, link: String, isCurrentPage: Boolean) {
-    val color = if (isCurrentPage) {
-        "text-primary"
-    } else {
-        "text-white/70"
-    }
     div {
 
-        classes = setOf("pt-2")
+        classes = setOf("pt-2", "text-white/70")
 
         a {
+
             href = link
 
-            classes = setOf(color, "text-lg", "hover:text-primary", "transition ease-in-out delay-100")
+            classes = setOf(
+                "text-lg",
+                "transition ease-in-out delay-100",
+                "project-color-hover",
+            ).plus(if (isCurrentPage) "project-color" else "")
 
             +text
         }
@@ -330,6 +372,8 @@ private fun getProject(project: String): ProjectData? {
         ProjectData(
             id = projectEntity.id.value,
             name = projectEntity.name,
+            icon = projectEntity.icon,
+            color = projectEntity.color,
             versions = versions,
         ).also {
             projectCache.put(it.id, it)
@@ -340,6 +384,8 @@ private fun getProject(project: String): ProjectData? {
 public data class ProjectData(
     public val id: String,
     public val name: String,
+    public val icon: String,
+    public val color: String,
     public val versions: Map<String, Version>,
 )
 

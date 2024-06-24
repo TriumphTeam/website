@@ -42,10 +42,6 @@ body {
     padding-bottom: 3px;
 }
 
-.summary-active * {
-    color: #9B55BA;
-}
-
 .summary ul > li {
     font-size: 80%;
     margin-left: 20px;

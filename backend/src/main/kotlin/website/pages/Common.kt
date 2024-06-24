@@ -12,7 +12,7 @@ import kotlinx.html.meta
 import kotlinx.html.script
 
 @HtmlTagMarker
-public fun HTML.setupHead(extra: HEAD.() -> Unit = {}) {
+public fun HTML.setupHead(developmentMode: Boolean, extra: HEAD.() -> Unit = {}) {
     head {
         extra()
 
@@ -38,31 +38,20 @@ public fun HTML.setupHead(extra: HEAD.() -> Unit = {}) {
             src = "https://kit.fontawesome.com/14e77edfda.js"
         }
 
-        // Setup Tailwind
-        script {
-            src = "https://cdn.tailwindcss.com"
-        }
+        if (developmentMode) {
+            // Setup Tailwind
+            script {
+                src = "https://cdn.tailwindcss.com"
+            }
 
-        script {
-            +"""
-                tailwind.config = {
-                  theme: {
-                    extend: {
-                      colors: {
-                        primary: '#9B55BA',
-                        'primary-light': '#BA6EDC',
-                        'card-bg': '#181818',
-                        'card-bg-secondary': '#151515',
-                        'docs-bg': '#141417',
-                        'search-bg': '#202023',
-                      },
-                      backgroundImage: {
-                        'blur-effect': `url('/static/images/blur_effect.png')`,
-                      }
-                    }
-                  }
-                }
-            """.trimIndent()
+            script {
+                src = "/static/tailwind.config.js"
+            }
+        } else {
+            link {
+                href = "/static/css/tailwind.css"
+                rel = "stylesheet"
+            }
         }
     }
 }
