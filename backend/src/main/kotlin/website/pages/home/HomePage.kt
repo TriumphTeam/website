@@ -20,11 +20,12 @@ import kotlinx.html.h1
 import kotlinx.html.i
 import kotlinx.html.img
 import kotlinx.html.link
+import kotlinx.html.style
 import kotlinx.html.title
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 
-public fun Routing.homeRoutes() {
+public fun Routing.homeRoutes(developmentMode: Boolean) {
 
     get<Home> {
         call.respondHtml {
@@ -44,14 +45,14 @@ public fun Routing.homeRoutes() {
                 }
             }
 
-            fullPage(projects)
+            fullPage(developmentMode, projects)
         }
     }
 }
 
-private fun HTML.fullPage(projects: List<ProjectDisplay>) {
+private fun HTML.fullPage(developmentMode: Boolean, projects: List<ProjectDisplay>) {
 
-    setupHead {
+    setupHead(developmentMode) {
 
         link {
             href = "/static/css/home_style.css"
@@ -137,8 +138,8 @@ private fun FlowContent.centerArea() {
         }
 
         div {
-            classes = setOf("col-span-1", "py-2", "text-2xl", "w-3/6")
-            +"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ipsum massa, venenatis ac pretium at."
+            classes = setOf("col-span-1", "py-2", "text-xl", "w-5/6")
+            +"Home to our documentations."
         }
 
         div {
@@ -210,6 +211,7 @@ private fun FlowContent.projectCard(project: ProjectDisplay) {
         href = "/docs/${project.id}"
 
         div {
+            style = "border-color: ${project.color}7F"
             classes = setOf(
                 "col-span-1",
                 "flex flex-col justify-items-center gap-2",
@@ -217,7 +219,6 @@ private fun FlowContent.projectCard(project: ProjectDisplay) {
                 "bg-card-bg-secondary",
                 "py-6",
                 "rounded-3xl",
-                "border-[${project.color}]/50",
                 "border",
                 "transition ease-in-out delay-100",
                 "hover:scale-110",
@@ -242,8 +243,9 @@ private fun FlowContent.projectCard(project: ProjectDisplay) {
                 classes = setOf("flex justify-center")
 
                 div {
+                    style  = "background-color: ${project.color};"
                     classes =
-                        setOf("bg-[${project.color}]", "py-1", "px-4", "rounded-md", "w-auto", "text-base", "text-lg")
+                        setOf("py-1", "px-4", "rounded-md", "w-auto", "text-base", "text-lg")
                     +project.version
                 }
             }

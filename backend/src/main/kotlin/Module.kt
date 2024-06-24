@@ -79,6 +79,6 @@ public fun Application.module() {
         }
 
         apiRoutes()
-        websiteRoutes()
+        websiteRoutes(developmentMode)
     }
 }

@@ -33,7 +33,7 @@ public fun FlowContent.search() {
                 classes = setOf(
                     "flex",
                     "items-center",
-                    "bg-primary",
+                    "project-color-bg",
                     "justify-center",
                     "w-12",
                     "h-12",

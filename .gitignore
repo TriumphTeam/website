@@ -129,3 +129,7 @@ backend/src/main/resources/static/scripts/script.js
 backend/src/main/resources/static/scripts/script.js.map
 
 kotlin-js-store/
+
+tailwind/
+
+backend/src/main/resources/static/css/tailwind.css

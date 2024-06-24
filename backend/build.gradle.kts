@@ -1,3 +1,5 @@
+import tasks.TailwindCompile
+
 plugins {
     id("backend.base")
     id("io.ktor.plugin") version "2.3.10"
@@ -22,6 +24,11 @@ dependencies {
 
 tasks {
 
+    register<TailwindCompile>("tailwindBuild") {
+        srcDir.set(project.sourceSets.main.get().kotlin.srcDirs.first())
+        resourcesDir.set(project.sourceSets.main.get().resources.srcDirs.first())
+        outputDir.set(rootDir.resolve("tailwind"))
+    }
     /*val prepareJs = register<PrepareJs>("prepareJs") {
 
         val jsTask = named<Copy>("jsBrowserDistribution").get()
