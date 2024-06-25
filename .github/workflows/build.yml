@@ -15,6 +15,9 @@ jobs:
       contents: read
       packages: write
 
+    outputs:
+      output1: ${{ steps.step1.outputs }}
+
     steps:
       # Checkout the repo files
       - name: Checkout repository
@@ -32,11 +35,22 @@ jobs:
       - name: Prepare tailwind
         run: ./gradlew backend:tailwindPrepare
 
+      # Node territory
+
       - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Run tailwind install
+      - name: Tailwind install
         run: npm install -D tailwindcss
+        working-directory: tailwind
 
+      - name: Create tailwind .css file
+        run: npx tailwindcss -o tailwind.css --minify
+        working-directory: tailwind
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-artifact
+          path: tailwind/
