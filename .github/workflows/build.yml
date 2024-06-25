@@ -75,6 +75,7 @@ jobs:
           images: lichthund/website
           tags: |
             type=semver,pattern={{version}},value=${{steps.version.outputs.VERSION_NAME}}-${{ steps.tags.outputs.sha }}
+            type=semver,pattern={{version}},value=lastest
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
