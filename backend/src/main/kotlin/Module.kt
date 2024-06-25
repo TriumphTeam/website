@@ -28,7 +28,7 @@ import io.ktor.server.routing.routing
 /** Module of the application. */
 public fun Application.module() {
 
-    val propertyValue = System.getProperty("WEBSITE_AUTH")
+    val propertyValue = System.getenv("WEBSITE_AUTH")
     val bearer = when {
         developmentMode -> "test"
         propertyValue == null -> error("Bearer token not set. Application cannot initiate.")

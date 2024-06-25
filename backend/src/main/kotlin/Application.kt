@@ -14,30 +14,17 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.Properties
 
 public fun main() {
-
-    val user = System.getenv("DB_USER")
-    val pass = System.getenv("DB_PASS")
-    val name = System.getenv("DB_NAME")
-    val port = System.getenv("DB_PORT")
-    val server = System.getenv("DB_SERVER")
-
-    println(user)
-    println(pass)
-    println(name)
-    println(port)
-    println(server)
-
     // Database connection
     Database.connect(
         HikariDataSource(
             HikariConfig(
                 Properties().apply {
                     setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource")
-                    setProperty("dataSource.user", user ?: "matt")
-                    setProperty("dataSource.password", pass ?: "test")
-                    setProperty("dataSource.databaseName", name ?: "website")
-                    setProperty("dataSource.portNumber", port ?: "5432")
-                    setProperty("dataSource.serverName", server ?: "localhost")
+                    setProperty("dataSource.user", System.getenv("DB_USER") ?: "matt")
+                    setProperty("dataSource.password", System.getenv("DB_PASS") ?: "test")
+                    setProperty("dataSource.databaseName", System.getenv("DB_NAME") ?: "website")
+                    setProperty("dataSource.portNumber", System.getenv("DB_PORT") ?: "5432")
+                    setProperty("dataSource.serverName", System.getenv("DB_SERVER") ?: "localhost")
                 }
             )
         )
