@@ -46,11 +46,17 @@ jobs:
         run: npm install -D tailwindcss
         working-directory: tailwind
 
+      # Generate the css file into the backend's resources folder. :))))
       - name: Create tailwind .css file
-        run: npx tailwindcss -o tailwind.css --minify
+        run: npx tailwindcss -o ../backend/src/main/resources/static/css/tailwind.css --minify
         working-directory: tailwind
+
+      # Back into Gradle territory
+
+      - name: Build backend
+        run: ./gradlew backend:assemble
 
       - uses: actions/upload-artifact@v4
         with:
           name: test-artifact
-          path: tailwind/
+          path: backend/build/libs/
