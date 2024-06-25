@@ -72,7 +72,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4.4.0
         with:
-          images: lichthund/${{ github.repository }}
+          images: lichthund/website
           tags: |
             type=semver,pattern={{version}},value=${{steps.version.outputs.VERSION_NAME}}-${{ steps.tags.outputs.sha }}
 
