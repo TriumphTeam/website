@@ -46,6 +46,9 @@ jobs:
 
       # Back into Gradle territory
 
+      - name: Kotlin JS
+        run: ./gradlew jsBrowserDistribution
+
       - name: Build backend
         run: ./gradlew backend:assemble
 

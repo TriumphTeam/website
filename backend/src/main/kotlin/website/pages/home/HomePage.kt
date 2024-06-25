@@ -145,18 +145,18 @@ private fun FlowContent.centerArea() {
         div {
             classes = setOf("col-span-1", "py-10", "grid", "grid-cols-2", "gap-10")
 
-            socialButton(BorderDirection.LEFT, "fa-github")
-            socialButton(BorderDirection.RIGHT, "fa-discord")
+            socialButton(BorderDirection.LEFT, "fa-github", "https://github.com/TriumphTeam")
+            socialButton(BorderDirection.RIGHT, "fa-discord", "/discord")
         }
     }
 }
 
-private fun FlowContent.socialButton(direction: BorderDirection, icon: String) {
+private fun FlowContent.socialButton(direction: BorderDirection, icon: String, link: String) {
     a {
 
         classes = setOf("z-10")
 
-        href = "#"
+        href = link
 
         div {
             classes = setOf(
@@ -243,7 +243,7 @@ private fun FlowContent.projectCard(project: ProjectDisplay) {
                 classes = setOf("flex justify-center")
 
                 div {
-                    style  = "background-color: ${project.color};"
+                    style = "background-color: ${project.color};"
                     classes =
                         setOf("py-1", "px-4", "rounded-md", "w-auto", "text-base", "text-lg")
                     +project.version
