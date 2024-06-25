@@ -1,9 +1,6 @@
-FROM openjdk:17
+FROM eclipse-temurin:21-jre-jammy
 
-RUN mkdir /app
-
-COPY backend.jar /app
+ADD backend/build/libs/backend.jar /app/backend.jar
 
 WORKDIR /app
-
-CMD java -Xms128M -Xmx1024M -jar backend.jar
+CMD ["java", "-jar", "/app/backend.jar"]

@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import tasks.TailwindPrepare
 
 plugins {
@@ -29,27 +30,8 @@ tasks {
         resourcesDir.set(project.sourceSets.main.get().resources.srcDirs.first())
         outputDir.set(rootDir.resolve("tailwind"))
     }
-    /*val prepareJs = register<PrepareJs>("prepareJs") {
-
-        val jsTask = named<Copy>("jsBrowserDistribution").get()
-        val resourcesTask = named<Copy>("processResources").get()
-
-        dependsOn(jsTask)
-        dependsOn(resourcesTask)
-
-        jsDir.set(jsTask.destinationDir)
-        outputDir.set(resourcesTask.destinationDir)
-    }
-
-    named("jvmJar") {
-        dependsOn(prepareJs)
-    }
 
     withType<ShadowJar> {
-        dependsOn(prepareJs)
+        archiveFileName.set("backend.jar")
     }
-
-    jar {
-        dependsOn(prepareJs)
-    }*/
 }
