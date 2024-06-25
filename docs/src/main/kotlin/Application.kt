@@ -115,9 +115,6 @@ public suspend fun main(args: Array<String>) {
     logger.info("Paring complete!")
     logger.info("Uploading..")
 
-    println(JsonSerializer.encode<Repository>(repo))
-
-    return
     val client = HttpClient(CIO) {
         install(Resources)
         install(ContentNegotiation) {
