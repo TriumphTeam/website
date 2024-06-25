@@ -11,10 +11,7 @@ import io.ktor.server.netty.Netty
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.io.File
 import java.util.Properties
-
-public val DATA_FOLDER: File = File("data")
 
 public fun main() {
     // Database connection
@@ -23,11 +20,11 @@ public fun main() {
             HikariConfig(
                 Properties().apply {
                     setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource")
-                    setProperty("dataSource.user", "matt")
-                    setProperty("dataSource.password", "test")
-                    setProperty("dataSource.databaseName", "website")
-                    setProperty("dataSource.portNumber", "5432")
-                    setProperty("dataSource.serverName", "localhost")
+                    setProperty("dataSource.user", System.getProperty("DB_USER") ?: "matt")
+                    setProperty("dataSource.password", System.getProperty("DB_PASS") ?: "test")
+                    setProperty("dataSource.databaseName", System.getProperty("DB_NAME") ?: "website")
+                    setProperty("dataSource.portNumber", System.getProperty("DB_PORT") ?: "5432")
+                    setProperty("dataSource.serverName", System.getProperty("DB_SERVER") ?: "localhost")
                 }
             )
         )
@@ -42,6 +39,5 @@ public fun main() {
         )
     }
 
-    embeddedServer(Netty, module = Application::module, port = 8001, watchPaths = listOf("classes"))
-        .start(true)
+    embeddedServer(Netty, module = Application::module, port = 8001, watchPaths = listOf("classes")).start(true)
 }

@@ -28,7 +28,7 @@ import io.ktor.server.routing.routing
 /** Module of the application. */
 public fun Application.module() {
 
-    val propertyValue = System.getProperty("website.auth.bearer")
+    val propertyValue = System.getProperty("WEBSITE_AUTH")
     val bearer = when {
         developmentMode -> "test"
         propertyValue == null -> error("Bearer token not set. Application cannot initiate.")
@@ -40,8 +40,9 @@ public fun Application.module() {
         json(JsonSerializer.json)
     }
 
-    // TODO: Comment out or delete
-    install(CallLogging)
+    if (developmentMode) {
+        install(CallLogging)
+    }
 
     install(CORS) {
         allowMethod(HttpMethod.Post)
