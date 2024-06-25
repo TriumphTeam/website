@@ -6,7 +6,7 @@ import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
-abstract class TailwindCompile : DefaultTask() {
+abstract class TailwindPrepare : DefaultTask() {
 
     @get:InputDirectory
     abstract val srcDir: DirectoryProperty
