@@ -40,6 +40,7 @@ import kotlinx.html.h1
 import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.li
+import kotlinx.html.meta
 import kotlinx.html.script
 import kotlinx.html.style
 import kotlinx.html.styleLink
@@ -92,7 +93,7 @@ private fun HTML.renderFullPage(
     developmentMode: Boolean,
     project: ProjectData,
     version: Version,
-    currentVersion: Page,
+    currentPage: Page,
 ) {
     setupHead(developmentMode) {
 
@@ -100,7 +101,29 @@ private fun HTML.renderFullPage(
         styleLink("/static/css/docs_content.css")
         styleLink("/static/css/themes/one_dark.css")
 
-        title { +"TrimphTeam | ${project.name}" }
+        val title = "TrimphTeam | ${project.name}"
+
+        meta {
+            name = "og:type"
+            content = "website"
+        }
+
+        meta {
+            name = "og:title"
+            content = title
+        }
+
+        meta {
+            name = "og:description"
+            content = "Bussy"
+        }
+
+        meta {
+            name = "og:image"
+            content = "/banners/${project.id}/${version.reference}/${currentPage.id}/banner.png"
+        }
+
+        title { +title }
 
         style {
             +CssBuilder().apply {
@@ -136,8 +159,8 @@ private fun HTML.renderFullPage(
 
         classes = setOf("bg-docs-bg", "text-white", "overflow-y-auto overflow-x-hidden")
 
-        sideBar(project, version, currentVersion)
-        content(currentVersion)
+        sideBar(project, version, currentPage)
+        content(currentPage)
         toast()
 
         script {

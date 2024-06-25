@@ -14,6 +14,7 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.bearer
+import io.ktor.server.http.content.staticFiles
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.plugins.cachingheaders.CachingHeaders
 import io.ktor.server.plugins.callloging.CallLogging
@@ -68,6 +69,7 @@ public fun Application.module() {
     routing {
 
         staticResources("/static", "static")
+        staticFiles("/banners", DATA_FOLDER)
 
         install(CachingHeaders) {
             options { _, outgoingContent ->

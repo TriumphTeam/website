@@ -3,6 +3,7 @@ package dev.triumphteam.website.docs
 import dev.triumphteam.website.HoconSerializer
 import dev.triumphteam.website.JsonSerializer
 import dev.triumphteam.website.api.Api
+import dev.triumphteam.website.docs.markdown.BannerDataRenderer
 import dev.triumphteam.website.docs.markdown.MarkdownRenderer
 import dev.triumphteam.website.docs.markdown.hint.HintExtension
 import dev.triumphteam.website.docs.markdown.summary.SummaryRenderer
@@ -112,6 +113,9 @@ public suspend fun main(args: Array<String>) {
         }
     })
 
+    println(JsonSerializer.encode<Repository>(repo))
+    return
+
     logger.info("Paring complete!")
     logger.info("Uploading..")
 
@@ -173,6 +177,9 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
                 }
 
                 val parsedFile = mdParser.parse(pageFile.readText())
+
+                val (bannerHeader, bannerParagraph) = BannerDataRenderer().render(parsedFile)
+
                 pageCollector.collect(
                     Page(
                         id = pageFile.nameWithoutExtension.lowercase(),
@@ -180,7 +187,12 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
                         summary = PageSummary(
                             path = "${repoSettings.editPath.removeSuffix("/")}/${pageFile.relativeTo(parentDir).path}",
                             entries = summaryRenderer.render(parsedFile),
-                        )
+                        ),
+                        banner = Page.Banner(
+                            title = bannerHeader,
+                            subTitle = bannerParagraph,
+                            group = parsedGroupConfig.header,
+                        ),
                     )
                 )
             }
