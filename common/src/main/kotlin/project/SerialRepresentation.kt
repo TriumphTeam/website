@@ -41,7 +41,16 @@ public data class Page(
     public val id: String,
     public val content: String,
     public val summary: PageSummary,
-)
+    public val banner: Banner,
+) {
+
+    @Serializable
+    public data class Banner(
+        public val title: String?,
+        public val group: String,
+        public val subTitle: String?,
+    )
+}
 
 @Serializable
 public data class SummaryEntry(
