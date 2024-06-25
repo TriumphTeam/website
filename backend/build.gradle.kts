@@ -1,4 +1,4 @@
-import tasks.TailwindCompile
+import tasks.TailwindPrepare
 
 plugins {
     id("backend.base")
@@ -24,7 +24,7 @@ dependencies {
 
 tasks {
 
-    register<TailwindCompile>("tailwindCompile") {
+    register<TailwindPrepare>("tailwindPrepare") {
         srcDir.set(project.sourceSets.main.get().kotlin.srcDirs.first())
         resourcesDir.set(project.sourceSets.main.get().resources.srcDirs.first())
         outputDir.set(rootDir.resolve("tailwind"))
