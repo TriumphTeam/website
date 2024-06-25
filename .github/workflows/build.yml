@@ -5,7 +5,6 @@ on:
     branches: [ "update/rewrite" ]
 
 env:
-  REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
@@ -14,9 +13,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-
-    outputs:
-      output1: ${{ steps.step1.outputs }}
 
     steps:
       # Checkout the repo files
@@ -69,12 +65,11 @@ jobs:
 
       # Docker time!
 
-      - name: Log in to the Container registry
+      - name: Log in to docker hub
         uses: docker/login-action@v2.1.0
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Extract metadata for Docker
         id: meta
