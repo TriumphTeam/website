@@ -24,7 +24,7 @@ dependencies {
 
 tasks {
 
-    register<TailwindCompile>("tailwindBuild") {
+    register<TailwindCompile>("tailwindCompile") {
         srcDir.set(project.sourceSets.main.get().kotlin.srcDirs.first())
         resourcesDir.set(project.sourceSets.main.get().resources.srcDirs.first())
         outputDir.set(rootDir.resolve("tailwind"))
