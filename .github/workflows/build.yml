@@ -1,0 +1,33 @@
+name: Build docker
+
+on:
+  push:
+    branches: [ "update/rewrite" ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      # Checkout the repo files
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      # Generate tailwind compiled css file
+      - name: Compile tailwind
+        run: ./gradlew backend:tailwindCompile
