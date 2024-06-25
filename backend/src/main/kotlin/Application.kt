@@ -15,11 +15,11 @@ import java.util.Properties
 
 public fun main() {
 
-    val user = System.getProperty("DB_USER")
-    val pass = System.getProperty("DB_PASS")
-    val name = System.getProperty("DB_NAME")
-    val port = System.getProperty("DB_PORT")
-    val server = System.getProperty("DB_SERVER")
+    val user = System.getenv("DB_USER")
+    val pass = System.getenv("DB_PASS")
+    val name = System.getenv("DB_NAME")
+    val port = System.getenv("DB_PORT")
+    val server = System.getenv("DB_SERVER")
 
     println(user)
     println(pass)
