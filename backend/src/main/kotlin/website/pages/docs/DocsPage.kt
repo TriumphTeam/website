@@ -107,7 +107,7 @@ private fun HTML.renderFullPage(
 
         meta {
             name = "og:type"
-            content = "website"
+            content = "article"
         }
 
         meta {
