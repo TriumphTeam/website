@@ -166,7 +166,7 @@ public suspend fun main(args: Array<String>) {
             MultiPartFormDataContent(
                 formData {
                     append("zip", zip.file.readBytes(), Headers.build {
-                        append(HttpHeaders.ContentType, ContentType.Application.Zip)
+                        append(HttpHeaders.ContentType, "multipart/form-data")
                         append(HttpHeaders.ContentDisposition, "filename=\"projects.zip\"")
                     })
                 },

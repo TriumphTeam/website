@@ -5,16 +5,37 @@ import dev.triumphteam.backend.api.database.DocVersionEntity
 import dev.triumphteam.backend.api.database.PageEntity
 import dev.triumphteam.backend.api.database.ProjectEntity
 import dev.triumphteam.backend.banner.BannerMaker
-import dev.triumphteam.website.project.Project
+import dev.triumphteam.website.JsonSerializer
+import dev.triumphteam.website.project.Repository
+import net.lingala.zip4j.ZipFile
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.net.URL
+import java.io.File
+import java.io.FileNotFoundException
+import java.nio.file.Files
 import javax.imageio.ImageIO
 
 private val bannerMaker = BannerMaker()
 
-public fun setupRepository(projects: List<Project>) {
+public fun setupRepository(projects: File) {
+
+    val tempFolder = Files.createTempDirectory("zip-temp").toFile()
+    ZipFile(projects).extractAll(tempFolder.path)
+
+    val json = tempFolder.resolve("repository.json")
+    if (!json.exists()) {
+        throw FileNotFoundException("Could not find temporary repository at ${tempFolder.path}")
+    }
+
+    val coreDir = DATA_FOLDER.resolve("core").also(File::mkdirs)
+    // Copy files
+    tempFolder.listFiles()?.filter(File::isDirectory)?.forEach {
+        it.copyRecursively(coreDir.resolve(it.name), overwrite = true)
+    }
+    // Parse repos
+    val repo = JsonSerializer.from<Repository>(json)
+
     transaction {
-        projects.forEach { project ->
+        repo.projects.forEach { project ->
 
             // Start by deleting project if exists
             // This will cascade down to all other tables
@@ -26,7 +47,7 @@ public fun setupRepository(projects: List<Project>) {
                 this.github = project.projectHome
             }
 
-            val projectIcon = ImageIO.read(URL(""))
+            val projectIcon = ImageIO.read(coreDir.resolve("${project.id}/icon.png"))
 
             project.versions.forEach { version ->
 
@@ -37,7 +58,7 @@ public fun setupRepository(projects: List<Project>) {
                     this.recommended = version.recommended
                 }
 
-                val versionFolder = DATA_FOLDER.resolve("${project.id}/${version.reference}").also {
+                val versionFolder = DATA_FOLDER.resolve("core/${project.id}/${version.reference}").also {
                     it.mkdirs()
                 }
 

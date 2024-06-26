@@ -1,7 +1,5 @@
 package dev.triumphteam.website.docs.markdown.highlight
 
-import dev.snipme.highlights.internal.isNewLine
-
 internal val NEW_LINE_CHARS = setOf("\n", "\r", "\r\n")
 
 internal fun String.indicesOf(char: Char): Set<Int> {

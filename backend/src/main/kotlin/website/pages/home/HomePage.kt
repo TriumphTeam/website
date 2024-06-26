@@ -4,6 +4,7 @@ import dev.triumphteam.backend.api.database.DocVersionEntity
 import dev.triumphteam.backend.api.database.DocVersions
 import dev.triumphteam.backend.api.database.ProjectEntity
 import dev.triumphteam.backend.website.pages.backgroundBlob
+import dev.triumphteam.backend.website.pages.createIconPath
 import dev.triumphteam.backend.website.pages.home.resource.Home
 import dev.triumphteam.backend.website.pages.setupHead
 import io.ktor.server.application.call
@@ -38,7 +39,7 @@ public fun Routing.homeRoutes(developmentMode: Boolean) {
                     ProjectDisplay(
                         id = project.id.value,
                         name = project.name,
-                        icon = project.icon,
+                        icon = createIconPath(project.id.value),
                         color = project.color,
                         version = version.id.value,
                     )
