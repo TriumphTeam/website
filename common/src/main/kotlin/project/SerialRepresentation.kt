@@ -11,7 +11,6 @@ public data class Repository(
 public data class Project(
     public val id: String,
     public val name: String,
-    public val icon: String,
     public val color: String,
     public val projectHome: String,
     public val versions: List<DocVersion>,
