@@ -36,6 +36,8 @@ public object Pages : IdTable<String>("pages") {
     public val version: Column<EntityID<String>> =
         reference("version_id", DocVersions, ReferenceOption.CASCADE, ReferenceOption.CASCADE)
     public val content: Column<String> = text("content")
+    public val title: Column<String> = text("title")
+    public val subTitle: Column<String> = text("sub_title")
     public val summary: Column<PageSummary> = serializable<PageSummary>("summary")
 
     override val primaryKey: PrimaryKey = PrimaryKey(id)
@@ -64,5 +66,7 @@ public class PageEntity(id: EntityID<String>) : Entity<String>(id) {
     public var project: ProjectEntity by ProjectEntity referencedOn Pages.project
     public var version: DocVersionEntity by DocVersionEntity referencedOn Pages.version
     public var content: String by Pages.content
+    public var title: String by Pages.title
+    public var subTitle: String by Pages.subTitle
     public var summary: PageSummary by Pages.summary
 }

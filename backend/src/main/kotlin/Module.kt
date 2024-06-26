@@ -14,6 +14,7 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.bearer
+import io.ktor.server.http.content.CompressedFileType
 import io.ktor.server.http.content.staticFiles
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.plugins.cachingheaders.CachingHeaders
@@ -24,6 +25,7 @@ import io.ktor.server.plugins.defaultheaders.DefaultHeaders
 import io.ktor.server.plugins.forwardedheaders.ForwardedHeaders
 import io.ktor.server.plugins.forwardedheaders.XForwardedHeaders
 import io.ktor.server.resources.Resources
+import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 
 /** Module of the application. */
@@ -68,8 +70,12 @@ public fun Application.module() {
 
     routing {
 
-        staticResources("/static", "static")
-        staticFiles("/assets", DATA_FOLDER.resolve("core"))
+        staticResources("/static", "static") {
+            preCompressed(CompressedFileType.BROTLI, CompressedFileType.GZIP)
+        }
+        staticFiles("/assets", DATA_FOLDER.resolve("core")) {
+            preCompressed(CompressedFileType.BROTLI, CompressedFileType.GZIP)
+        }
 
         install(CachingHeaders) {
             options { _, outgoingContent ->

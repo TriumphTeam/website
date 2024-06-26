@@ -179,7 +179,7 @@ public suspend fun main(args: Array<String>) {
     }
 
     if (response.status != HttpStatusCode.Accepted) {
-        error("Could not upload repository to backend!")
+        error("Could not upload repository to backend '${response.status}'!")
     }
 
     logger.info("Upload complete!")
