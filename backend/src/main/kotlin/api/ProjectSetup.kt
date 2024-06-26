@@ -3,7 +3,6 @@ package dev.triumphteam.backend.api
 import dev.triumphteam.backend.DATA_FOLDER
 import dev.triumphteam.backend.api.database.DocVersionEntity
 import dev.triumphteam.backend.api.database.PageEntity
-import dev.triumphteam.backend.api.database.Pages.subTitle
 import dev.triumphteam.backend.api.database.ProjectEntity
 import dev.triumphteam.backend.banner.BannerMaker
 import dev.triumphteam.website.JsonSerializer
@@ -34,6 +33,9 @@ public fun setupRepository(projects: File) {
     }
     // Parse repos
     val repo = JsonSerializer.from<Repository>(json)
+
+    // Delete downloaded files
+    projects.delete()
 
     transaction {
         repo.projects.forEach { project ->

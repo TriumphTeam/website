@@ -15,9 +15,11 @@ import dev.triumphteam.backend.website.pages.setupHead
 import dev.triumphteam.website.project.Navigation
 import dev.triumphteam.website.project.PageSummary
 import dev.triumphteam.website.project.SummaryEntry
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.TextContent
+import io.ktor.http.withCharset
 import io.ktor.server.application.call
-import io.ktor.server.html.respondHtml
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
@@ -38,11 +40,13 @@ import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.footer
 import kotlinx.html.h1
+import kotlinx.html.html
 import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.li
 import kotlinx.html.meta
 import kotlinx.html.script
+import kotlinx.html.stream.appendHTML
 import kotlinx.html.style
 import kotlinx.html.styleLink
 import kotlinx.html.title
@@ -53,6 +57,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDate
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
+
+private val pageCache: Cache<String, TextContent> = Caffeine.newBuilder()
+    .expireAfterWrite(10.minutes.toJavaDuration())
+    .build()
 
 private val projectCache: Cache<String, ProjectData> = Caffeine.newBuilder()
     .expireAfterWrite(5.minutes.toJavaDuration())
@@ -84,9 +92,24 @@ public fun Routing.docsRoutes(developmentMode: Boolean) {
             }
         }
 
-        call.respondHtml {
-            renderFullPage(developmentMode, project, currentVersion, page)
+        val cacheId = cacheId(project, currentVersion, page)
+        val cached = pageCache.getIfPresent(cacheId)
+        if (cached != null) {
+            return@get call.respond(cached)
         }
+
+        val text = buildString {
+            append("<!DOCTYPE html>\n")
+            appendHTML().html {
+                renderFullPage(developmentMode, project, currentVersion, page)
+            }
+        }
+
+        call.respond(
+            message = TextContent(text, ContentType.Text.Html.withCharset(Charsets.UTF_8), HttpStatusCode.OK).also {
+                pageCache.put(cacheId, it)
+            }
+        )
     }
 }
 
@@ -465,3 +488,7 @@ public data class Page(
     public val title: String,
     public val subTitle: String,
 )
+
+private fun cacheId(project: ProjectData, version: Version, page: Page): String {
+    return "${project.id}:${version.reference}:${page.id}"
+}
