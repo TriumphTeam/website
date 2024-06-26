@@ -69,7 +69,7 @@ public fun Application.module() {
     routing {
 
         staticResources("/static", "static")
-        staticFiles("/banners", DATA_FOLDER)
+        staticFiles("/assets", DATA_FOLDER.resolve("core"))
 
         install(CachingHeaders) {
             options { _, outgoingContent ->

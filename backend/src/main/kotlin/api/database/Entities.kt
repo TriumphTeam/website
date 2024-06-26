@@ -12,7 +12,6 @@ import org.jetbrains.exposed.sql.ReferenceOption
 public object Projects : IdTable<String>("projects") {
     public override val id: Column<EntityID<String>> = varchar("project_id", 255).entityId()
     public val name: Column<String> = varchar("name", 255)
-    public val icon: Column<String> = varchar("icon", 1024)
     public val color: Column<String> = varchar("color", 10)
     public val github: Column<String> = varchar("github", 1024)
 
@@ -46,7 +45,6 @@ public class ProjectEntity(id: EntityID<String>) : Entity<String>(id) {
     public companion object : EntityClass<String, ProjectEntity>(Projects)
 
     public var name: String by Projects.name
-    public var icon: String by Projects.icon
     public var color: String by Projects.color
     public var github: String by Projects.github
 }

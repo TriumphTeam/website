@@ -7,6 +7,7 @@ import dev.triumphteam.backend.api.database.DocVersions
 import dev.triumphteam.backend.api.database.PageEntity
 import dev.triumphteam.backend.api.database.Pages
 import dev.triumphteam.backend.api.database.ProjectEntity
+import dev.triumphteam.backend.website.pages.createIconPath
 import dev.triumphteam.backend.website.pages.docs.components.dropDown
 import dev.triumphteam.backend.website.pages.docs.components.search
 import dev.triumphteam.backend.website.pages.docs.components.toast
@@ -395,7 +396,7 @@ private fun getProject(project: String): ProjectData? {
         ProjectData(
             id = projectEntity.id.value,
             name = projectEntity.name,
-            icon = projectEntity.icon,
+            icon = createIconPath(projectEntity.id.value),
             color = projectEntity.color,
             versions = versions,
         ).also {

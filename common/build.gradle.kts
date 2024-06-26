@@ -3,5 +3,6 @@ plugins {
 }
 
 dependencies {
+    api(libs.zip)
     api(libs.ktor.resources)
 }
