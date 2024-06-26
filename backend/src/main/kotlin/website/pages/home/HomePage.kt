@@ -7,8 +7,8 @@ import dev.triumphteam.backend.website.pages.backgroundBlob
 import dev.triumphteam.backend.website.pages.createIconPath
 import dev.triumphteam.backend.website.pages.home.resource.Home
 import dev.triumphteam.backend.website.pages.setupHead
+import dev.triumphteam.backend.website.respondHtmlCached
 import io.ktor.server.application.call
-import io.ktor.server.html.respondHtml
 import io.ktor.server.resources.get
 import io.ktor.server.routing.Routing
 import kotlinx.html.FlowContent
@@ -30,7 +30,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 public fun Routing.homeRoutes(developmentMode: Boolean) {
 
     get<Home> {
-        call.respondHtml {
+        call.respondHtmlCached("home") {
             val projects = transaction {
                 ProjectEntity.all().map { project ->
                     val version = DocVersionEntity.find {
