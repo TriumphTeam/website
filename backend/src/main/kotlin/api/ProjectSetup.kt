@@ -28,7 +28,6 @@ public fun setupRepository(projects: File) {
     }
 
     val coreDir = DATA_FOLDER.resolve("core").also(File::mkdirs)
-    println(coreDir.absolutePath)
     // Copy files
     tempFolder.listFiles()?.filter(File::isDirectory)?.forEach {
         it.copyRecursively(coreDir.resolve(it.name), overwrite = true)
