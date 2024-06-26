@@ -2,7 +2,7 @@ name: Build docs
 
 on:
   push:
-    branches: [ "update/rewrite" ]
+    branches: [ "main" ]
 
 jobs:
   build-and-push-image:
