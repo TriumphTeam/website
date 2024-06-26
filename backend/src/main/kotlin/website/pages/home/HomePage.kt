@@ -21,6 +21,7 @@ import kotlinx.html.h1
 import kotlinx.html.i
 import kotlinx.html.img
 import kotlinx.html.link
+import kotlinx.html.meta
 import kotlinx.html.style
 import kotlinx.html.title
 import org.jetbrains.exposed.sql.and
@@ -58,6 +59,22 @@ private fun HTML.fullPage(developmentMode: Boolean, projects: List<ProjectDispla
         link {
             href = "/static/css/home_style.css"
             rel = "stylesheet"
+        }
+
+        meta {
+            name = "og:type"
+            content = "article"
+        }
+
+        meta {
+            name = "og:title"
+            content = "TriumphTeam"
+        }
+
+        meta {
+            name = "og:image"
+            // TODO: Replace with final URL, sucks that it can't be relative
+            content = "https://new.triumphteam.dev/static/images/banner.png"
         }
 
         title("TriumphTeam")
