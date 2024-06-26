@@ -18,7 +18,6 @@ import dev.triumphteam.website.project.SummaryEntry
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.html.respondHtml
-import io.ktor.server.request.path
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
@@ -106,8 +105,30 @@ private fun HTML.renderFullPage(
         val title = "TrimphTeam | ${project.name} - ${currentPage.title}"
 
         meta {
-            name = "og:type"
+            name = "description"
+            content = currentPage.subTitle
+        }
+
+        // Facebook Meta Tags
+        meta {
+            unsafe {
+                raw("property = \"og:type\"")
+            }
             content = "article"
+        }
+
+        meta {
+            unsafe {
+                raw("property = \"og:title\"")
+            }
+            content = title
+        }
+
+        meta {
+            unsafe {
+                raw("property = \"og:description\"")
+            }
+            content = currentPage.subTitle
         }
 
         meta {
@@ -116,14 +137,35 @@ private fun HTML.renderFullPage(
         }
 
         meta {
-            name = "og:description"
+            unsafe {
+                raw("property = \"og:image\"")
+            }
+            // TODO: Replace with final URL, sucks that it can't be relative
+            content =
+                "https://new.triumphteam.dev/assets/${project.id}/${version.reference}/${currentPage.id}/banner.png"
+        }
+
+        // Twitter Meta Tags
+        meta {
+            name = "twitter:card"
+            content = "summary_large_image"
+        }
+
+        meta {
+            name = "twitter:title"
+            content = title
+        }
+
+        meta {
+            name = "twitter:description"
             content = currentPage.subTitle
         }
 
         meta {
-            name = "og:image"
+            name = "twitter:image"
             // TODO: Replace with final URL, sucks that it can't be relative
-            content = "https://new.triumphteam.dev/assets/${project.id}/${version.reference}/${currentPage.id}/banner.png"
+            content =
+                "https://new.triumphteam.dev/assets/${project.id}/${version.reference}/${currentPage.id}/banner.png"
         }
 
         title { +title }
