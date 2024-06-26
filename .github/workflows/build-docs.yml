@@ -4,10 +4,6 @@ on:
   push:
     branches: [ "update/rewrite" ]
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
@@ -48,15 +44,14 @@ jobs:
       - name: Log in to docker hub
         uses: docker/login-action@v2.1.0
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Extract metadata for Docker
         id: meta
         uses: docker/metadata-action@v4.4.0
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: lichthund/docs
           tags: |
             type=semver,pattern={{version}},value=${{steps.version.outputs.VERSION_NAME}}-${{ steps.tags.outputs.sha }}
           flavor: |
