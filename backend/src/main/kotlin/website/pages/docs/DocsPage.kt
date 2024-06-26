@@ -12,6 +12,7 @@ import dev.triumphteam.backend.website.pages.docs.components.dropDown
 import dev.triumphteam.backend.website.pages.docs.components.search
 import dev.triumphteam.backend.website.pages.docs.components.toast
 import dev.triumphteam.backend.website.pages.setupHead
+import dev.triumphteam.backend.website.respondHtmlCached
 import dev.triumphteam.website.project.Navigation
 import dev.triumphteam.website.project.PageSummary
 import dev.triumphteam.website.project.SummaryEntry
@@ -20,6 +21,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.TextContent
 import io.ktor.http.withCharset
 import io.ktor.server.application.call
+import io.ktor.server.html.respondHtml
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
@@ -92,24 +94,9 @@ public fun Routing.docsRoutes(developmentMode: Boolean) {
             }
         }
 
-        val cacheId = cacheId(project, currentVersion, page)
-        val cached = pageCache.getIfPresent(cacheId)
-        if (cached != null) {
-            return@get call.respond(cached)
+        call.respondHtmlCached(cacheId(project, currentVersion, page)) {
+            renderFullPage(developmentMode, project, currentVersion, page)
         }
-
-        val text = buildString {
-            append("<!DOCTYPE html>\n")
-            appendHTML().html {
-                renderFullPage(developmentMode, project, currentVersion, page)
-            }
-        }
-
-        call.respond(
-            message = TextContent(text, ContentType.Text.Html.withCharset(Charsets.UTF_8), HttpStatusCode.OK).also {
-                pageCache.put(cacheId, it)
-            }
-        )
     }
 }
 
