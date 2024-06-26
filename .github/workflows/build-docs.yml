@@ -1,8 +1,12 @@
-name: Build docker
+name: Build docs
 
 on:
   push:
     branches: [ "update/rewrite" ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push-image:
@@ -25,33 +29,8 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      # Generate files to compile the tailwind into a css file
-      - name: Prepare tailwind
-        run: ./gradlew backend:tailwindPrepare
-
-      # Node territory
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Tailwind install
-        run: npm install -D tailwindcss
-        working-directory: tailwind
-
-      # Generate the css file into the backend's resources folder. :))))
-      - name: Create tailwind .css file
-        run: npx tailwindcss -o ../backend/src/main/resources/static/css/tailwind.css --minify
-        working-directory: tailwind
-
-      # Back into Gradle territory
-
-      - name: Kotlin JS
-        run: ./gradlew jsBrowserDistribution
-
-      - name: Build backend
-        run: ./gradlew backend:assemble
+      - name: Build docs
+        run: ./gradlew docs:assemble
 
       - name: Grab gradle version
         run: |
@@ -69,14 +48,15 @@ jobs:
       - name: Log in to docker hub
         uses: docker/login-action@v2.1.0
         with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata for Docker
         id: meta
         uses: docker/metadata-action@v4.4.0
         with:
-          images: lichthund/website
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=semver,pattern={{version}},value=${{steps.version.outputs.VERSION_NAME}}-${{ steps.tags.outputs.sha }}
           flavor: |
@@ -89,7 +69,7 @@ jobs:
         uses: docker/build-push-action@v4.0.0
         with:
           context: .
-          file: backend/Dockerfile
+          file: docs/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

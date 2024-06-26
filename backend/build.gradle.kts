@@ -5,11 +5,10 @@ plugins {
     id("backend.base")
     id("io.ktor.plugin") version "2.3.10"
 }
-val main = "dev.triumphteam.backend.ApplicationKt"
 
 application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=true")
-    mainClass.set(main)
+    mainClass.set("dev.triumphteam.backend.ApplicationKt")
 }
 
 dependencies {
