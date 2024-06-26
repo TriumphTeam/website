@@ -18,6 +18,7 @@ import dev.triumphteam.website.project.SummaryEntry
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.html.respondHtml
+import io.ktor.server.request.path
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
@@ -102,7 +103,7 @@ private fun HTML.renderFullPage(
         styleLink("/static/css/docs_content.css")
         styleLink("/static/css/themes/one_dark.css")
 
-        val title = "TrimphTeam | ${project.name}"
+        val title = "TrimphTeam | ${project.name} - ${currentPage.title}"
 
         meta {
             name = "og:type"
@@ -116,12 +117,13 @@ private fun HTML.renderFullPage(
 
         meta {
             name = "og:description"
-            content = "Bussy"
+            content = currentPage.subTitle
         }
 
         meta {
             name = "og:image"
-            content = "/banners/${project.id}/${version.reference}/${currentPage.id}/banner.png"
+            // TODO: Replace with final URL, sucks that it can't be relative
+            content = "https://new.triumphteam.dev/assets/${project.id}/${version.reference}/${currentPage.id}/banner.png"
         }
 
         title { +title }
@@ -388,6 +390,8 @@ private fun getProject(project: String): ProjectData? {
                             id = pageEntity.id.value,
                             content = pageEntity.content,
                             summary = pageEntity.summary,
+                            title = pageEntity.title,
+                            subTitle = pageEntity.subTitle,
                         )
                     }.associateBy(Page::id),
             )
@@ -426,4 +430,6 @@ public data class Page(
     public val id: String,
     public val content: String,
     public val summary: PageSummary,
+    public val title: String,
+    public val subTitle: String,
 )

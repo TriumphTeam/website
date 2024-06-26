@@ -3,6 +3,7 @@ package dev.triumphteam.backend.api
 import dev.triumphteam.backend.DATA_FOLDER
 import dev.triumphteam.backend.api.database.DocVersionEntity
 import dev.triumphteam.backend.api.database.PageEntity
+import dev.triumphteam.backend.api.database.Pages.subTitle
 import dev.triumphteam.backend.api.database.ProjectEntity
 import dev.triumphteam.backend.banner.BannerMaker
 import dev.triumphteam.website.JsonSerializer
@@ -68,20 +69,22 @@ public fun setupRepository(projects: File) {
                         it.mkdirs()
                     }
 
-                    page.banner.apply {
-                        bannerMaker.create(
-                            icon = projectIcon,
-                            group = group,
-                            title = title,
-                            subTitle = subTitle,
-                            output = pageDir.resolve("banner.png"),
-                        )
-                    }
+                    val banner = page.banner
+
+                    bannerMaker.create(
+                        icon = projectIcon,
+                        group = banner.group,
+                        title = banner.title,
+                        subTitle = banner.subTitle,
+                        output = pageDir.resolve("banner.png"),
+                    )
 
                     PageEntity.new(page.id) {
                         this.project = projectEntity
                         this.version = versionEntity
                         this.content = page.content
+                        this.title = banner.title ?: ""
+                        this.subTitle = banner.subTitle ?: ""
                         this.summary = page.summary
                     }
                 }
