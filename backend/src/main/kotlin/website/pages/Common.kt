@@ -1,6 +1,5 @@
 package dev.triumphteam.backend.website.pages
 
-import dev.triumphteam.backend.api.database.ProjectEntity
 import kotlinx.html.FlowContent
 import kotlinx.html.HEAD
 import kotlinx.html.HTML

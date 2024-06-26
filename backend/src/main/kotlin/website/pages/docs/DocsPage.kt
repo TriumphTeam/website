@@ -103,6 +103,8 @@ private fun HTML.renderFullPage(
         styleLink("/static/css/themes/one_dark.css")
 
         val title = "TrimphTeam | ${project.name} - ${currentPage.title}"
+        // TODO: Replace with final URL, sucks that it can't be relative
+        val image = "https://new.triumphteam.dev/assets/${project.id}/${version.reference}/${currentPage.id}/banner.png"
 
         meta {
             name = "description"
@@ -111,38 +113,28 @@ private fun HTML.renderFullPage(
 
         // Facebook Meta Tags
         meta {
-            unsafe {
-                raw("property = \"og:type\"")
-            }
+            attributes["property"] = "og:type"
             content = "article"
         }
 
         meta {
-            unsafe {
-                raw("property = \"og:title\"")
-            }
+            attributes["property"] = "og:title"
             content = title
         }
 
         meta {
-            unsafe {
-                raw("property = \"og:description\"")
-            }
+            attributes["property"] = "og:description"
             content = currentPage.subTitle
         }
 
         meta {
-            name = "og:title"
+            attributes["property"] = "og:title"
             content = title
         }
 
         meta {
-            unsafe {
-                raw("property = \"og:image\"")
-            }
-            // TODO: Replace with final URL, sucks that it can't be relative
-            content =
-                "https://new.triumphteam.dev/assets/${project.id}/${version.reference}/${currentPage.id}/banner.png"
+            attributes["property"] = "og:image"
+            content = image
         }
 
         // Twitter Meta Tags
@@ -163,9 +155,7 @@ private fun HTML.renderFullPage(
 
         meta {
             name = "twitter:image"
-            // TODO: Replace with final URL, sucks that it can't be relative
-            content =
-                "https://new.triumphteam.dev/assets/${project.id}/${version.reference}/${currentPage.id}/banner.png"
+            content = image
         }
 
         title { +title }
