@@ -23,14 +23,20 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.onUpload
 import io.ktor.client.plugins.resources.Resources
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.forms.MultiPartFormDataContent
+import io.ktor.client.request.forms.formData
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.util.InternalAPI
+import net.lingala.zip4j.ZipFile
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Option
 import org.apache.commons.cli.Options
@@ -63,6 +69,7 @@ private val mdParser = Parser.builder().extensions(DEFAULT_EXTENSIONS).build()
 
 private val logger: Logger = LoggerFactory.getLogger("docs")
 
+@OptIn(InternalAPI::class)
 public suspend fun main(args: Array<String>) {
 
     val options = DefaultParser().parse(
@@ -90,33 +97,56 @@ public suspend fun main(args: Array<String>) {
         HoconSerializer.from<RepoSettings>(requireNotNull(inputFiles.find { it.name == "settings.conf" }))
 
     // Navigate through file structure and parse all projects
-    val repo = Repository(projects = inputFiles.mapNotNull { projectDir ->
-        // Ignore non-directory files
-        if (!projectDir.isDirectory) return@mapNotNull null
+    val projects = Projects(
+        projects = inputFiles.mapNotNull { projectDir ->
+            // Ignore non-directory files
+            if (!projectDir.isDirectory) return@mapNotNull null
 
-        val files = projectDir.listFiles() ?: emptyArray()
-        val projectConfig = files.find("project.conf") {
-            "Found project folder without a 'project.conf' file, skipping it!"
-        } ?: return@mapNotNull null
+            val files = projectDir.listFiles() ?: emptyArray()
+            val projectConfig = files.findFile("project.conf") {
+                "Found project folder without a 'project.conf' file, skipping it!"
+            } ?: return@mapNotNull null
 
-        val parsedProjectConfig = HoconSerializer.from<ProjectConfig>(projectConfig)
+            val parsedProjectConfig = HoconSerializer.from<ProjectConfig>(projectConfig)
 
-        Project(
-            id = parsedProjectConfig.id,
-            name = parsedProjectConfig.name,
-            icon = parsedProjectConfig.icon,
-            color = parsedProjectConfig.color,
-            projectHome = parsedProjectConfig.projectHome,
-            versions = parseVersions(files.filter(File::isDirectory), inputPath, repoSettings),
-        ).also {
-            logger.info("Parsed project '$${it.id}', with versions: ${it.versions.map(DocVersion::reference)}!")
+            ProjectWithIcon(
+                project = Project(
+                    id = parsedProjectConfig.id,
+                    name = parsedProjectConfig.name,
+                    color = parsedProjectConfig.color,
+                    projectHome = parsedProjectConfig.projectHome,
+                    versions = parseVersions(files.filter(File::isDirectory), inputPath, repoSettings),
+                ),
+                icon = requireNotNull(files.findFile("icon.png")) {
+                    "Found project folder without a 'project.conf' file, skipping it!"
+                }
+            ).also {
+                logger.info("Parsed project '${it.project.id}', with versions: ${it.project.versions.map(DocVersion::reference)}!")
+            }
+        },
+    )
+
+    val outputDir = File("output").also(File::mkdirs)
+
+    val repository = outputDir.resolve("repository.json").also {
+        it.writeText(JsonSerializer.encode<Repository>(projects.toRepository()))
+    }
+
+    val icons = projects.projects.map {
+        outputDir.resolve(it.project.id).also { dir ->
+            dir.mkdirs()
+            it.icon.copyTo(dir.resolve("icon.png"), overwrite = true)
         }
-    })
+    }
 
-    println(JsonSerializer.encode<Repository>(repo))
-    return
+    val zip = ZipFile("projects.zip").also {
+        icons.forEach { dir ->
+            it.addFolder(dir)
+        }
+        it.addFile(repository)
+    }
 
-    logger.info("Paring complete!")
+    logger.info("Parsing complete!")
     logger.info("Uploading..")
 
     val client = HttpClient(CIO) {
@@ -128,12 +158,24 @@ public suspend fun main(args: Array<String>) {
         defaultRequest {
             url(url)
             bearerAuth(bearer)
-            contentType(ContentType.Application.Json)
         }
     }
 
     val response = client.post(Api.Setup()) {
-        setBody(repo)
+        setBody(
+            MultiPartFormDataContent(
+                formData {
+                    append("zip", zip.file.readBytes(), Headers.build {
+                        append(HttpHeaders.ContentType, ContentType.Application.Zip)
+                        append(HttpHeaders.ContentDisposition, "filename=\"projects.zip\"")
+                    })
+                },
+                boundary = "WebAppBoundary"
+            )
+        )
+        onUpload { bytesSentTotal, contentLength ->
+            logger.info("Sent $bytesSentTotal bytes from $contentLength")
+        }
     }
 
     if (response.status != HttpStatusCode.Accepted) {
@@ -148,7 +190,7 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
     return versionDirs.mapNotNull { versionDir ->
 
         val files = versionDir.listFiles() ?: emptyArray()
-        val versionConfig = files.find("version.conf") {
+        val versionConfig = files.findFile("version.conf") {
             "Found version folder without a 'version.conf' file, skipping it!"
         } ?: return@mapNotNull null
 
@@ -159,7 +201,7 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
 
         files.filter(File::isDirectory).sortedBy(File::getName).forEach { groupDir ->
             val groupFiles = groupDir.listFiles() ?: emptyArray()
-            val groupConfig = groupFiles.find("group.conf") {
+            val groupConfig = groupFiles.findFile("group.conf") {
                 "Found group folder without a 'group.conf' file, skipping it!"
             } ?: return@mapNotNull null
 
@@ -212,13 +254,26 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
     }
 }
 
-private fun Array<File>.find(fileName: String, log: () -> String): File? {
+private fun Array<File>.findFile(fileName: String, log: (() -> String)? = null): File? {
     val file = find { it.name == fileName }
 
     if (file == null) {
-        logger.warn(log())
+        log?.invoke()?.let { logger.warn(it) }
         return null
     }
 
     return file
+}
+
+private data class ProjectWithIcon(val project: Project, val icon: File)
+
+private data class Projects(val projects: List<ProjectWithIcon>) {
+
+    fun toRepository(): Repository {
+        return Repository(projects.map(ProjectWithIcon::project))
+    }
+
+    fun icons(): List<File> {
+        return projects.map(ProjectWithIcon::icon)
+    }
 }

@@ -133,3 +133,5 @@ kotlin-js-store/
 tailwind/
 
 backend/src/main/resources/static/css/tailwind.css
+
+output/
