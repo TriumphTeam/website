@@ -22,13 +22,11 @@ public class BannerDataRenderer : AbstractVisitor() {
         val literal = block.literal
 
         val headerMatch = headerPattern.find(literal)
-        if (headerMatch != null) {
-            if (header != null) return
+        if (headerMatch != null && header == null) {
             header = headerMatch.value
-            return
         }
 
-        val paragraphMatch = headerPattern.find(literal) ?: return
+        val paragraphMatch = paragraphPattern.find(literal) ?: return
         if (paragraph != null) return
         paragraph = paragraphMatch.value
     }
