@@ -8,6 +8,7 @@ import dev.triumphteam.backend.api.database.PageEntity
 import dev.triumphteam.backend.api.database.Pages
 import dev.triumphteam.backend.api.database.ProjectEntity
 import dev.triumphteam.backend.website.pages.createIconPath
+import dev.triumphteam.backend.website.pages.docs.components.DropdownOption
 import dev.triumphteam.backend.website.pages.docs.components.dropDown
 import dev.triumphteam.backend.website.pages.docs.components.search
 import dev.triumphteam.backend.website.pages.docs.components.toast
@@ -170,6 +171,10 @@ private fun HTML.renderFullPage(
                     color = Color(project.color)
                 }
 
+                rule(".project-color-hover") {
+                    transitionDuration = 0.3.s
+                }
+
                 rule(".project-color-hover:hover") {
                     color = Color(project.color)
                 }
@@ -325,7 +330,15 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
             div {
                 classes = setOf("col-span-1")
 
-                dropDown(project.versions.keys, version.reference)
+                dropDown(
+                    options = project.versions.values.map { ver ->
+                        DropdownOption(
+                            text = ver.reference,
+                            link = "/docs/${ver.reference}/${project.id}",
+                            selected = ver.reference == version.reference,
+                        )
+                    }
+                )
             }
         }
 
@@ -416,6 +429,7 @@ private fun getProject(project: String): ProjectData? {
             Version(
                 reference = entity.reference,
                 navigation = entity.navigation,
+                stable = entity.stable,
                 pages = PageEntity.find { (Pages.project eq projectEntity.id) and (Pages.version eq entity.id) }
                     .map { pageEntity ->
                         Page(
@@ -452,6 +466,7 @@ public data class ProjectData(
 public data class Version(
     public val reference: String,
     public val navigation: Navigation,
+    public val stable: Boolean,
     public val pages: Map<String, Page>,
 ) {
 

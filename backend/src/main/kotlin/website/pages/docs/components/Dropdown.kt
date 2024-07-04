@@ -6,7 +6,13 @@ import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.id
 
-public fun FlowContent.dropDown(versions: Set<String>, current: String) {
+public data class DropdownOption(
+    public val text: String,
+    public val link: String,
+    public val selected: Boolean = false,
+)
+
+public fun FlowContent.dropDown(options: List<DropdownOption>) {
     div {
         classes = setOf("mx-auto", "max-w-sm", "flex", "select-none")
 
@@ -27,6 +33,8 @@ public fun FlowContent.dropDown(versions: Set<String>, current: String) {
             +"Version"
         }
 
+        val selected = options.find { it.selected } ?: return@div
+
         // Drop-down menu
         div dropdown@{
 
@@ -39,7 +47,7 @@ public fun FlowContent.dropDown(versions: Set<String>, current: String) {
                     "transition ease-in-out delay-100",
                     "cursor-pointer",
                 )
-                
+
                 classes = setOf(
                     "inline-flex",
                     "flex-shrink-0",
@@ -56,12 +64,12 @@ public fun FlowContent.dropDown(versions: Set<String>, current: String) {
                     "justify-center",
                     "font-bold",
                     "text-center",
-                ).plus(if (versions.size <= 1) emptyList() else conditional)
+                ).plus(if (options.size <= 1) emptyList() else conditional)
 
-                +current
+                +selected.text
             }
 
-            if (versions.size <= 1) return@dropdown
+            if (options.size <= 1) return@dropdown
 
             div {
                 id = "version-select"
@@ -76,15 +84,24 @@ public fun FlowContent.dropDown(versions: Set<String>, current: String) {
                     "rounded-lg",
                 )
 
-                // TODO
-                repeat(4) {
+                options.sortedByDescending(DropdownOption::text).forEach { option ->
                     a {
-                        href = "#"
+                        href = option.link
+
+                        val color = if (option.selected) "project-color" else ""
 
                         div {
-                            classes = setOf("px-4", "py-2")
+                            classes = setOf(
+                                "w-24",
+                                "px-4",
+                                "py-2",
+                                "font-bold",
+                                "text-center",
+                                "project-color-hover",
+                                color,
+                            )
 
-                            +"Option $it"
+                            +option.text
                         }
                     }
                 }
