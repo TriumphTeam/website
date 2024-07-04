@@ -60,7 +60,7 @@ public fun FlowContent.backgroundBlob(properties: List<String>) {
     div {
         classes = setOf(
             "absolute -z-10",
-            "bg-blur-effect",
+            "blob-background",
             "bg-cover",
             "pointer-events-none",
         ).plus(properties)

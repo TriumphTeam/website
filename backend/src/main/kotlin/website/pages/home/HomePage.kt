@@ -42,7 +42,7 @@ public fun Routing.homeRoutes(developmentMode: Boolean) {
                         name = project.name,
                         icon = createIconPath(project.id.value),
                         color = project.color,
-                        version = version.id.value,
+                        version = version.reference,
                     )
                 }
             }

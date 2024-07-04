@@ -65,7 +65,7 @@ public class BannerMaker {
         }
     }
 
-    public fun BufferedImage.deepCopy(): BufferedImage {
+    private fun BufferedImage.deepCopy(): BufferedImage {
         val cm = colorModel
         val isAlphaPremultiplied = cm.isAlphaPremultiplied
         val raster = copyData(null)

@@ -36,3 +36,8 @@
     background-color: #3C3E41;
     border-radius: 25px;
 }
+
+.blob-background {
+    background: rgb(155, 85, 186);
+    background: radial-gradient(circle, rgba(155, 85, 186, 0.2) 0%, rgba(181, 50, 160, 0) 50%);
+}

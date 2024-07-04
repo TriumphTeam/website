@@ -70,12 +70,8 @@ public fun Application.module() {
 
     routing {
 
-        staticResources("/static", "static") {
-            preCompressed(CompressedFileType.BROTLI, CompressedFileType.GZIP)
-        }
-        staticFiles("/assets", DATA_FOLDER.resolve("core")) {
-            preCompressed(CompressedFileType.BROTLI, CompressedFileType.GZIP)
-        }
+        staticResources("/static", "static")
+        staticFiles("/assets", DATA_FOLDER.resolve("core"))
 
         install(CachingHeaders) {
             options { _, outgoingContent ->

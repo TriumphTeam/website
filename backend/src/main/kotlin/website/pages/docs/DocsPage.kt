@@ -16,12 +16,8 @@ import dev.triumphteam.backend.website.respondHtmlCached
 import dev.triumphteam.website.project.Navigation
 import dev.triumphteam.website.project.PageSummary
 import dev.triumphteam.website.project.SummaryEntry
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.TextContent
-import io.ktor.http.withCharset
 import io.ktor.server.application.call
-import io.ktor.server.html.respondHtml
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
@@ -42,13 +38,11 @@ import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.footer
 import kotlinx.html.h1
-import kotlinx.html.html
 import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.li
 import kotlinx.html.meta
 import kotlinx.html.script
-import kotlinx.html.stream.appendHTML
 import kotlinx.html.style
 import kotlinx.html.styleLink
 import kotlinx.html.title
@@ -59,10 +53,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDate
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
-
-private val pageCache: Cache<String, TextContent> = Caffeine.newBuilder()
-    .expireAfterWrite(10.minutes.toJavaDuration())
-    .build()
 
 private val projectCache: Cache<String, ProjectData> = Caffeine.newBuilder()
     .expireAfterWrite(5.minutes.toJavaDuration())
@@ -424,12 +414,12 @@ private fun getProject(project: String): ProjectData? {
 
         val versions = DocVersionEntity.find { DocVersions.project eq projectEntity.id }.map { entity ->
             Version(
-                reference = entity.id.value,
+                reference = entity.reference,
                 navigation = entity.navigation,
                 pages = PageEntity.find { (Pages.project eq projectEntity.id) and (Pages.version eq entity.id) }
                     .map { pageEntity ->
                         Page(
-                            id = pageEntity.id.value,
+                            id = pageEntity.pageId,
                             content = pageEntity.content,
                             summary = pageEntity.summary,
                             title = pageEntity.title,

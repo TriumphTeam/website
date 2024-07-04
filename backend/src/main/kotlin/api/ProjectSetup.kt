@@ -54,7 +54,8 @@ public fun setupRepository(projects: File) {
 
             project.versions.forEach { version ->
 
-                val versionEntity = DocVersionEntity.new(version.reference) {
+                val versionEntity = DocVersionEntity.new {
+                    this.reference = version.reference
                     this.project = projectEntity
                     this.navigation = version.navigation
                     this.stable = version.stable
@@ -81,7 +82,8 @@ public fun setupRepository(projects: File) {
                         output = pageDir.resolve("banner.png"),
                     )
 
-                    PageEntity.new(page.id) {
+                    PageEntity.new {
+                        this.pageId = page.id
                         this.project = projectEntity
                         this.version = versionEntity
                         this.content = page.content
