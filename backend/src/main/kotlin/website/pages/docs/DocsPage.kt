@@ -13,17 +13,17 @@ import dev.triumphteam.backend.meilisearch.Meili
 import dev.triumphteam.backend.website.pages.createIconPath
 import dev.triumphteam.backend.website.pages.docs.components.DropdownOption
 import dev.triumphteam.backend.website.pages.docs.components.dropDown
-import dev.triumphteam.website.highlightWord
 import dev.triumphteam.backend.website.pages.docs.components.noResults
 import dev.triumphteam.backend.website.pages.docs.components.search
 import dev.triumphteam.backend.website.pages.docs.components.searchArea
 import dev.triumphteam.backend.website.pages.docs.components.searchResult
 import dev.triumphteam.backend.website.pages.docs.components.toast
-import dev.triumphteam.website.trim
 import dev.triumphteam.backend.website.pages.setupHead
 import dev.triumphteam.backend.website.respondHtmlCached
+import dev.triumphteam.website.highlightWord
 import dev.triumphteam.website.project.Navigation
 import dev.triumphteam.website.project.Page
+import dev.triumphteam.website.trimAround
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.html.respondHtml
@@ -128,7 +128,7 @@ public fun Routing.docsRoutes(meili: Meili, developmentMode: Boolean) {
                     val summary = page.summary.find { it.href == document.anchor } ?: return@mapNotNull null
 
                     val queryWords = query.split(" ")
-                    val trimmedDescription = summary.terms.joinToString(" ").trim(queryWords.first(), 50)
+                    val trimmedDescription = summary.terms.joinToString(" ").trimAround(queryWords.first(), 50)
 
                     SearchResult(
                         title = "${page.title} | ${summary.literal}",
