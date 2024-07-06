@@ -11,12 +11,12 @@ import dev.triumphteam.backend.website.pages.createIconPath
 import dev.triumphteam.backend.website.pages.docs.components.DropdownOption
 import dev.triumphteam.backend.website.pages.docs.components.dropDown
 import dev.triumphteam.backend.website.pages.docs.components.search
+import dev.triumphteam.backend.website.pages.docs.components.searchArea
 import dev.triumphteam.backend.website.pages.docs.components.toast
 import dev.triumphteam.backend.website.pages.setupHead
 import dev.triumphteam.backend.website.respondHtmlCached
 import dev.triumphteam.website.project.Navigation
-import dev.triumphteam.website.project.PageSummary
-import dev.triumphteam.website.project.SummaryEntry
+import dev.triumphteam.website.project.Page
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.uri
@@ -95,7 +95,7 @@ private fun HTML.renderFullPage(
     developmentMode: Boolean,
     project: ProjectData,
     version: Version,
-    currentPage: Page,
+    currentPage: ProjectPage,
 ) {
     setupHead(developmentMode) {
 
@@ -197,7 +197,10 @@ private fun HTML.renderFullPage(
 
     body {
 
-        classes = setOf("bg-docs-bg", "text-white", "overflow-y-auto overflow-x-hidden")
+        classes = setOf("bg-docs-bg", "text-white", "overflow-y-auto overflow-x-hidden", "opened-search")
+
+        // Must be first here
+        searchArea()
 
         sideBar(project, version, currentPage)
         content(currentPage)
@@ -209,7 +212,7 @@ private fun HTML.renderFullPage(
     }
 }
 
-private fun FlowContent.content(page: Page) {
+private fun FlowContent.content(page: ProjectPage) {
     // Content area
     div {
 
@@ -253,7 +256,7 @@ private fun FlowContent.content(page: Page) {
         div {
             classes = setOf("py-4", "px-2")
             a {
-                href = page.summary.path
+                href = page.path
                 classes =
                     setOf("w-full", "text-white/75", "text-sm", "transition ease-in-out delay-100 project-color-hover")
                 +"Edit this page on GitHub"
@@ -268,12 +271,12 @@ private fun FlowContent.content(page: Page) {
         ul {
             id = "summary"
             classes = setOf("text-white/75 text-lg", "summary")
-            page.summary.entries.forEach { entries(it, true) }
+            page.summary.forEach { entries(it, true) }
         }
     }
 }
 
-private fun UL.entries(entry: SummaryEntry, initial: Boolean = false) {
+private fun UL.entries(entry: Page.Summary, initial: Boolean = false) {
     li {
 
         if (initial) {
@@ -293,7 +296,7 @@ private fun UL.entries(entry: SummaryEntry, initial: Boolean = false) {
     }
 }
 
-private fun FlowContent.sideBar(project: ProjectData, version: Version, currentPage: Page) {
+private fun FlowContent.sideBar(project: ProjectData, version: Version, currentPage: ProjectPage) {
     div {
 
         classes = setOf(
@@ -342,7 +345,12 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
             }
         }
 
-        search()
+        div {
+            id = "searchbar-button"
+
+            classes = setOf("cursor-pointer")
+            search(enabled = false)
+        }
 
         div {
             classes = setOf(
@@ -382,7 +390,7 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
     }
 }
 
-private fun FlowContent.barHeader(text: String, pages: List<Navigation.Page>, currentPage: Page) {
+private fun FlowContent.barHeader(text: String, pages: List<Navigation.Page>, currentPage: ProjectPage) {
     div {
 
         h1 {
@@ -432,14 +440,15 @@ private fun getProject(project: String): ProjectData? {
                 stable = entity.stable,
                 pages = PageEntity.find { (Pages.project eq projectEntity.id) and (Pages.version eq entity.id) }
                     .map { pageEntity ->
-                        Page(
+                        ProjectPage(
                             id = pageEntity.pageId,
                             content = pageEntity.content,
+                            path = pageEntity.path,
                             summary = pageEntity.summary,
                             title = pageEntity.title,
                             subTitle = pageEntity.subTitle,
                         )
-                    }.associateBy(Page::id),
+                    }.associateBy(ProjectPage::id),
             )
         }.associateBy(Version::reference)
 
@@ -467,20 +476,21 @@ public data class Version(
     public val reference: String,
     public val navigation: Navigation,
     public val stable: Boolean,
-    public val pages: Map<String, Page>,
+    public val pages: Map<String, ProjectPage>,
 ) {
 
     public data class Data(public val reference: String, public val stable: Boolean)
 }
 
-public data class Page(
+public data class ProjectPage(
     public val id: String,
     public val content: String,
-    public val summary: PageSummary,
+    public val path: String,
+    public val summary: List<Page.Summary>,
     public val title: String,
     public val subTitle: String,
 )
 
-private fun cacheId(project: ProjectData, version: Version, page: Page): String {
+private fun cacheId(project: ProjectData, version: Version, page: ProjectPage): String {
     return "${project.id}:${version.reference}:${page.id}"
 }

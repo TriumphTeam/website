@@ -72,13 +72,13 @@ public fun setupRepository(projects: File) {
                         it.mkdirs()
                     }
 
-                    val banner = page.banner
+                    val description = page.description
 
                     bannerMaker.create(
                         icon = projectIcon,
-                        group = banner.group,
-                        title = banner.title,
-                        subTitle = banner.subTitle,
+                        group = description.group,
+                        title = description.title,
+                        subTitle = description.subTitle,
                         output = pageDir.resolve("banner.png"),
                     )
 
@@ -87,9 +87,10 @@ public fun setupRepository(projects: File) {
                         this.project = projectEntity
                         this.version = versionEntity
                         this.content = page.content
-                        this.title = banner.title ?: ""
-                        this.subTitle = banner.subTitle ?: ""
-                        this.summary = page.summary
+                        this.path = page.path
+                        this.title = description.title ?: ""
+                        this.subTitle = description.subTitle ?: ""
+                        this.summary = description.summary
                     }
                 }
             }

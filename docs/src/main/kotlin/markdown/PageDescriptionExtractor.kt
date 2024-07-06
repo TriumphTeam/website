@@ -7,12 +7,12 @@ import org.commonmark.node.Node
 private val headerPattern = "(?<=<center><h1>)[^<]+(?=</h1></center>)".toRegex()
 private val paragraphPattern = "(?<=<center><p>)[^<]+(?=</p></center>)".toRegex()
 
-public class BannerDataRenderer : AbstractVisitor() {
+public class PageDescriptionExtractor : AbstractVisitor() {
 
     private var header: String? = null
     private var paragraph: String? = null
 
-    public fun render(node: Node): Pair<String?, String?> {
+    public fun extract(node: Node): Pair<String?, String?> {
         node.accept(this)
 
         return header to paragraph

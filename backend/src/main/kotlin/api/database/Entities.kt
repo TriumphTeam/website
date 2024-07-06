@@ -1,7 +1,7 @@
 package dev.triumphteam.backend.api.database
 
 import dev.triumphteam.website.project.Navigation
-import dev.triumphteam.website.project.PageSummary
+import dev.triumphteam.website.project.Page
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.IntEntity
@@ -40,10 +40,11 @@ public object Pages : IntIdTable("pages") {
         reference("project_id", Projects, ReferenceOption.CASCADE, ReferenceOption.CASCADE)
     public val version: Column<EntityID<Int>> =
         reference("version_id", DocVersions, ReferenceOption.CASCADE, ReferenceOption.CASCADE)
+    public val path: Column<String> = text("path")
     public val content: Column<String> = text("content")
     public val title: Column<String> = text("title")
     public val subTitle: Column<String> = text("sub_title")
-    public val summary: Column<PageSummary> = serializable<PageSummary>("summary")
+    public val summary: Column<List<Page.Summary>> = serializable<List<Page.Summary>>("summary")
 
     init {
         uniqueIndex("page_project_version_uq", pageId, project, version)
@@ -74,8 +75,9 @@ public class PageEntity(id: EntityID<Int>) : IntEntity(id) {
     public var pageId: String by Pages.pageId
     public var project: ProjectEntity by ProjectEntity referencedOn Pages.project
     public var version: DocVersionEntity by DocVersionEntity referencedOn Pages.version
+    public var path: String by Pages.path
     public var content: String by Pages.content
     public var title: String by Pages.title
     public var subTitle: String by Pages.subTitle
-    public var summary: PageSummary by Pages.summary
+    public var summary: List<Page.Summary> by Pages.summary
 }

@@ -6,8 +6,8 @@ import dev.triumphteam.backend.api.database.DocVersions
 import dev.triumphteam.backend.api.database.Pages
 import dev.triumphteam.backend.api.database.Projects
 import io.ktor.server.application.Application
+import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -42,5 +42,5 @@ public fun main() {
         )
     }
 
-    embeddedServer(Netty, module = Application::module, port = 8001, watchPaths = listOf("classes")).start(true)
+    embeddedServer(CIO, module = Application::module, port = 8001, watchPaths = listOf("classes")).start(true)
 }

@@ -17,8 +17,8 @@ public class TabsBlockParser(indent: Int) : FenceBlockParser('-') {
         return true
     }
 
-    override fun canContain(block: Block?): Boolean {
-        return block != null && block !is TabsBlock
+    override fun canContain(block: Block): Boolean {
+        return block !is TabsBlock
     }
 
     override fun skip(line: CharSequence, startIndex: Int, endIndex: Int): Int {

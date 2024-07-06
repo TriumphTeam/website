@@ -2,6 +2,7 @@ package dev.triumphteam.backend
 
 import dev.triumphteam.backend.api.apiRoutes
 import dev.triumphteam.backend.api.auth.TriumphPrincipal
+import dev.triumphteam.backend.meilisearch.Meili
 import dev.triumphteam.backend.website.websiteRoutes
 import dev.triumphteam.website.JsonSerializer
 import io.ktor.http.CacheControl
@@ -67,6 +68,10 @@ public fun Application.module() {
     }
     install(ForwardedHeaders)
     install(XForwardedHeaders)
+
+    install(Meili) {
+
+    }
 
     routing {
 

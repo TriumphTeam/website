@@ -39,8 +39,8 @@ public data class Navigation(public val groups: List<Group>) {
 public data class Page(
     public val id: String,
     public val content: String,
-    public val summary: PageSummary,
-    public val banner: Banner,
+    public val path: String,
+    public val description: Description,
 ) {
 
     @Serializable
@@ -49,26 +49,20 @@ public data class Page(
         public val group: String,
         public val subTitle: String?,
     )
-}
 
-@Serializable
-public data class SummaryEntry(
-    public val literal: String,
-    public val href: String,
-    public val children: List<SummaryEntry>,
-) {
+    @Serializable
+    public data class Description(
+        public val title: String?,
+        public val group: String,
+        public val subTitle: String?,
+        public val summary: List<Summary>,
+    )
 
-    public fun print(indent: Int) {
-        println(" ".repeat(indent) + "- $href")
-        children.forEach { it.print(indent + 2) }
-    }
-}
-
-@Serializable
-public data class PageSummary(public val path: String, public val entries: List<SummaryEntry>) {
-
-    public fun print() {
-        println("Path -> $path")
-        entries.forEach { it.print(2) }
-    }
+    @Serializable
+    public data class Summary(
+        public val literal: String,
+        public val href: String,
+        public val terms: List<String>,
+        public val children: List<Summary>,
+    )
 }

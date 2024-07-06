@@ -3,10 +3,10 @@ package dev.triumphteam.website.docs
 import dev.triumphteam.website.HoconSerializer
 import dev.triumphteam.website.JsonSerializer
 import dev.triumphteam.website.api.Api
-import dev.triumphteam.website.docs.markdown.BannerDataRenderer
 import dev.triumphteam.website.docs.markdown.MarkdownRenderer
+import dev.triumphteam.website.docs.markdown.PageDescriptionExtractor
 import dev.triumphteam.website.docs.markdown.hint.HintExtension
-import dev.triumphteam.website.docs.markdown.summary.SummaryRenderer
+import dev.triumphteam.website.docs.markdown.summary.SummaryExtractor
 import dev.triumphteam.website.docs.markdown.tab.TabExtension
 import dev.triumphteam.website.docs.serialization.GroupConfig
 import dev.triumphteam.website.docs.serialization.PageConfig
@@ -16,7 +16,6 @@ import dev.triumphteam.website.docs.serialization.VersionConfig
 import dev.triumphteam.website.project.DocVersion
 import dev.triumphteam.website.project.Navigation
 import dev.triumphteam.website.project.Page
-import dev.triumphteam.website.project.PageSummary
 import dev.triumphteam.website.project.Project
 import dev.triumphteam.website.project.Repository
 import io.ktor.client.HttpClient
@@ -30,7 +29,6 @@ import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -63,9 +61,9 @@ private val DEFAULT_EXTENSIONS = listOf(
 private val htmlRenderer =
     HtmlRenderer.builder().nodeRendererFactory(::MarkdownRenderer).extensions(DEFAULT_EXTENSIONS).build()
 
-private val summaryRenderer = SummaryRenderer()
-
-private val mdParser = Parser.builder().extensions(DEFAULT_EXTENSIONS).build()
+private val mdParser = Parser.builder()
+    .extensions(DEFAULT_EXTENSIONS)
+    .build()
 
 private val logger: Logger = LoggerFactory.getLogger("docs")
 
@@ -219,21 +217,20 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
                 }
 
                 val parsedFile = mdParser.parse(pageFile.readText())
+                val summaryExtractor = SummaryExtractor()
 
-                val (bannerHeader, bannerParagraph) = BannerDataRenderer().render(parsedFile)
+                val (title, subTitle) = PageDescriptionExtractor().extract(parsedFile)
 
                 pageCollector.collect(
                     Page(
                         id = pageFile.nameWithoutExtension.lowercase(),
                         content = htmlRenderer.render(parsedFile),
-                        summary = PageSummary(
-                            path = "${repoSettings.editPath.removeSuffix("/")}/${pageFile.relativeTo(parentDir).path}",
-                            entries = summaryRenderer.render(parsedFile),
-                        ),
-                        banner = Page.Banner(
-                            title = bannerHeader,
-                            subTitle = bannerParagraph,
+                        path = "${repoSettings.editPath.removeSuffix("/")}/${pageFile.relativeTo(parentDir).path}",
+                        description = Page.Description(
+                            title = title,
+                            subTitle = subTitle,
                             group = parsedGroupConfig.header,
+                            summary = summaryExtractor.extract(parsedFile),
                         ),
                     )
                 )

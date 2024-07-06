@@ -4,6 +4,7 @@ import org.commonmark.internal.util.Parsing
 import org.commonmark.parser.block.AbstractBlockParser
 import org.commonmark.parser.block.BlockContinue
 import org.commonmark.parser.block.ParserState
+import org.commonmark.text.Characters
 
 public abstract class FenceBlockParser(private val skipCharacter: Char) : AbstractBlockParser() {
 
@@ -42,7 +43,7 @@ public abstract class FenceBlockParser(private val skipCharacter: Char) : Abstra
         }
 
         // spec: The closing code fence [...] may be followed only by spaces, which are ignored.
-        val after = Parsing.skipSpaceTab(line, index + fences, line.length)
+        val after = Characters.skipSpaceTab(line, index + fences, line.length)
         return after == line.length
     }
 

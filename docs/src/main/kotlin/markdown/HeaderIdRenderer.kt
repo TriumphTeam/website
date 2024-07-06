@@ -32,3 +32,10 @@ public class HeaderIdRenderer : TextBasedRenderer(
     separator = "-",
     transform = { it.replace(" ", "-").lowercase() }
 )
+
+public class TestRenderer : AbstractVisitor() {
+
+    public fun render(node: Node) {
+        node.accept(this)
+    }
+}

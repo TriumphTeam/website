@@ -30,7 +30,29 @@ private val intersectionOptions = object : IntersectionObserverInit {
 }
 
 public fun main() {
-    versionDropdownListeners()
+
+    // Show version dropdown
+    showListener(
+        buttonId = "version-select-button",
+        elementId = "version-select",
+    )
+    // Hide the version dropdown
+    hideListener(
+        buttonId = "version-select-button",
+        elementId = "version-select",
+    )
+
+    // Show search area
+    showListener(
+        buttonId = "searchbar-button",
+        elementId = "search-area",
+    )
+    // Hide the search area
+    hideListener(
+        buttonId = "searchbar-button",
+        elementId = "search-area",
+        ignoreElementId = "search-area-container",
+    )
     copyCodeListener()
     observer()
 }
@@ -57,14 +79,12 @@ private fun copyToClipboard(toastElement: Element?, target: EventTarget?) {
     }
 }
 
-private fun versionDropdownListeners() {
-    val dropdownId = "version-select"
-    val buttonId = "version-select-button"
+private fun showListener(buttonId: String, elementId: String) {
 
     val buttonElement = document.getElementById(buttonId)
 
     buttonElement?.addEventListener("click", { event: Event ->
-        val target = document.getElementById(dropdownId)
+        val target = document.getElementById(elementId)
 
         // Only show if hidden
         if (target?.hasClass(invisibleClass) == true) {
@@ -78,12 +98,22 @@ private fun versionDropdownListeners() {
         // Hide links
         target?.addClass(invisibleClass, hiddenClass)
     })
+}
+
+private fun hideListener(
+    buttonId: String,
+    elementId: String,
+    ignoreElementId: String? = null,
+) {
+    val buttonElement = document.getElementById(buttonId)
+    val ignoreElement = ignoreElementId?.let { document.getElementById(it) }
 
     document.addEventListener("click", { event: Event ->
         // Don't do global hide if clicking on the version element
         if (buttonElement?.contains(event.target as Node) == true) return@addEventListener
+        if (ignoreElement?.contains(event.target as Node) == true) return@addEventListener
 
-        val element = document.getElementById(dropdownId)
+        val element = document.getElementById(elementId)
 
         // Hide if it's not hidden
         if (element?.hasClass(invisibleClass) == false) {

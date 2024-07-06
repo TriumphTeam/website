@@ -46,3 +46,13 @@ body {
     font-size: 80%;
     margin-left: 20px;
 }
+
+.opened-search {
+    overflow: hidden !important;
+}
+
+.docs-search {
+    z-index: 1;
+    backdrop-filter: blur(4px);
+    background: rgba(40, 44, 52, 0.51);
+}

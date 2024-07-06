@@ -346,5 +346,4 @@ public class MarkdownRenderer(private val context: HtmlNodeRendererContext) : Ab
             """.trimIndent()
         )
     }
-
 }
