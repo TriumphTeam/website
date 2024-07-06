@@ -124,7 +124,7 @@ public suspend fun main(args: Array<String>) {
             }
         },
     )
-    
+
     val outputDir = File("output").also(File::mkdirs)
 
     val repository = outputDir.resolve("repository.json").also {

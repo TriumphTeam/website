@@ -32,15 +32,19 @@ public class MeiliClient(
     port: Int,
     private val apiKey: String = "",
     protocol: URLProtocol,
+    developMode: Boolean,
 ) {
 
     public val client: HttpClient = HttpClient(CIO) {
         install(Resources)
         install(Auth) { api(apiKey) } // Auto setup authentication
         install(ContentNegotiation) { json(JsonSerializer.json) } // Using Kotlin serialization for content negotiation
-        install(Logging) {
-            logger = Logger.DEFAULT
-            level = LogLevel.BODY
+
+        if (developMode) {
+            install(Logging) {
+                logger = Logger.DEFAULT
+                level = LogLevel.BODY
+            }
         }
 
         defaultRequest {

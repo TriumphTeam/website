@@ -13,13 +13,13 @@ public class Meili(config: Configuration) {
 
     public val client: MeiliClient = config.createClient()
 
-    public class Configuration {
+    public class Configuration(private val developMode: Boolean) {
         public var host: String = "0.0.0.0"
         public var port: Int = 7700
         public var apiKey: String = "masterKey"
         public var protocol: URLProtocol = URLProtocol.HTTP
 
-        internal fun createClient() = MeiliClient(host, port, apiKey, protocol)
+        internal fun createClient() = MeiliClient(host, port, apiKey, protocol, developMode)
     }
 
     public companion object Plugin : BaseApplicationPlugin<Application, Configuration, Meili> {
@@ -27,7 +27,7 @@ public class Meili(config: Configuration) {
         override val key: AttributeKey<Meili> = AttributeKey("Meili")
 
         override fun install(pipeline: Application, configure: Configuration.() -> Unit): Meili {
-            return Meili(Configuration().apply(configure))
+            return Meili(Configuration(pipeline.developmentMode).apply(configure))
         }
     }
 }
