@@ -30,4 +30,4 @@ public data class GroupConfig(public val header: String, public val pages: List<
 }
 
 @Serializable
-public data class PageConfig(public val header: String, public val link: String)
+public data class PageConfig(public val header: String, public val link: String, public val default: Boolean = false)

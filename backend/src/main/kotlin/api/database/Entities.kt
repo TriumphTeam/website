@@ -28,6 +28,7 @@ public object DocVersions : IntIdTable("docs_version") {
     public val navigation: Column<Navigation> = serializable<Navigation>("navigation")
     public val stable: Column<Boolean> = bool("stable")
     public val recommended: Column<Boolean> = bool("recommended")
+    public val defaultPage: Column<String> = varchar("default_page", 255)
 
     init {
         uniqueIndex("ref_project_uq", reference, project)
@@ -67,6 +68,7 @@ public class DocVersionEntity(id: EntityID<Int>) : IntEntity(id) {
     public var navigation: Navigation by DocVersions.navigation
     public var stable: Boolean by DocVersions.stable
     public var recommended: Boolean by DocVersions.recommended
+    public var defaultPage: String by DocVersions.defaultPage
 }
 
 public class PageEntity(id: EntityID<Int>) : IntEntity(id) {

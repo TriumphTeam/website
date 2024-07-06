@@ -48,6 +48,7 @@ ktor-server-caching-headers = { module = "io.ktor:ktor-server-caching-headers-jv
 ktor-server-html = { module = "io.ktor:ktor-server-html-builder", version.ref = "ktor" }
 ktor-server-css = { module = "org.jetbrains.kotlin-wrappers:kotlin-css", version.ref = "ktor-css" }
 ktor-server-default-headers = { module = "io.ktor:ktor-server-default-headers-jvm", version.ref = "ktor" }
+ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
 
 # Common
 ktor-resources = { module = "io.ktor:ktor-resources", version.ref = "ktor" }
@@ -109,6 +110,7 @@ ktor-server = [
     "ktor-server-caching-headers",
     "ktor-server-default-headers",
     "ktor-server-css",
+    "ktor-server-status-pages",
 ]
 ktor-client = [
     "ktor-client-core",

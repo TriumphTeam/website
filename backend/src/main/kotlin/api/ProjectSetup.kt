@@ -68,6 +68,7 @@ public suspend fun setupRepository(meili: Meili, projects: File) {
                     this.navigation = version.navigation
                     this.stable = version.stable
                     this.recommended = version.recommended
+                    this.defaultPage = version.pages.find { it.default }?.id ?: error("Could not find default page.")
                 }
 
                 val versionFolder = DATA_FOLDER.resolve("core/${project.id}/${version.reference}").also {

@@ -9,7 +9,6 @@ import dev.triumphteam.website.docs.markdown.hint.HintExtension
 import dev.triumphteam.website.docs.markdown.summary.SummaryExtractor
 import dev.triumphteam.website.docs.markdown.tab.TabExtension
 import dev.triumphteam.website.docs.serialization.GroupConfig
-import dev.triumphteam.website.docs.serialization.PageConfig
 import dev.triumphteam.website.docs.serialization.ProjectConfig
 import dev.triumphteam.website.docs.serialization.RepoSettings
 import dev.triumphteam.website.docs.serialization.VersionConfig
@@ -208,9 +207,9 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
             navigationCollector.collect(Navigation.Group(parsedGroupConfig.header, parsedGroupConfig.mapPages()))
 
             val filesMap = groupFiles.associateBy(File::nameWithoutExtension)
-            parsedGroupConfig.pages.map(PageConfig::link).forEach { link ->
-                val pageFile = requireNotNull(filesMap[link]) {
-                    "Could not find file named '$link', make sure the file is created before adding it to the group config."
+            parsedGroupConfig.pages.forEach { page ->
+                val pageFile = requireNotNull(filesMap[page.link]) {
+                    "Could not find file named '${page.link}', make sure the file is created before adding it to the group config."
                 }
 
                 if (pageFile.nameWithoutExtension.contains(" ")) {
@@ -233,6 +232,7 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
                             group = parsedGroupConfig.header,
                             summary = summaryExtractor.extract(parsedFile),
                         ),
+                        default = page.default,
                     )
                 )
             }
@@ -243,7 +243,11 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
             recommended = parsedVersionConfig.recommended,
             stable = parsedVersionConfig.stable,
             navigation = navigationCollector.collection(),
-            pages = pageCollector.collection(),
+            pages = pageCollector.collection().also { pages ->
+                require(pages.count { it.default } == 1) {
+                    "Versions must have 1 and only 1 default page."
+                }
+            },
         )
     }.also { docVersions ->
         require(docVersions.count(DocVersion::recommended) == 1) {

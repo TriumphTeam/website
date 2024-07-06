@@ -86,12 +86,12 @@ public fun Routing.docsRoutes(meili: Meili, developmentMode: Boolean) {
 
         val pages = currentVersion.pages
         val page = when {
-            paramPage != null -> pages[paramPage] ?: return@get call.respond(HttpStatusCode.NotFound)
+            !paramPage.isNullOrEmpty() -> pages[paramPage] ?: return@get call.respond(HttpStatusCode.NotFound)
             else -> {
                 // If the page doesn't exist, redirect to 404
-                val page = pages.values.firstOrNull() ?: return@get call.respond(HttpStatusCode.NotFound)
+                val page = pages[currentVersion.defaultPage] ?: return@get call.respond(HttpStatusCode.NotFound)
                 // If exist redirect to default
-                return@get call.respondRedirect("${call.request.uri}/${page.id}")
+                return@get call.respondRedirect("${call.request.uri.removeSuffix("/")}/${page.id}")
             }
         }
 
@@ -511,6 +511,7 @@ private fun getProject(project: String): ProjectData? {
                 reference = entity.reference,
                 navigation = entity.navigation,
                 stable = entity.stable,
+                defaultPage = entity.defaultPage,
                 pages = PageEntity.find { (Pages.project eq projectEntity.id) and (Pages.version eq entity.id) }
                     .map { pageEntity ->
                         ProjectPage(
@@ -550,6 +551,7 @@ public data class Version(
     public val navigation: Navigation,
     public val stable: Boolean,
     public val pages: Map<String, ProjectPage>,
+    public val defaultPage: String,
 ) {
 
     public data class Data(public val reference: String, public val stable: Boolean)

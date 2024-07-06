@@ -3,18 +3,21 @@ package dev.triumphteam.backend
 import dev.triumphteam.backend.api.apiRoutes
 import dev.triumphteam.backend.api.auth.TriumphPrincipal
 import dev.triumphteam.backend.meilisearch.Meili
+import dev.triumphteam.backend.website.pages.respondNotFound
 import dev.triumphteam.backend.website.websiteRoutes
 import dev.triumphteam.website.JsonSerializer
 import io.ktor.http.CacheControl
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.CachingOptions
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.bearer
+import io.ktor.server.html.respondHtml
 import io.ktor.server.http.content.staticFiles
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.plugins.cachingheaders.CachingHeaders
@@ -24,7 +27,10 @@ import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.defaultheaders.DefaultHeaders
 import io.ktor.server.plugins.forwardedheaders.ForwardedHeaders
 import io.ktor.server.plugins.forwardedheaders.XForwardedHeaders
+import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.resources.Resources
+import io.ktor.server.response.respondRedirect
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.routing
 
 /** Module of the application. */
@@ -35,6 +41,12 @@ public fun Application.module() {
         developmentMode -> "test"
         propertyValue == null -> error("Bearer token not set. Application cannot initiate.")
         else -> propertyValue
+    }
+
+    install(StatusPages) {
+        status(HttpStatusCode.NotFound) { call, status ->
+            call.respondRedirect("/404")
+        }
     }
 
     install(Resources)

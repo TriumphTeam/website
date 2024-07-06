@@ -41,6 +41,7 @@ public data class Page(
     public val content: String,
     public val path: String,
     public val description: Description,
+    public val default: Boolean,
 ) {
 
     @Serializable
