@@ -1,6 +1,6 @@
 package dev.triumphteam.website
 
-public fun String.trim(word: String? = null, contextLength: Int = 20): String {
+public fun String.trimAround(word: String? = null, contextLength: Int = 20): String {
     val index = word?.let { indexOf(it, ignoreCase = true) } ?: 0
     val wordLength = word?.length ?: 0
 
@@ -10,11 +10,14 @@ public fun String.trim(word: String? = null, contextLength: Int = 20): String {
         start--
     }
 
+    println(start)
     // Find end index by moving forward contextLength characters and then to the next space
     var end = (index + wordLength + contextLength).coerceAtMost(length)
     while (end < length && !this[end].isWhitespace()) {
         end++
     }
+    println(end)
+    println(this)
 
     val trimmed = substring(start, end).trim()
 
