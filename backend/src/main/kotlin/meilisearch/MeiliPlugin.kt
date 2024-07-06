@@ -14,10 +14,10 @@ public class Meili(config: Configuration) {
     public val client: MeiliClient = config.createClient()
 
     public class Configuration {
-        private var host: String = "0.0.0.0"
-        private var port: Int = 7700
-        private var apiKey: String = "masterKey"
-        private var protocol: URLProtocol = URLProtocol.HTTP
+        public var host: String = "0.0.0.0"
+        public var port: Int = 7700
+        public var apiKey: String = "masterKey"
+        public var protocol: URLProtocol = URLProtocol.HTTP
 
         internal fun createClient() = MeiliClient(host, port, apiKey, protocol)
     }

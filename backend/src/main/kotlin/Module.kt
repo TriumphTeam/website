@@ -70,7 +70,7 @@ public fun Application.module() {
     install(XForwardedHeaders)
 
     install(Meili) {
-
+        this.apiKey = bearer
     }
 
     routing {
