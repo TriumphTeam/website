@@ -124,9 +124,7 @@ public suspend fun main(args: Array<String>) {
             }
         },
     )
-
-    println(JsonSerializer.encode<Repository>(projects.toRepository()))
-    return
+    
     val outputDir = File("output").also(File::mkdirs)
 
     val repository = outputDir.resolve("repository.json").also {
