@@ -10,14 +10,11 @@ public fun String.trimAround(word: String? = null, contextLength: Int = 20): Str
         start--
     }
 
-    println(start)
     // Find end index by moving forward contextLength characters and then to the next space
     var end = (index + wordLength + contextLength).coerceAtMost(length)
     while (end < length && !this[end].isWhitespace()) {
         end++
     }
-    println(end)
-    println(this)
 
     val trimmed = substring(start, end).trim()
 
