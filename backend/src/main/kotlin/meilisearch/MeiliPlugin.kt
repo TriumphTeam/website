@@ -8,8 +8,6 @@ import io.ktor.server.application.application
 import io.ktor.server.application.plugin
 import io.ktor.util.AttributeKey
 import io.ktor.util.pipeline.PipelineContext
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
 
 public class Meili(config: Configuration) {
 
@@ -37,9 +35,10 @@ public class Meili(config: Configuration) {
 public suspend inline fun <reified T> PipelineContext<*, ApplicationCall>.search(
     index: String,
     query: String,
+    limit: Int = 20,
     filter: String? = null,
 ): List<T> = with(this.application.plugin(Meili).client) {
-    return index(index).search(query, filter)
+    return index(index).search(query, limit, filter)
 }
 
 public suspend inline fun PipelineContext<*, ApplicationCall>.index(index: String): MeiliClient.Index =

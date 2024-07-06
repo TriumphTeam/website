@@ -18,6 +18,7 @@ import dev.triumphteam.website.project.Navigation
 import dev.triumphteam.website.project.Page
 import dev.triumphteam.website.project.Project
 import dev.triumphteam.website.project.Repository
+import dev.triumphteam.website.trim
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -228,7 +229,7 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
                         path = "${repoSettings.editPath.removeSuffix("/")}/${pageFile.relativeTo(parentDir).path}",
                         description = Page.Description(
                             title = title,
-                            subTitle = subTitle,
+                            subTitle = subTitle?.trim(contextLength = 100),
                             group = parsedGroupConfig.header,
                             summary = summaryExtractor.extract(parsedFile),
                         ),

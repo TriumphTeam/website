@@ -1,12 +1,14 @@
 package dev.triumphteam.backend.api
 
 import dev.triumphteam.backend.DATA_FOLDER
+import dev.triumphteam.backend.meilisearch.Meili
 import dev.triumphteam.website.api.Api
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.http.content.streamProvider
 import io.ktor.server.application.call
+import io.ktor.server.application.plugin
 import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receiveMultipart
 import io.ktor.server.resources.post
@@ -19,6 +21,7 @@ import java.io.File
 private val logger: Logger = LoggerFactory.getLogger("api-route")
 
 public fun Routing.apiRoutes() {
+    val meili = plugin(Meili)
 
     authenticate("bearer") {
         post<Api.Setup> {
@@ -35,7 +38,7 @@ public fun Routing.apiRoutes() {
                                 val zip = downloadsFolder.resolve("projects.zip").also {
                                     it.writeBytes(fileBytes)
                                 }
-                                setupRepository(zip)
+                                setupRepository(meili, zip)
                             }
 
                             else -> {}

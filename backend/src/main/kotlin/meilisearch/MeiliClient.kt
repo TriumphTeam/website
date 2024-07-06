@@ -76,16 +76,24 @@ public class MeiliClient(
         public suspend fun delete(): HttpResponse = client.delete(Indexes.Uid(uid = uid))
 
         /** Search for specific content in the index. */
-        public suspend inline fun <reified T> search(query: String, filter: String?): List<T> {
-            return searchFull<T>(query, filter).hits
+        public suspend inline fun <reified T> search(
+            query: String,
+            limit: Int = 20,
+            filter: String? = null,
+        ): List<T> {
+            return searchFull<T>(query, limit, filter).hits
         }
 
         /** [search] but returns all the data ([SearchResult]) provided by the search. */
-        public suspend inline fun <reified T> searchFull(query: String, filter: String?): SearchResult<T> {
+        public suspend inline fun <reified T> searchFull(
+            query: String,
+            limit: Int,
+            filter: String?,
+        ): SearchResult<T> {
             // TODO: Handle errors.
             return client.post(Indexes.Uid.Search(Indexes.Uid(uid = uid))) {
                 contentType(ContentType.Application.Json)
-                setBody(SearchRequest(query, filter))
+                setBody(SearchRequest(query, limit, filter))
             }.body()
         }
 
@@ -176,6 +184,7 @@ public class MeiliClient(
     @Serializable
     public data class SearchRequest(
         public val q: String,
+        public val limit: Int = 20,
         public val filter: String?,
     )
 

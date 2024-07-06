@@ -5,8 +5,13 @@ import dev.triumphteam.backend.api.database.DocVersionEntity
 import dev.triumphteam.backend.api.database.PageEntity
 import dev.triumphteam.backend.api.database.ProjectEntity
 import dev.triumphteam.backend.banner.BannerMaker
+import dev.triumphteam.backend.meilisearch.Meili
 import dev.triumphteam.website.JsonSerializer
+import dev.triumphteam.website.project.Page
 import dev.triumphteam.website.project.Repository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 import net.lingala.zip4j.ZipFile
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -16,9 +21,12 @@ import javax.imageio.ImageIO
 
 private val bannerMaker = BannerMaker()
 
-public fun setupRepository(projects: File) {
+public suspend fun setupRepository(meili: Meili, projects: File) {
 
-    val tempFolder = Files.createTempDirectory("zip-temp").toFile()
+    val tempFolder = withContext(Dispatchers.IO) {
+        Files.createTempDirectory("zip-temp")
+    }.toFile()
+
     ZipFile(projects).extractAll(tempFolder.path)
 
     val json = tempFolder.resolve("repository.json")
@@ -96,4 +104,63 @@ public fun setupRepository(projects: File) {
             }
         }
     }
+
+
+    // Search setup
+    repo.projects.forEach { project ->
+        project.versions.forEach { version ->
+
+            val projectId = projectIndex(project.id, version.reference)
+
+            // First delete it all
+            meili.client.index(projectId).delete()
+
+            // Then re-add new stuff
+            meili.client.index(projectId, primaryKey = "id").addDocuments(
+                version.pages.flatMap { page ->
+                    listOf(descriptionDocument(page.id, page.description))
+                        .plus(
+                            page.description.summary.map { summary ->
+                                SearchDocument(
+                                    id = SearchDocument.createId(page.id, summary.href),
+                                    pageId = page.id,
+                                    anchor = summary.href,
+                                    isAnchor = true,
+                                    reference = summary.terms,
+                                )
+                            }
+                        )
+                }
+            )
+        }
+    }
 }
+
+private fun descriptionDocument(id: String, description: Page.Description): SearchDocument {
+    return SearchDocument(
+        id = id,
+        pageId = id,
+        anchor = id,
+        isAnchor = false,
+        reference = listOfNotNull(description.title, description.subTitle),
+    )
+}
+
+@Serializable
+public data class SearchDocument(
+    public val id: String,
+    public val pageId: String,
+    public val anchor: String,
+    public val isAnchor: Boolean,
+    public val reference: List<String>,
+) {
+
+    public companion object {
+
+        public fun createId(page: String, id: String): String {
+            return "$page-$id"
+        }
+    }
+}
+
+public fun projectIndex(project: String, version: String): String = "$project-${version.replace(".", "_")}"

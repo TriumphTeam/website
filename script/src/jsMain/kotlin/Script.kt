@@ -46,13 +46,17 @@ public fun main() {
     showListener(
         buttonId = "searchbar-button",
         elementId = "search-area",
-    )
+    ) {
+        document.body?.addClass("opened-search")
+    }
     // Hide the search area
     hideListener(
         buttonId = "searchbar-button",
         elementId = "search-area",
         ignoreElementId = "search-area-container",
-    )
+    ) {
+        document.body?.removeClass("opened-search")
+    }
     copyCodeListener()
     observer()
 }
@@ -79,7 +83,11 @@ private fun copyToClipboard(toastElement: Element?, target: EventTarget?) {
     }
 }
 
-private fun showListener(buttonId: String, elementId: String) {
+private fun showListener(
+    buttonId: String,
+    elementId: String,
+    extra: () -> Unit = {},
+) {
 
     val buttonElement = document.getElementById(buttonId)
 
@@ -89,6 +97,7 @@ private fun showListener(buttonId: String, elementId: String) {
         // Only show if hidden
         if (target?.hasClass(invisibleClass) == true) {
             target.removeClass(invisibleClass, hiddenClass)
+            extra()
             return@addEventListener
         }
 
@@ -104,6 +113,7 @@ private fun hideListener(
     buttonId: String,
     elementId: String,
     ignoreElementId: String? = null,
+    extra: () -> Unit = {},
 ) {
     val buttonElement = document.getElementById(buttonId)
     val ignoreElement = ignoreElementId?.let { document.getElementById(it) }
@@ -119,6 +129,8 @@ private fun hideListener(
         if (element?.hasClass(invisibleClass) == false) {
             element.addClass(invisibleClass, hiddenClass)
         }
+
+        extra()
     })
 }
 
