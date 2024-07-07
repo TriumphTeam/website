@@ -441,6 +441,7 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
 
             div {
 
+                attributes["hx-boost"] = "true"
                 classes = setOf(
                     "grid",
                     "grid-cols-1",

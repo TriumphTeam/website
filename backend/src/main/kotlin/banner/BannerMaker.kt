@@ -37,16 +37,16 @@ public class BannerMaker {
 
             // First write the bold part
             font = fontBold.deriveFont(45f)
-            title?.let { drawString(it.trimAround(contextLength = 20), 66, 429) }
+            title?.let { drawString(it.trimAround(contextLength = 25), 66, 429) }
 
             // Then the rest
-            font = fontRegular.deriveFont(20f)
+            font = fontRegular.deriveFont(30f)
             drawString(group, 66, 359)
             subTitle?.let {
                 var location = 479
                 val lineSize = 50
 
-                val lines = it.splitSentence(maxLength = 50)
+                val lines = it.splitSentence(maxLength = 40)
 
                 lines.forEach { line ->
                     drawString(line, 66, location)
