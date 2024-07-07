@@ -2,12 +2,8 @@ package dev.triumphteam.backend.meilisearch
 
 import io.ktor.http.URLProtocol
 import io.ktor.server.application.Application
-import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.BaseApplicationPlugin
-import io.ktor.server.application.application
-import io.ktor.server.application.plugin
 import io.ktor.util.AttributeKey
-import io.ktor.util.pipeline.PipelineContext
 
 public class Meili(config: Configuration) {
 
@@ -31,15 +27,3 @@ public class Meili(config: Configuration) {
         }
     }
 }
-
-public suspend inline fun <reified T> PipelineContext<*, ApplicationCall>.search(
-    index: String,
-    query: String,
-    limit: Int = 20,
-    filter: String? = null,
-): List<T> = with(this.application.plugin(Meili).client) {
-    return index(index).search(query, limit, filter)
-}
-
-public suspend inline fun PipelineContext<*, ApplicationCall>.index(index: String): MeiliClient.Index =
-    application.plugin(Meili).client.index(index)

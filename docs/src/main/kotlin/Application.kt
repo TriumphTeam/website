@@ -33,7 +33,6 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.util.InternalAPI
 import net.lingala.zip4j.ZipFile
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Option
@@ -67,7 +66,6 @@ private val mdParser = Parser.builder()
 
 private val logger: Logger = LoggerFactory.getLogger("docs")
 
-@OptIn(InternalAPI::class)
 public suspend fun main(args: Array<String>) {
 
     val options = DefaultParser().parse(
@@ -273,9 +271,5 @@ private data class Projects(val projects: List<ProjectWithIcon>) {
 
     fun toRepository(): Repository {
         return Repository(projects.map(ProjectWithIcon::project))
-    }
-
-    fun icons(): List<File> {
-        return projects.map(ProjectWithIcon::icon)
     }
 }

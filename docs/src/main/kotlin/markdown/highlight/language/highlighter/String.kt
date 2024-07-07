@@ -55,7 +55,7 @@ public class StringHighlighter(
                     return@forEachIndexed
                 }
 
-                // If we find end of line reset since it's not allowed
+                // If we find the end of line reset since it's not allowed
                 if (char.isNewLine()) {
                     openerIndex = INVALID_INDEX
                 }

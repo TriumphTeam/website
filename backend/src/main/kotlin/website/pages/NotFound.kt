@@ -1,10 +1,8 @@
 package dev.triumphteam.backend.website.pages
 
-import kotlinx.css.h1
 import kotlinx.html.HTML
 import kotlinx.html.body
 import kotlinx.html.classes
-import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.meta
 import kotlinx.html.title
@@ -18,7 +16,7 @@ public fun HTML.respondNotFound(developmentMode: Boolean) {
 
         meta {
             name = "og:title"
-            content = "TriumphTeam"
+            content = "TriumphTeam | Not Found"
         }
 
         meta {

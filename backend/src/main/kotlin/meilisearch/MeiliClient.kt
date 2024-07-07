@@ -69,7 +69,7 @@ public class MeiliClient(
     ) {
 
         /** Create the index. Success even if it already exists. */
-        public suspend fun create(): HttpResponse = client.post(Indexes()) {
+        private suspend fun create(): HttpResponse = client.post(Indexes()) {
             contentType(ContentType.Application.Json)
             setBody(Create(uid, primaryKey))
         }.also {
@@ -124,14 +124,14 @@ public class MeiliClient(
         public suspend fun transferTo(index: Index): HttpResponse {
             val createResponse = index.create()
 
-            // If there was an error creating the new index we return the response
+            // If there was an error creating the new index, we return the response
             if (!createResponse.status.isSuccess()) return createResponse
 
             val swapResponse = client.post(Indexes.Swap()) {
                 setBody(listOf(Swap(listOf(uid, this@Index.uid))))
             }
 
-            // If there was an error swapping the new indexes we return the response
+            // If there was an error swapping the new indexes, we return the response
             if (!swapResponse.status.isSuccess()) return swapResponse
 
             // Then we delete the current index
@@ -166,7 +166,7 @@ public class MeiliClient(
         public class Swap(public val parent: Indexes = Indexes())
     }
 
-    /** Serializable class for the create end point. */
+    /** Serializable class for the "create" end point. */
     @Serializable
     public data class Create(
         val uid: String,

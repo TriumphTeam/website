@@ -204,7 +204,7 @@ public class MarkdownRenderer(private val context: HtmlNodeRendererContext) : Ab
     }
 
     override fun visit(orderedList: OrderedList) {
-        val start = orderedList.startNumber
+        val start = orderedList.markerStartNumber
         val attrs: MutableMap<String, String> = LinkedHashMap()
         if (start != 1) {
             attrs["start"] = start.toString()
@@ -309,9 +309,9 @@ public class MarkdownRenderer(private val context: HtmlNodeRendererContext) : Ab
     private fun isInTightList(paragraph: Paragraph): Boolean {
         val parent: Node? = paragraph.parent
         if (parent != null) {
-            val gramps = parent.parent
-            if (gramps is ListBlock) {
-                return gramps.isTight
+            val grandParent = parent.parent
+            if (grandParent is ListBlock) {
+                return grandParent.isTight
             }
         }
         return false

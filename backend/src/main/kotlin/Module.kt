@@ -3,7 +3,6 @@ package dev.triumphteam.backend
 import dev.triumphteam.backend.api.apiRoutes
 import dev.triumphteam.backend.api.auth.TriumphPrincipal
 import dev.triumphteam.backend.meilisearch.Meili
-import dev.triumphteam.backend.website.pages.respondNotFound
 import dev.triumphteam.backend.website.websiteRoutes
 import dev.triumphteam.website.JsonSerializer
 import io.ktor.http.CacheControl
@@ -17,7 +16,6 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.bearer
-import io.ktor.server.html.respondHtml
 import io.ktor.server.http.content.staticFiles
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.plugins.cachingheaders.CachingHeaders
@@ -30,7 +28,6 @@ import io.ktor.server.plugins.forwardedheaders.XForwardedHeaders
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.resources.Resources
 import io.ktor.server.response.respondRedirect
-import io.ktor.server.response.respondText
 import io.ktor.server.routing.routing
 
 /** Module of the application. */
@@ -44,7 +41,7 @@ public fun Application.module() {
     }
 
     install(StatusPages) {
-        status(HttpStatusCode.NotFound) { call, status ->
+        status(HttpStatusCode.NotFound) { call, _ ->
             call.respondRedirect("/404")
         }
     }

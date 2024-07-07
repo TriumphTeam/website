@@ -72,7 +72,7 @@ public class MultilineCommentHighlighter : LanguageHighlightComponent {
                 if (char == ASTERISK) {
                     asteriskIndex = index
 
-                    // Previous was a slash, no it's asterisk, we found an "opener"
+                    // Previous was a slash, no it's asterisk, we found an "opener".
                     if (slashIndex + 1 == index) {
                         openerIndex = slashIndex
                     }

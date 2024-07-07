@@ -169,7 +169,7 @@ private fun HTML.renderFullPage(
             src = "https://unpkg.com/htmx.org@2.0.0"
         }
 
-        val title = "TrimphTeam | ${project.name} - ${currentPage.title}"
+        val title = "TriumphTeam | ${project.name} - ${currentPage.title}"
         // TODO: Replace with final URL, sucks that it can't be relative
         val image = "https://new.triumphteam.dev/assets/${project.id}/${version.reference}/${currentPage.id}/banner.png"
 
@@ -228,43 +228,47 @@ private fun HTML.renderFullPage(
         title { +title }
 
         style {
-            +CssBuilder().apply {
-                rule(".project-color-bg") {
-                    backgroundColor = Color(project.color)
-                }
+            unsafe {
+                raw(
+                    CssBuilder().apply {
+                        rule(".project-color-bg") {
+                            backgroundColor = Color(project.color)
+                        }
 
-                rule(".project-color") {
-                    color = Color(project.color)
-                }
+                        rule(".project-color") {
+                            color = Color(project.color)
+                        }
 
-                rule(".project-color-hover") {
-                    transitionDuration = 0.3.s
-                }
+                        rule(".project-color-hover") {
+                            transitionDuration = 0.3.s
+                        }
 
-                rule(".project-color-border") {
-                    transitionDuration = 0.3.s
-                }
+                        rule(".project-color-border") {
+                            transitionDuration = 0.3.s
+                        }
 
-                rule(".project-color-hover:hover") {
-                    color = Color(project.color)
-                }
+                        rule(".project-color-hover:hover") {
+                            color = Color(project.color)
+                        }
 
-                rule(".project-color-border:hover") {
-                    borderColor = Color(project.color)
-                }
+                        rule(".project-color-border:hover") {
+                            borderColor = Color(project.color)
+                        }
 
-                rule(".docs-content a") {
-                    color = Color(project.color)
-                    transitionDuration = 0.3.s
-                }
-                rule(".docs-content a:hover") {
-                    color = Color("${project.color}C8")
-                }
+                        rule(".docs-content a") {
+                            color = Color(project.color)
+                            transitionDuration = 0.3.s
+                        }
+                        rule(".docs-content a:hover") {
+                            color = Color("${project.color}C8")
+                        }
 
-                rule(".summary-active *") {
-                    color = Color(project.color)
-                }
-            }.toString()
+                        rule(".summary-active *") {
+                            color = Color(project.color)
+                        }
+                    }.toString()
+                )
+            }
         }
     }
 

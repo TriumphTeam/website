@@ -21,7 +21,7 @@ public abstract class FenceBlockParser(private val skipCharacter: Char) : Abstra
             line[nextNonSpace] == skipCharacter &&
             isClosing(line, nextNonSpace)
         ) {
-            // closing fence - we're at end of line, so we can finalize now
+            // closing "fence" - we're at the end of line, so we can finalize now
             return BlockContinue.finished()
         }
 

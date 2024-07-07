@@ -29,7 +29,7 @@ public abstract class LanguageDefinition(
         }
     }
 
-    public fun captureHighlights(code: String): Map<Int, Collection<HighlightStep>> {
+    private fun captureHighlights(code: String): Map<Int, Collection<HighlightStep>> {
         val highlights = components.flatMap { it.highlight(code) }.toMutableList()
 
         globalValidator.forEach { validator ->
