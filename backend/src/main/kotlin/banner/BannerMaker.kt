@@ -1,5 +1,7 @@
 package dev.triumphteam.backend.banner
 
+import dev.triumphteam.website.splitSentence
+import dev.triumphteam.website.trimAround
 import java.awt.Font
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
@@ -31,19 +33,26 @@ public class BannerMaker {
 
         graphics.apply {
             // Change the quality of the strings rendered
-            setRenderingHint(
-                RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB,
-            )
+            setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB)
 
             // First write the bold part
-            font = fontBold.deriveFont(64f)
-            title?.let { drawString(it, 66, 429) }
+            font = fontBold.deriveFont(45f)
+            title?.let { drawString(it.trimAround(contextLength = 20), 66, 429) }
 
             // Then the rest
-            font = fontRegular.deriveFont(30f)
+            font = fontRegular.deriveFont(20f)
             drawString(group, 66, 359)
-            subTitle?.let { drawString(it, 66, 479) }
+            subTitle?.let {
+                var location = 479
+                val lineSize = 50
+
+                val lines = it.splitSentence(maxLength = 50)
+
+                lines.forEach { line ->
+                    drawString(line, 66, location)
+                    location += lineSize
+                }
+            }
 
             // Then the icon
             drawImage(icon, 712, 170, null)

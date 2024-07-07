@@ -30,3 +30,28 @@ public fun String.highlightWord(words: List<String>): String {
         "<b>${it.value}</b>"
     }
 }
+
+public fun String.splitSentence(maxLength: Int = 40): List<String> {
+    val words = split(" ")
+    val lines = mutableListOf<String>()
+    var currentLine = mutableListOf<String>()
+
+    for (word in words) {
+        // Check if adding the next word would exceed the max length
+        if (currentLine.sumOf { it.length } + currentLine.size + word.length <= maxLength) {
+            currentLine.add(word)
+        } else {
+            // Join the current line into a string and add to lines
+            lines.add(currentLine.joinToString(" "))
+            // Start a new line with the current word
+            currentLine = mutableListOf(word)
+        }
+    }
+
+    // Add the last line to lines
+    if (currentLine.isNotEmpty()) {
+        lines.add(currentLine.joinToString(" "))
+    }
+
+    return lines
+}
