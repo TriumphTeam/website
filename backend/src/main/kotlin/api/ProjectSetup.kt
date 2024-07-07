@@ -14,14 +14,18 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import net.lingala.zip4j.ZipFile
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileNotFoundException
 import java.nio.file.Files
 import javax.imageio.ImageIO
 
+private val logger = LoggerFactory.getLogger("project-setup")
 private val bannerMaker = BannerMaker()
 
 public suspend fun setupRepository(meili: Meili, projects: File) {
+
+    logger.info("Setup projects request received.")
 
     val tempFolder = withContext(Dispatchers.IO) {
         Files.createTempDirectory("zip-temp")
@@ -45,6 +49,7 @@ public suspend fun setupRepository(meili: Meili, projects: File) {
     // Delete downloaded files
     projects.delete()
 
+    logger.info("Inserting projects...")
     transaction {
         repo.projects.forEach { project ->
 
@@ -106,7 +111,7 @@ public suspend fun setupRepository(meili: Meili, projects: File) {
         }
     }
 
-
+    logger.info("Preparing search...")
     // Search setup
     repo.projects.forEach { project ->
         project.versions.forEach { version ->
@@ -135,6 +140,8 @@ public suspend fun setupRepository(meili: Meili, projects: File) {
             )
         }
     }
+
+    logger.info("Setup projects done.")
 }
 
 private fun descriptionDocument(id: String, description: Page.Description): SearchDocument {
