@@ -9,7 +9,10 @@ import dev.triumphteam.backend.meilisearch.Meili
 import dev.triumphteam.website.JsonSerializer
 import dev.triumphteam.website.project.Page
 import dev.triumphteam.website.project.Repository
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import net.lingala.zip4j.ZipFile
@@ -19,9 +22,12 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.nio.file.Files
 import javax.imageio.ImageIO
+import kotlin.time.Duration.Companion.seconds
 
 private val logger = LoggerFactory.getLogger("project-setup")
 private val bannerMaker = BannerMaker()
+
+private val scope = CoroutineScope(Dispatchers.IO)
 
 public suspend fun setupRepository(meili: Meili, projects: File) {
 
@@ -125,23 +131,28 @@ public suspend fun setupRepository(meili: Meili, projects: File) {
             // First delete it all
             meili.client.index(projectId).delete()
 
-            // Then re-add new stuff
-            meili.client.index(projectId, primaryKey = "id").addDocuments(
-                version.pages.flatMap { page ->
-                    listOf(descriptionDocument(page.id, page.description))
-                        .plus(
-                            page.description.summary.map { summary ->
-                                SearchDocument(
-                                    id = SearchDocument.createId(page.id, summary.href),
-                                    pageId = page.id,
-                                    anchor = summary.href,
-                                    isAnchor = true,
-                                    reference = summary.terms,
-                                )
-                            }
-                        )
-                }
-            )
+            scope.launch {
+                // Delay insert
+                delay(1.seconds)
+
+                // Then re-add new stuff
+                meili.client.index(projectId, primaryKey = "id").addDocuments(
+                    version.pages.flatMap { page ->
+                        listOf(descriptionDocument(page.id, page.description))
+                            .plus(
+                                page.description.summary.map { summary ->
+                                    SearchDocument(
+                                        id = SearchDocument.createId(page.id, summary.href),
+                                        pageId = page.id,
+                                        anchor = summary.href,
+                                        isAnchor = true,
+                                        reference = summary.terms,
+                                    )
+                                }
+                            )
+                    }
+                )
+            }
         }
     }
 
