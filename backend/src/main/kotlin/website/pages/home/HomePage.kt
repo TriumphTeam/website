@@ -163,7 +163,7 @@ private fun FlowContent.centerArea() {
             classes = setOf("col-span-1", "py-10", "grid", "grid-cols-2", "gap-10")
 
             socialButton(BorderDirection.LEFT, "fa-github", "https://github.com/TriumphTeam")
-            socialButton(BorderDirection.RIGHT, "fa-discord", "/discord")
+            socialButton(BorderDirection.RIGHT, "fa-discord", "https://triumphteam.dev/discord")
         }
     }
 }
