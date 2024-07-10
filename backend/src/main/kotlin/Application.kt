@@ -42,5 +42,10 @@ public fun main() {
         )
     }
 
-    embeddedServer(CIO, module = Application::module, port = 8001, watchPaths = listOf("classes")).start(true)
+    embeddedServer(
+        CIO,
+        module = Application::module,
+        port = System.getenv("WEBSITE_PORT")?.toIntOrNull() ?: 8001,
+        watchPaths = listOf("classes"),
+    ).start(true)
 }
