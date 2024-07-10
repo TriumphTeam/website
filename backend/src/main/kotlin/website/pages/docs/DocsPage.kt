@@ -324,6 +324,7 @@ private fun FlowContent.content(page: ProjectPage) {
 
                 id = "content"
                 classes = setOf("docs-content")
+                attributes["hx-boost"] = "true"
 
                 unsafe {
                     raw(page.content)
