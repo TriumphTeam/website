@@ -72,8 +72,6 @@ public class MeiliClient(
         private suspend fun create(): HttpResponse = client.post(Indexes()) {
             contentType(ContentType.Application.Json)
             setBody(Create(uid, primaryKey))
-        }.also {
-            println(it)
         }
 
         /** Deletes the current index. Success even if it doesn't exist. */
@@ -114,9 +112,6 @@ public class MeiliClient(
                 contentType(ContentType.Application.Json)
                 pk?.let { parameter(PRIMARY_KEY_PARAM, it) }
                 setBody<List<T>>(documents)
-            }.also {
-                println(it)
-                println(it.body<String>())
             }
         }
 

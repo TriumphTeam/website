@@ -35,7 +35,7 @@ public fun main() {
 
     // Creates all the tables
     transaction {
-        SchemaUtils.create(
+        SchemaUtils.createMissingTablesAndColumns(
             Projects,
             DocVersions,
             Pages,

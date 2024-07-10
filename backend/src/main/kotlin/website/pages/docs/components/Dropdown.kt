@@ -72,6 +72,7 @@ public fun FlowContent.dropDown(options: List<DropdownOption>) {
             if (options.size <= 1) return@dropdown
 
             div {
+                attributes["hx-boost"] = "true"
                 id = "version-select"
 
                 classes = setOf(

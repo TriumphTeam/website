@@ -8,7 +8,7 @@ import kotlinx.html.div
 import kotlinx.html.i
 import kotlinx.html.id
 import kotlinx.html.input
-import kotlinx.html.label
+import kotlinx.html.span
 import kotlinx.html.unsafe
 
 public fun FlowContent.search(
@@ -36,11 +36,10 @@ public fun FlowContent.search(
                     placeholder = "Search"
                     name = "q"
                     autoComplete = false
-                    autoFocus = true
                 }
             } else {
-                label {
-                    classes = textClasses.plus("pointer-events-none text-white/50")
+                span {
+                    classes = textClasses.plus("pointer-events-none text-white/50 select-none")
                     +"Search"
                 }
             }

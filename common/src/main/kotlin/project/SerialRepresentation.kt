@@ -13,6 +13,7 @@ public data class Project(
     public val name: String,
     public val color: String,
     public val projectHome: String,
+    public val discord: String?,
     public val versions: List<DocVersion>,
 )
 
@@ -23,6 +24,9 @@ public data class DocVersion(
     public val stable: Boolean,
     public val navigation: Navigation,
     public val pages: List<Page>,
+    public val github: String?,
+    public val discord: String?,
+    public val javadocs: String?,
 )
 
 @Serializable

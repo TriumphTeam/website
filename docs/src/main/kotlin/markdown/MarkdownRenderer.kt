@@ -169,7 +169,7 @@ public class MarkdownRenderer(private val context: HtmlNodeRendererContext) : Ab
         }
 
         url = context.encodeUrl(url)
-        attrs["href"] = url
+        attrs["href"] = url.removePrefix("/")
         if (link.title != null) attrs["title"] = link.title
         if (!url.startsWith("/")) {
             attrs["target"] = "_blank"

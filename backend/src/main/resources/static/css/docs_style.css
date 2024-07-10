@@ -21,18 +21,6 @@ body {
     border-radius: 25px;
 }
 
-.sidebar-content::after {
-    position: absolute;
-    z-index: 10;
-    left: 0;
-    width: 100%;
-    height: 10%;
-    content: "";
-    bottom: 0;
-    background: linear-gradient(rgba(20, 20, 23, 0) 0%, rgb(20, 20, 23) 50%);
-    pointer-events: none;
-}
-
 .weird-max-height {
     max-height: calc(100vh - 500px);
 }
@@ -52,6 +40,48 @@ body {
 }
 
 .docs-search {
-    z-index: 1;
+    z-index: 20;
     background: rgba(29, 32, 35, 0.9);
+}
+
+[data-tooltip] {
+    position: relative
+}
+
+[data-tooltip]::before, [data-tooltip]::after {
+    opacity: 0;
+    margin-top: -0.5em;
+    transition: opacity 0.3s;
+}
+
+[data-tooltip]::before {
+    content: attr(data-tooltip);
+    display: block;
+    position: absolute;
+    top: -130%;
+    left: 50%;
+    margin-left: -51px;
+    width: 8em;
+    text-align: center;
+    border-radius: 4px;
+    background: #202023;
+    color: white;
+    font-weight: bold;
+    font-size: 0.8em;
+    line-height: 1.1;
+    padding: 0.75em 0.95em;
+}
+
+[data-tooltip]::after {
+    content: "";
+    border: 10px solid transparent;
+    border-top-color: #202023;
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    margin-left: -10px;
+}
+
+[data-tooltip]:hover::before, [data-tooltip]:hover::after {
+    opacity: 1;
 }

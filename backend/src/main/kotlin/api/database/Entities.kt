@@ -17,6 +17,7 @@ public object Projects : IdTable<String>("projects") {
     public val name: Column<String> = varchar("name", 255)
     public val color: Column<String> = varchar("color", 10)
     public val github: Column<String> = varchar("github", 1024)
+    public val discord: Column<String?> = varchar("discord", 255).nullable().default(null)
 
     override val primaryKey: PrimaryKey = PrimaryKey(id)
 }
@@ -29,6 +30,9 @@ public object DocVersions : IntIdTable("docs_version") {
     public val stable: Column<Boolean> = bool("stable")
     public val recommended: Column<Boolean> = bool("recommended")
     public val defaultPage: Column<String> = varchar("default_page", 255)
+    public val github: Column<String?> = varchar("github", 1024).nullable().default(null)
+    public val discord: Column<String?> = varchar("discord", 1024).nullable().default(null)
+    public val javadocs: Column<String?> = varchar("javadocs", 1024).nullable().default(null)
 
     init {
         uniqueIndex("ref_project_uq", reference, project)
@@ -58,6 +62,7 @@ public class ProjectEntity(id: EntityID<String>) : Entity<String>(id) {
     public var name: String by Projects.name
     public var color: String by Projects.color
     public var github: String by Projects.github
+    public var discord: String? by Projects.discord
 }
 
 public class DocVersionEntity(id: EntityID<Int>) : IntEntity(id) {
@@ -69,6 +74,9 @@ public class DocVersionEntity(id: EntityID<Int>) : IntEntity(id) {
     public var stable: Boolean by DocVersions.stable
     public var recommended: Boolean by DocVersions.recommended
     public var defaultPage: String by DocVersions.defaultPage
+    public var github: String? by DocVersions.github
+    public var discord: String? by DocVersions.discord
+    public var javadocs: String? by DocVersions.javadocs
 }
 
 public class PageEntity(id: EntityID<Int>) : IntEntity(id) {

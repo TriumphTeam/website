@@ -61,6 +61,7 @@ public suspend fun setupRepository(meili: Meili, projects: File) {
                 this.name = project.name
                 this.color = project.color
                 this.github = project.projectHome
+                this.discord = project.discord
             }
 
             val projectIcon = ImageIO.read(coreDir.resolve("${project.id}/icon.png"))
@@ -74,6 +75,9 @@ public suspend fun setupRepository(meili: Meili, projects: File) {
                     this.stable = version.stable
                     this.recommended = version.recommended
                     this.defaultPage = version.pages.find { it.default }?.id ?: error("Could not find default page.")
+                    this.github = version.github
+                    this.discord = version.discord
+                    this.javadocs = version.javadocs
                 }
 
                 val versionFolder = DATA_FOLDER.resolve("core/${project.id}/${version.reference}").also {

@@ -48,6 +48,7 @@ import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.footer
 import kotlinx.html.h1
+import kotlinx.html.i
 import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.li
@@ -62,6 +63,7 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDate
+import kotlin.collections.set
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
 
@@ -169,6 +171,10 @@ private fun HTML.renderFullPage(
             src = "https://unpkg.com/htmx.org@2.0.0"
         }
 
+        script {
+            src = "/static/scripts/base.js"
+        }
+
         val title = "TriumphTeam | ${project.name} - ${currentPage.title}"
         // TODO: Replace with final URL, sucks that it can't be relative
         val image = "https://new.triumphteam.dev/assets/${project.id}/${version.reference}/${currentPage.id}/banner.png"
@@ -247,12 +253,20 @@ private fun HTML.renderFullPage(
                             transitionDuration = 0.3.s
                         }
 
+                        rule(".project-color-bg-hover") {
+                            transitionDuration = 0.3.s
+                        }
+
                         rule(".project-color-hover:hover") {
                             color = Color(project.color)
                         }
 
                         rule(".project-color-border:hover") {
                             borderColor = Color(project.color)
+                        }
+
+                        rule(".project-color-bg-hover:hover") {
+                            backgroundColor = Color(project.color)
                         }
 
                         rule(".docs-content a") {
@@ -284,7 +298,7 @@ private fun HTML.renderFullPage(
         toast()
 
         script {
-            src = "/static/scripts/script.js"
+            src = "/static/scripts/observer.js"
         }
     }
 }
@@ -431,12 +445,10 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
 
         div {
             classes = setOf(
-                "w-full",
-                "h-full",
                 "px-4",
                 "overflow-y-auto",
                 "overflow-x-hidden",
-                "sidebar-content",
+                "grow",
             )
 
             div {
@@ -451,20 +463,54 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
                 version.navigation.groups.forEach { group ->
                     barHeader(group.header, group.pages, currentPage)
                 }
-
-                // Keeps it from overflowing on the bottom
-                div {
-                    classes = setOf("h-12")
-                }
             }
         }
 
         div {
             classes = setOf(
                 "w-full",
-                "h-8",
+                "h-16",
+                "flex justify-center items-center flex-none",
             )
+
+            div {
+                classes = setOf(
+                    "w-56",
+                    "flex justify-center items-center gap-2",
+                )
+
+                bottomButton("Discord", "fa-brands fa-discord", version.discord ?: project.discord)
+                bottomButton("Github", "fa-brands fa-github", version.github)
+                bottomButton("Javadocs", "fa-solid fa-book", version.javadocs)
+            }
         }
+    }
+}
+
+private fun FlowContent.bottomButton(tooltip: String, icon: String, link: String?) {
+    a {
+
+        link?.let { href = it }
+        target = "_bank"
+        if (link != null) {
+            attributes["data-tooltip"] = tooltip
+        }
+
+        val conditional = if (link != null) {
+            setOf("project-color-bg-hover")
+        } else {
+            setOf("text-zinc-500", "cursor-default")
+        }
+
+        classes = setOf(
+            "w-1/3",
+            "flex justify-center items-center",
+            "bg-search-bg",
+            "rounded-md",
+            "p-2",
+        ).plus(conditional)
+
+        i { classes = setOf(icon) }
     }
 }
 
@@ -490,6 +536,7 @@ private fun FlowContent.page(text: String, link: String, isCurrentPage: Boolean)
 
         a {
 
+            id = "navigation-link"
             href = link
 
             classes = setOf(
@@ -517,6 +564,9 @@ private fun getProject(project: String): ProjectData? {
                 navigation = entity.navigation,
                 stable = entity.stable,
                 defaultPage = entity.defaultPage,
+                github = entity.github,
+                discord = entity.discord,
+                javadocs = entity.javadocs,
                 pages = PageEntity.find { (Pages.project eq projectEntity.id) and (Pages.version eq entity.id) }
                     .map { pageEntity ->
                         ProjectPage(
@@ -537,6 +587,7 @@ private fun getProject(project: String): ProjectData? {
             icon = createIconPath(projectEntity.id.value),
             color = projectEntity.color,
             versions = versions,
+            discord = projectEntity.discord,
         ).also {
             projectCache.put(it.id, it)
         }
@@ -548,6 +599,7 @@ public data class ProjectData(
     public val name: String,
     public val icon: String,
     public val color: String,
+    public val discord: String?,
     public val versions: Map<String, Version>,
 )
 
@@ -557,6 +609,9 @@ public data class Version(
     public val stable: Boolean,
     public val pages: Map<String, ProjectPage>,
     public val defaultPage: String,
+    public val github: String?,
+    public val discord: String?,
+    public val javadocs: String?,
 ) {
 
     public data class Data(public val reference: String, public val stable: Boolean)
