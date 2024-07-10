@@ -21,8 +21,7 @@ public fun HTML.respondNotFound(developmentMode: Boolean) {
 
         meta {
             name = "og:image"
-            // TODO: Replace with final URL, sucks that it can't be relative
-            content = "https://new.triumphteam.dev/static/images/banner_not_found.png"
+            content = "https://triumphteam.dev/static/images/banner_not_found.png"
         }
 
         title("TriumphTeam")

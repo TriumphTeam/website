@@ -51,6 +51,7 @@ import kotlinx.html.h1
 import kotlinx.html.i
 import kotlinx.html.id
 import kotlinx.html.img
+import kotlinx.html.lang
 import kotlinx.html.li
 import kotlinx.html.meta
 import kotlinx.html.script
@@ -161,6 +162,8 @@ private fun HTML.renderFullPage(
     version: Version,
     currentPage: ProjectPage,
 ) {
+    lang = "en"
+
     setupHead(developmentMode) {
 
         styleLink("/static/css/docs_style.css")
@@ -176,8 +179,7 @@ private fun HTML.renderFullPage(
         }
 
         val title = "TriumphTeam | ${project.name} - ${currentPage.title}"
-        // TODO: Replace with final URL, sucks that it can't be relative
-        val image = "https://new.triumphteam.dev/assets/${project.id}/${version.reference}/${currentPage.id}/banner.png"
+        val image = "https://triumphteam.dev/assets/${project.id}/${version.reference}/${currentPage.id}/banner.png"
 
         meta {
             name = "description"
@@ -349,6 +351,7 @@ private fun FlowContent.content(page: ProjectPage) {
             classes = setOf("py-4", "px-2")
             a {
                 href = page.path
+                target = "_blank"
                 classes =
                     setOf("w-full", "text-white/75", "text-sm", "transition ease-in-out delay-100 project-color-hover")
                 +"Edit this page on GitHub"

@@ -73,8 +73,7 @@ private fun HTML.fullPage(developmentMode: Boolean, projects: List<ProjectDispla
 
         meta {
             name = "og:image"
-            // TODO: Replace with final URL, sucks that it can't be relative
-            content = "https://new.triumphteam.dev/static/images/banner.png"
+            content = "https://triumphteam.dev/static/images/banner.png"
         }
 
         title("TriumphTeam")
