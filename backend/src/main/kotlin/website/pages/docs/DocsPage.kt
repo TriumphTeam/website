@@ -83,7 +83,7 @@ public fun Routing.docsRoutes(meili: Meili, developmentMode: Boolean) {
 
         val currentVersion = when {
             paramVersion != null -> project.versions[paramVersion] ?: return@get call.respond(HttpStatusCode.NotFound)
-            else -> project.versions.values.firstOrNull() ?: return@get call.respond(HttpStatusCode.NotFound)
+            else -> project.versions.values.find { it.recommended } ?: return@get call.respond(HttpStatusCode.NotFound)
         }
 
         val pages = currentVersion.pages
@@ -563,6 +563,7 @@ private fun getProject(project: String): ProjectData? {
                 reference = entity.reference,
                 navigation = entity.navigation,
                 stable = entity.stable,
+                recommended = entity.recommended,
                 defaultPage = entity.defaultPage,
                 github = entity.github,
                 discord = entity.discord,
@@ -607,6 +608,7 @@ public data class Version(
     public val reference: String,
     public val navigation: Navigation,
     public val stable: Boolean,
+    public val recommended: Boolean,
     public val pages: Map<String, ProjectPage>,
     public val defaultPage: String,
     public val github: String?,
