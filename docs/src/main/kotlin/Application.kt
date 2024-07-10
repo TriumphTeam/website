@@ -112,6 +112,7 @@ public suspend fun main(args: Array<String>) {
                     color = parsedProjectConfig.color,
                     projectHome = parsedProjectConfig.projectHome,
                     versions = parseVersions(files.filter(File::isDirectory), inputPath, repoSettings),
+                    discord = parsedProjectConfig.discord,
                 ),
                 icon = requireNotNull(files.findFile("icon.png")) {
                     "Found project folder without a 'project.conf' file, skipping it!"
@@ -246,6 +247,9 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
                     "Versions must have 1 and only 1 default page."
                 }
             },
+            github = parsedVersionConfig.github,
+            discord = parsedVersionConfig.discord,
+            javadocs = parsedVersionConfig.javadocs,
         )
     }.also { docVersions ->
         require(docVersions.count(DocVersion::recommended) == 1) {

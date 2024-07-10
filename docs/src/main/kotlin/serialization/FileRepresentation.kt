@@ -20,9 +20,9 @@ public data class VersionConfig(
     public val reference: String,
     public val recommended: Boolean = false,
     public val stable: Boolean = true,
-    public val github: String?,
-    public val discord: String?,
-    public val javadocs: String?,
+    public val github: String? = null,
+    public val discord: String? = null,
+    public val javadocs: String? = null,
 )
 
 @Serializable
