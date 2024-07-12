@@ -46,7 +46,6 @@ import kotlinx.html.a
 import kotlinx.html.body
 import kotlinx.html.classes
 import kotlinx.html.div
-import kotlinx.html.footer
 import kotlinx.html.h1
 import kotlinx.html.i
 import kotlinx.html.id
@@ -309,11 +308,15 @@ private fun FlowContent.content(page: ProjectPage) {
     // Content area
     div {
 
-        classes = setOf("w-screen h-screen", "px-[36em]", "pt-12", "grid grid-cols-1 gap-4")
+        classes = setOf("w-screen h-full", "pt-12")
 
         // Actual content
         div {
-            classes = setOf("h-full", "w-full")
+            classes = setOf(
+                "h-full",
+                "w-3/4 xl:w-3/6 2xl:w-3/5",
+                "mx-auto",
+            )
 
             div {
                 classes = setOf(
@@ -325,7 +328,7 @@ private fun FlowContent.content(page: ProjectPage) {
             div {
 
                 id = "content"
-                classes = setOf("docs-content")
+                classes = setOf("docs-content pb-12")
                 attributes["hx-boost"] = "true"
 
                 unsafe {
@@ -333,19 +336,18 @@ private fun FlowContent.content(page: ProjectPage) {
                 }
             }
         }
-
-        // Footer
-        footer {
-
-            classes = setOf("text-xs", "text-center", "py-8", "self-end")
-            +"Copyright © ${LocalDate.now().year}, TriumphTeam. All Rights Reserved."
-        }
     }
 
     // Right side, bar area
     div {
 
-        classes = setOf("fixed inset-y-0 right-0", "w-80 h-screen", "px-6", "py-16")
+        classes = setOf(
+            "opacity-0 xl:opacity-100",
+            "fixed inset-y-0 right-0",
+            "h-screen",
+            "xl:w-60 2xl:w-72",
+            "px-6 py-16",
+        )
 
         div {
             classes = setOf("py-4", "px-2")
@@ -359,13 +361,21 @@ private fun FlowContent.content(page: ProjectPage) {
         }
 
         h1 {
-            classes = setOf("text-2xl", "font-bold", "py-2")
+            classes = setOf(
+                "xl:text-xl 2xl:text-2xl",
+                "font-bold",
+                "py-2",
+            )
             +"On this page"
         }
 
         ul {
             id = "summary"
-            classes = setOf("text-white/75 text-lg", "summary")
+            classes = setOf(
+                "text-white/75",
+                "xl:text-base 2xl:text-lg",
+                "summary",
+            )
             page.summary.forEach { entries(it, true) }
         }
     }
@@ -396,7 +406,8 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
 
         classes = setOf(
             "fixed",
-            "w-72",
+            "opacity-0 xl:opacity-100",
+            "xl:w-60 2xl:w-72",
             "h-screen",
             "flex flex-col",
             "gap-6",
@@ -450,8 +461,7 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
         div {
             classes = setOf(
                 "px-4",
-                "overflow-y-auto",
-                "overflow-x-hidden",
+                "overflow-y-auto overflow-x-hidden overscroll-contain",
                 "grow",
             )
 
@@ -474,7 +484,7 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
             classes = setOf(
                 "w-full",
                 "h-16",
-                "flex justify-center items-center flex-none",
+                "flex flex-col gap-1 justify-center items-center flex-none",
             )
 
             div {
@@ -486,6 +496,11 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
                 bottomButton("Discord", "fa-brands fa-discord", version.discord ?: project.discord)
                 bottomButton("Github", "fa-brands fa-github", version.github)
                 bottomButton("Javadocs", "fa-solid fa-book", version.javadocs)
+            }
+
+            div {
+                classes = setOf("flex-none", "text-[0.5em]", "text-center", "py-2")
+                +"Copyright © ${LocalDate.now().year}, TriumphTeam. All Rights Reserved."
             }
         }
     }
@@ -522,7 +537,11 @@ private fun FlowContent.barHeader(text: String, pages: List<Navigation.Page>, cu
     div {
 
         h1 {
-            classes = setOf("text-white", "text-xl", "font-bold")
+            classes = setOf(
+                "text-white",
+                "xl:text-lg 2xl:text-xl",
+                "font-bold",
+            )
 
             +text
         }
@@ -544,7 +563,7 @@ private fun FlowContent.page(text: String, link: String, isCurrentPage: Boolean)
             href = link
 
             classes = setOf(
-                "text-lg",
+                "xl:text-base 2xl:text-lg",
                 "transition ease-in-out delay-100",
                 "project-color-hover",
             ).plus(if (isCurrentPage) "project-color" else "")

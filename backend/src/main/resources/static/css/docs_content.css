@@ -1,7 +1,13 @@
 .docs-content {
-    font-size: 1.125rem;
+    font-size: 1rem;
     line-height: 1.75rem;
     color: rgba(255, 255, 255, 0.7);
+}
+
+@media (min-width: 1536px) {
+    .docs-content {
+        font-size: 1.125rem;
+    }
 }
 
 .docs-content * {
@@ -45,20 +51,20 @@
 }
 
 .docs-content h1 {
-    font-size: 2em;
+    font-size: 1.75em;
     font-weight: 700;
     padding: 0;
     color: white;
 }
 
 .docs-content h2 {
-    font-size: 1.4em;
+    font-size: 1.25em;
     font-weight: bold;
     color: white;
 }
 
 .docs-content h3 {
-    font-size: 1.2em;
+    font-size: 1.1em;
     font-weight: bold;
     color: white;
 }
@@ -67,6 +73,42 @@
     font-size: 1.0em;
     font-weight: bold;
     color: white;
+}
+
+@media (min-width: 1280px) {
+    .docs-content h1 {
+        font-size: 1.85rem;
+    }
+
+    .docs-content h2 {
+        font-size: 1.3em;
+    }
+
+    .docs-content h3 {
+        font-size: 1.15em;
+    }
+
+    .docs-content h4 {
+        font-size: 1.0em;
+    }
+}
+
+@media (min-width: 1536px) {
+    .docs-content h1 {
+        font-size: 2rem;
+    }
+
+    .docs-content h2 {
+        font-size: 1.4em;
+    }
+
+    .docs-content h3 {
+        font-size: 1.2em;
+    }
+
+    .docs-content h4 {
+        font-size: 1.0em;
+    }
 }
 
 .docs-content h2:hover #hash {

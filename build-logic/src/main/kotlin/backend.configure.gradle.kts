@@ -11,7 +11,6 @@ tasks {
                             "kotlin.ExperimentalStdlibApi",
                             "kotlin.io.path.ExperimentalPathApi",
                             "kotlin.contracts.ExperimentalContracts",
-                            "kotlin.io.path.ExperimentalSerializationApi",
                             "kotlinx.coroutines.ExperimentalCoroutinesApi",
                             "kotlinx.serialization.InternalSerializationApi",
                             "kotlinx.serialization.ExperimentalSerializationApi",
