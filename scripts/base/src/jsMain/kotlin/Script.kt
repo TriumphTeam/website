@@ -5,7 +5,6 @@ import kotlinx.dom.hasClass
 import kotlinx.dom.removeClass
 import org.w3c.dom.Element
 import org.w3c.dom.Node
-import org.w3c.dom.asList
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.EventTarget
 
@@ -43,13 +42,11 @@ public fun main() {
 }
 
 private fun copyCodeListener() {
-    val toastElement = document.getElementById("toast")
-
-    document.querySelectorAll("#copy").asList().forEach { element ->
-        element.addEventListener("click", { event ->
-            copyToClipboard(toastElement, event.target)
-        })
-    }
+    document.addEventListener("click", { event ->
+        val target = event.target as? Element ?: return@addEventListener
+        if (target.id != "copy") return@addEventListener
+        copyToClipboard(document.getElementById("toast"), target)
+    })
 }
 
 private fun copyToClipboard(toastElement: Element?, target: EventTarget?) {
