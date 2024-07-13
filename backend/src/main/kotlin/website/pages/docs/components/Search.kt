@@ -74,7 +74,7 @@ public fun FlowContent.searchArea(project: String, version: String) {
             "fixed",
             "w-screen h-screen",
             "docs-search",
-            "p-72",
+            "flex justify-center items-center",
         )
 
         div {
@@ -82,10 +82,8 @@ public fun FlowContent.searchArea(project: String, version: String) {
             id = "search-area-container"
 
             classes = setOf(
-                "w-2/5 min-h-72",
+                "w-5/6 xl:w-4/6 2xl:w-3/5 h-3/5",
                 "bg-docs-bg",
-                "mx-auto",
-                "my-0",
                 "rounded-lg",
                 "py-4 px-12",
                 "flex flex-col gap-6",

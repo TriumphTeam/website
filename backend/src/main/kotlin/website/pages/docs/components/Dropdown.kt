@@ -14,7 +14,7 @@ public data class DropdownOption(
 
 public fun FlowContent.dropDown(options: List<DropdownOption>) {
     div {
-        classes = setOf("mx-auto", "max-w-sm", "flex", "select-none")
+        classes = setOf("flex justify-center", "select-none")
 
         // Left side of the chooser
         div {

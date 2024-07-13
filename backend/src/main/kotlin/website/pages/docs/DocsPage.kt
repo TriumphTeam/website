@@ -320,8 +320,8 @@ private fun FlowContent.content(page: ProjectPage) {
 
             div {
                 classes = setOf(
-                    "absolute -z-10 w-[1700px] h-96 left-0 right-0 top-0 mx-auto",
-                    "bg-dots bg-cover opacity-85 pointer-events-none",
+                    "absolute -z-10 w-3/4 h-96 left-0 right-0 top-0 mx-auto",
+                    "dots bg-center opacity-85 pointer-events-none",
                 )
             }
 
@@ -402,29 +402,58 @@ private fun UL.entries(entry: Page.Summary, initial: Boolean = false) {
 }
 
 private fun FlowContent.sideBar(project: ProjectData, version: Version, currentPage: ProjectPage) {
+
     div {
 
+        classes = setOf("absolute opacity-100 xl:opacity-0 top-0 ml-6 mt-6 text-2xl")
+        i {
+            id = "show-sidebar-button"
+            classes = setOf("fa-solid fa-bars cursor-pointer")
+        }
+    }
+
+    div {
+
+        id = "side-bar"
         classes = setOf(
-            "fixed",
-            "opacity-0 xl:opacity-100",
-            "xl:w-60 2xl:w-72",
-            "h-screen",
-            "flex flex-col",
-            "gap-6",
+            "fixed z-10",
+            "bg-docs-bg",
+            "w-screen xl:w-60 2xl:w-72",
+            "h-svh h-screen",
+            "hidden xl:flex flex-col",
+            "gap-4",
             "px-4",
-            "justify-items-center",
+            "justify-center",
         )
+
+        div {
+            classes = setOf(
+                "absolute top-0 right-0 mr-8 mt-6 text-2xl cursor-pointer",
+                "xl:opacity-0",
+            )
+
+            i {
+                id = "hide-sidebar-button"
+                classes = setOf("fa-solid fa-xmark")
+            }
+        }
 
         // Logo area
         div {
-            classes = setOf("grid", "grid-cols-1", "gap-4", "w-full", "justify-items-center", "h-64")
+            classes = setOf(
+                "grid",
+                "grid-cols-1",
+                "gap-4",
+                "w-full",
+                "justify-items-center",
+            )
 
             div {
                 classes = setOf("flex items-center h-36 pt-4")
 
                 a {
                     href = "/"
-                    img(src = project.icon, classes = "col-span-1 w-28")
+                    img(src = project.icon, classes = "col-span-1 w-28 xl:w-24 2xl:w-28")
                 }
             }
 
@@ -435,21 +464,17 @@ private fun FlowContent.sideBar(project: ProjectData, version: Version, currentP
                     +project.name
                 }
             }
+        }
 
-            div {
-                classes = setOf("col-span-1")
-
-                dropDown(
-                    options = project.versions.values.map { ver ->
-                        DropdownOption(
-                            text = ver.reference,
-                            link = "/docs/${ver.reference}/${project.id}",
-                            selected = ver.reference == version.reference,
-                        )
-                    }
+        dropDown(
+            options = project.versions.values.map { ver ->
+                DropdownOption(
+                    text = ver.reference,
+                    link = "/docs/${ver.reference}/${project.id}",
+                    selected = ver.reference == version.reference,
                 )
             }
-        }
+        )
 
         div {
             id = "searchbar-button"

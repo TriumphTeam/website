@@ -10,10 +10,6 @@ tailwind.config = {
                 'docs-bg': '#141417',
                 'search-bg': '#202023',
             },
-            backgroundImage: {
-                'blur-effect': `url('/static/images/blur_effect.png')`,
-                'dots': `url('/static/images/dots.png')`,
-            }
         }
     }
 }

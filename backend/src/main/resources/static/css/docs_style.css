@@ -35,8 +35,18 @@ body {
     margin-left: 20px;
 }
 
-.opened-search {
+.search-locked {
     overflow: hidden !important;
+}
+
+.menu-locked {
+    overflow: hidden !important;
+}
+
+@media (min-width: 1280px) {
+    .menu-locked {
+        overflow-y: auto !important;
+    }
 }
 
 .docs-search {
@@ -85,4 +95,9 @@ body {
 
 [data-tooltip]:hover::before, [data-tooltip]:hover::after {
     opacity: 1;
+}
+
+.dots {
+    background-image: url("/static/images/dots.png"), linear-gradient(0deg, rgba(255,255,255,0) 70%, rgba(20,20,23,1) 100%), linear-gradient(180deg, rgba(255,255,255,0) 70%, rgba(20,20,23,1) 100%);
+    background-size: cover;
 }

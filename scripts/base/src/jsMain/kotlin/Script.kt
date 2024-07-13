@@ -5,7 +5,6 @@ import kotlinx.dom.hasClass
 import kotlinx.dom.removeClass
 import org.w3c.dom.Element
 import org.w3c.dom.Node
-import org.w3c.dom.events.Event
 import org.w3c.dom.events.EventTarget
 
 private const val hiddenClass = "opacity-0"
@@ -28,7 +27,7 @@ public fun main() {
         buttonId = "searchbar-button",
         elementId = "search-area",
     ) {
-        document.body?.addClass("opened-search")
+        document.body?.addClass("search-locked")
     }
     // Hide the search area
     hideListener(
@@ -36,8 +35,16 @@ public fun main() {
         elementId = "search-area",
         ignoreElementId = "search-area-container",
     ) {
-        document.body?.removeClass("opened-search")
+        document.body?.removeClass("search-locked")
     }
+
+    // Show sidebar
+    showListener(
+        buttonId = "side-bar-button",
+        elementId = "side-bar",
+    )
+
+    sideBarListener()
     copyCodeListener()
 }
 
@@ -61,13 +68,36 @@ private fun copyToClipboard(toastElement: Element?, target: EventTarget?) {
     }
 }
 
+private fun sideBarListener() {
+    val showId = "show-sidebar-button"
+    val hideId = "hide-sidebar-button"
+    val sideBarId = "side-bar"
+
+    document.addEventListener("click", { event ->
+        val target = event.target as? Element ?: return@addEventListener
+        if (target.id != showId && target.id != hideId) return@addEventListener
+        val sideBarElement = document.getElementById(sideBarId) ?: return@addEventListener
+
+        if (target.id == showId) {
+            sideBarElement.removeClass("hidden")
+            sideBarElement.addClass("flex")
+            document.body?.addClass("menu-locked")
+            return@addEventListener
+        }
+
+        sideBarElement.addClass("hidden")
+        sideBarElement.removeClass("flex")
+        document.body?.removeClass("menu-locked")
+    })
+}
+
 private fun showListener(
     buttonId: String,
     elementId: String,
     extra: () -> Unit = {},
 ) {
 
-    document.addEventListener("click", { event: Event ->
+    document.addEventListener("click", { event ->
         val buttonElement = document.getElementById(buttonId) ?: return@addEventListener
         if (!buttonElement.contains(event.target as Node)) return@addEventListener
 
@@ -95,7 +125,7 @@ private fun hideListener(
     extra: () -> Unit = {},
 ) {
 
-    document.addEventListener("click", { event: Event ->
+    document.addEventListener("click", { event ->
         val buttonElement = document.getElementById(buttonId)
         val ignoreElement = ignoreElementId?.let { document.getElementById(it) }
 
