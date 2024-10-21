@@ -70,6 +70,10 @@ public suspend fun setupRepository(meili: Meili, projects: File) {
                 this.discord = project.discord
             }
 
+            ProjectEntity.findByIdAndUpdate(project.id) {
+
+            }
+
             val projectIcon = ImageIO.read(coreDir.resolve("${project.id}/icon.png"))
 
             project.versions.forEach { version ->

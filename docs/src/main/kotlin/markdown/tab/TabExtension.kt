@@ -18,5 +18,4 @@ public class TabExtension : Parser.ParserExtension, HtmlRenderer.HtmlRendererExt
     override fun extend(rendererBuilder: HtmlRenderer.Builder) {
         rendererBuilder.nodeRendererFactory { TabNodeRenderer(it) }
     }
-
 }
