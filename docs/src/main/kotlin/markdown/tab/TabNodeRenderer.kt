@@ -42,8 +42,8 @@ public class TabNodeRenderer(
         val nameId = tabName.lowercase().replace(' ', '-').replace(ID_REGEX, "")
 
         html.line()
-        html.raw(getInput(nameId, tabCounter, tabsCounter))
-        html.tag("label", mapOf("for" to "tab-$tabsCounter-$nameId-$tabCounter"))
+        html.raw(getInput(nameId, tabCounter))
+        html.tag("label", mapOf("for" to "tab-$nameId"))
         html.text(tabName)
         html.tag("/label")
         html.tag("div", mapOf("class" to "content-tab"))
@@ -63,7 +63,7 @@ public class TabNodeRenderer(
 
 }
 
-private fun getInput(name: String, counter: Int, tabsCounter: Int): String {
+private fun getInput(name: String, counter: Int): String {
     val checked = if (counter == 1) "checked" else ""
-    return "<input type=\"radio\" id=\"tab-$tabsCounter-$name-$counter\" name=\"tab-$tabsCounter\" $checked>"
+    return "<input type=\"radio\" id=\"tab-$name\" name=\"tab\" $checked>"
 }
