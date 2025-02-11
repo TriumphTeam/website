@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+    --font-sans: Poppins, sans-serif;
+    --color-dark-background-primary: #141417;
+    --color-dark-background-secondary: #202023;
+}
+
+html, body {
+    @apply bg-white dark:bg-dark-background-primary;
+
+    @media (prefers-color-scheme: dark) {
+        color-scheme: dark;
+    }
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Poppins, sans-serif;
+}
