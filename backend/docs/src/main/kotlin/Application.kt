@@ -60,6 +60,9 @@ private val DEFAULT_EXTENSIONS = listOf(
 private val htmlRenderer =
     HtmlRenderer.builder().nodeRendererFactory(::MarkdownRenderer).extensions(DEFAULT_EXTENSIONS).build()
 
+private val testRenderer =
+    HtmlRenderer.builder().nodeRendererFactory(::MarkdownRenderer).extensions(DEFAULT_EXTENSIONS).build()
+
 private val mdParser = Parser.builder()
     .extensions(DEFAULT_EXTENSIONS)
     .build()
@@ -71,8 +74,8 @@ public suspend fun main(args: Array<String>) {
     val options = DefaultParser().parse(
         Options().apply {
             addOption(Option.builder("i").longOpt("input").hasArg().required().build())
-            addOption(Option.builder("b").longOpt("bearer").hasArg().required().build())
-            addOption(Option.builder("u").longOpt("url").hasArg().required().build())
+            //addOption(Option.builder("b").longOpt("bearer").hasArg().required().build())
+            //addOption(Option.builder("u").longOpt("url").hasArg().required().build())
         },
         args,
     )
@@ -82,8 +85,8 @@ public suspend fun main(args: Array<String>) {
         if (!file.isDirectory()) error("Input path is not a valid directory!")
     }
 
-    val bearer = options.getOptionValue("b")
-    val url = options.getOptionValue("u")
+    val bearer = "bearer" //options.getOptionValue("b")
+    val url = "" //options.getOptionValue("u")
 
     logger.info("Starting project parsing!")
 
@@ -144,6 +147,8 @@ public suspend fun main(args: Array<String>) {
     }
 
     logger.info("Parsing complete!")
+    println(projects)
+    return
     logger.info("Uploading..")
 
     val client = HttpClient(CIO) {
