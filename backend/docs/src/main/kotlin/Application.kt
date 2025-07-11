@@ -4,20 +4,17 @@ import dev.triumphteam.website.HoconSerializer
 import dev.triumphteam.website.JsonSerializer
 import dev.triumphteam.website.api.Api
 import dev.triumphteam.website.docs.markdown.MarkdownRenderer
-import dev.triumphteam.website.docs.markdown.PageDescriptionExtractor
+import dev.triumphteam.website.docs.markdown.OldMarkdownRenderer
 import dev.triumphteam.website.docs.markdown.hint.HintExtension
-import dev.triumphteam.website.docs.markdown.summary.SummaryExtractor
+import dev.triumphteam.website.docs.markdown.placeholder.PlaceholderExtension
 import dev.triumphteam.website.docs.markdown.tab.TabExtension
-import dev.triumphteam.website.docs.serialization.GroupConfig
+import dev.triumphteam.website.docs.project.Replacement
 import dev.triumphteam.website.docs.serialization.ProjectConfig
 import dev.triumphteam.website.docs.serialization.RepoSettings
 import dev.triumphteam.website.docs.serialization.VersionConfig
 import dev.triumphteam.website.project.DocVersion
-import dev.triumphteam.website.project.Navigation
-import dev.triumphteam.website.project.Page
 import dev.triumphteam.website.project.Project
 import dev.triumphteam.website.project.Repository
-import dev.triumphteam.website.trimAround
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -48,6 +45,15 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import kotlin.io.path.Path
 
+private const val OUTPUT_FILE_NAME = "repository.json"
+private const val VERSION_FILE_NAME = "version.conf"
+private const val PROJECT_FILE_NAME = "project.conf"
+private const val SETTINGS_FILE_NAME = "settings.conf"
+private const val ICON_FILE_NAME = "icon.png"
+private const val PAGE_FILE_NAME = "index.md"
+private const val MD_FILE_EXTENSION = "md"
+private const val HOCON_FILE_EXTENSION = "conf"
+
 private val DEFAULT_EXTENSIONS = listOf(
     StrikethroughExtension.create(),
     AutolinkExtension.create(),
@@ -55,13 +61,14 @@ private val DEFAULT_EXTENSIONS = listOf(
     TaskListItemsExtension.create(),
     HintExtension.create(),
     TabExtension.create(),
+    PlaceholderExtension.create(),
 )
 
 private val htmlRenderer =
-    HtmlRenderer.builder().nodeRendererFactory(::MarkdownRenderer).extensions(DEFAULT_EXTENSIONS).build()
+    HtmlRenderer.builder().nodeRendererFactory(::OldMarkdownRenderer).extensions(DEFAULT_EXTENSIONS).build()
 
 private val testRenderer =
-    HtmlRenderer.builder().nodeRendererFactory(::MarkdownRenderer).extensions(DEFAULT_EXTENSIONS).build()
+    HtmlRenderer.builder().nodeRendererFactory(::OldMarkdownRenderer).extensions(DEFAULT_EXTENSIONS).build()
 
 private val mdParser = Parser.builder()
     .extensions(DEFAULT_EXTENSIONS)
@@ -93,17 +100,17 @@ public suspend fun main(args: Array<String>) {
     val inputFiles = inputPath.listFiles() ?: emptyArray()
 
     val repoSettings =
-        HoconSerializer.from<RepoSettings>(requireNotNull(inputFiles.find { it.name == "settings.conf" }))
+        HoconSerializer.from<RepoSettings>(requireNotNull(inputFiles.find { it.name == SETTINGS_FILE_NAME }))
 
-    // Navigate through file structure and parse all projects
+    // Navigate through the file structure and parse all projects
     val projects = Projects(
         projects = inputFiles.mapNotNull { projectDir ->
             // Ignore non-directory files
             if (!projectDir.isDirectory) return@mapNotNull null
 
             val files = projectDir.listFiles() ?: emptyArray()
-            val projectConfig = files.findFile("project.conf") {
-                "Found project folder without a 'project.conf' file, skipping it!"
+            val projectConfig = files.findFile(PROJECT_FILE_NAME) {
+                "Found project folder without a '$PROJECT_FILE_NAME' file, skipping it!"
             } ?: return@mapNotNull null
 
             val parsedProjectConfig = HoconSerializer.from<ProjectConfig>(projectConfig)
@@ -114,11 +121,11 @@ public suspend fun main(args: Array<String>) {
                     name = parsedProjectConfig.name,
                     color = parsedProjectConfig.color,
                     projectHome = parsedProjectConfig.projectHome,
-                    versions = parseVersions(files.filter(File::isDirectory), inputPath, repoSettings),
+                    versions = parseVersions(files.filter(File::isDirectory), projectDir, repoSettings),
                     discord = parsedProjectConfig.discord,
                 ),
-                icon = requireNotNull(files.findFile("icon.png")) {
-                    "Found project folder without a 'project.conf' file, skipping it!"
+                icon = requireNotNull(files.findFile(ICON_FILE_NAME)) {
+                    "Found project folder without an '$ICON_FILE_NAME'. Please make sure to add an icon for the project!"
                 }
             ).also {
                 logger.info("Parsed project '${it.project.id}', with versions: ${it.project.versions.map(DocVersion::reference)}!")
@@ -128,14 +135,14 @@ public suspend fun main(args: Array<String>) {
 
     val outputDir = File("output").also(File::mkdirs)
 
-    val repository = outputDir.resolve("repository.json").also {
+    val repository = outputDir.resolve(OUTPUT_FILE_NAME).also {
         it.writeText(JsonSerializer.encode<Repository>(projects.toRepository()))
     }
 
     val icons = projects.projects.map {
         outputDir.resolve(it.project.id).also { dir ->
             dir.mkdirs()
-            it.icon.copyTo(dir.resolve("icon.png"), overwrite = true)
+            it.icon.copyTo(dir.resolve(ICON_FILE_NAME), overwrite = true)
         }
     }
 
@@ -188,12 +195,12 @@ public suspend fun main(args: Array<String>) {
     client.close()
 }
 
-private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings: RepoSettings): List<DocVersion> {
-    return versionDirs.mapNotNull { versionDir ->
+private fun parseVersions(versions: List<File>, projectDir: File, repoSettings: RepoSettings): List<DocVersion> {
+    return versions.mapNotNull { versionDir ->
 
         val files = versionDir.listFiles() ?: emptyArray()
-        val versionConfig = files.findFile("version.conf") {
-            "Found version folder without a 'version.conf' file, skipping it!"
+        val versionConfig = files.findFile(VERSION_FILE_NAME) {
+            "Found version folder without a '$VERSION_FILE_NAME' file, skipping it!"
         } ?: return@mapNotNull null
 
         val parsedVersionConfig = HoconSerializer.from<VersionConfig>(versionConfig)
@@ -201,16 +208,54 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
         val navigationCollector = NavigationCollector()
         val pageCollector = PageCollector()
 
+        // Only directories are allowed at this stage, since we want to look into groups.
+        // No page is allowed outside a group.
         files.filter(File::isDirectory).sortedBy(File::getName).forEach { groupDir ->
-            val groupFiles = groupDir.listFiles() ?: emptyArray()
-            val groupConfig = groupFiles.findFile("group.conf") {
-                "Found group folder without a 'group.conf' file, skipping it!"
-            } ?: return@mapNotNull null
+            // Within a group, we also sort by name.
+            // The file can be a single file, or a more complex mix of files within a folder.
+            (groupDir.listFiles()?.sortedBy(File::getName) ?: emptyList()).forEach { file ->
 
-            val parsedGroupConfig = HoconSerializer.from<GroupConfig>(groupConfig)
-            navigationCollector.collect(Navigation.Group(parsedGroupConfig.header, parsedGroupConfig.mapPages()))
+                // If it's just a file, handle it.
+                if (!file.isDirectory) {
+                    require(file.extension == MD_FILE_EXTENSION) {
+                        "Only markdown files are allowed within groups, '${file.name}' is not a valid file!"
+                    }
+                    // Handle simple parsing
+                    return@forEach
+                }
 
-            val filesMap = groupFiles.associateBy(File::nameWithoutExtension)
+                val pageFiles = file.listFiles() ?: emptyArray()
+                val pageFile = pageFiles.findFile(PAGE_FILE_NAME) {
+                    "Found page directory without a '$PAGE_FILE_NAME' file, skipping it!"
+                } ?: return@forEach
+
+                // Map replacement.
+                val replacements = pageFiles.filter { it.name != pageFile.name }.associate { replacement ->
+                    replacement.nameWithoutExtension to when (replacement.extension) {
+                        MD_FILE_EXTENSION -> Replacement.Markdown(replacement.readText())
+                        HOCON_FILE_EXTENSION -> TODO("Not yet implemented")
+                        else -> error("Unknown file extension '${replacement.extension}'!")
+                    }
+                }
+
+                val pageNode = mdParser.parse(pageFile.readText())
+                val page = MarkdownRenderer().render(pageNode)
+                println(replacements)
+
+                println(projectDir.name) // Project
+                println(versionDir.name) // Version
+                println(groupDir.name) // Group
+                println(file.name) // File
+
+                Unit
+            }
+
+            // Group config parsed
+            // Figure out how to no need the "navigation collector" bs
+
+            println(navigationCollector.collection())
+
+            /*val filesMap = groupFiles.associateBy(File::nameWithoutExtension)
             parsedGroupConfig.pages.forEach { page ->
                 val pageFile = requireNotNull(filesMap[page.link]) {
                     "Could not find file named '${page.link}', make sure the file is created before adding it to the group config."
@@ -239,7 +284,7 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
                         default = page.default,
                     )
                 )
-            }
+            }*/
         }
 
         DocVersion(
@@ -257,6 +302,11 @@ private fun parseVersions(versionDirs: List<File>, parentDir: File, repoSettings
             javadocs = parsedVersionConfig.javadocs,
         )
     }.also { docVersions ->
+        if (docVersions.isEmpty()) {
+            logger.warn("No versions found for project '${projectDir.name}'.")
+            return@also
+        }
+
         require(docVersions.count(DocVersion::recommended) == 1) {
             "Only 1 recommended version is allowed per project."
         }

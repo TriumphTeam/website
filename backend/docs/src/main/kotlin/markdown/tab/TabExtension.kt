@@ -12,7 +12,6 @@ public class TabExtension : Parser.ParserExtension, HtmlRenderer.HtmlRendererExt
 
     override fun extend(parserBuilder: Parser.Builder) {
         parserBuilder.customBlockParserFactory(TabsBlockParser.Factory())
-        parserBuilder.customBlockParserFactory(TabBlockParser.Factory())
     }
 
     override fun extend(rendererBuilder: HtmlRenderer.Builder) {

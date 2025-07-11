@@ -26,10 +26,10 @@ public data class VersionConfig(
 )
 
 @Serializable
-public data class GroupConfig(public val header: String, public val pages: List<PageConfig>) {
+public data class GroupConfig(public val header: String) {
 
     public fun mapPages(): List<Navigation.Page> {
-        return pages.map { Navigation.Page(it.header, it.link) }
+        return emptyList()
     }
 }
 

@@ -1,4 +1,4 @@
-package dev.triumphteam.website.docs.markdown
+package dev.triumphteam.website.docs.markdown.fence
 
 import org.commonmark.node.CustomBlock
 

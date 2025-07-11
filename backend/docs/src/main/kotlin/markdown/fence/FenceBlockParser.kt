@@ -1,4 +1,4 @@
-package dev.triumphteam.website.docs.markdown
+package dev.triumphteam.website.docs.markdown.fence
 
 import org.commonmark.internal.util.Parsing
 import org.commonmark.parser.block.AbstractBlockParser
@@ -21,7 +21,7 @@ public abstract class FenceBlockParser(private val skipCharacter: Char) : Abstra
             line[nextNonSpace] == skipCharacter &&
             isClosing(line, nextNonSpace)
         ) {
-            // closing "fence" - we're at the end of line, so we can finalize now
+            // closing "fence" - we're at the end of the line, so we can finalize now
             return BlockContinue.finished()
         }
 

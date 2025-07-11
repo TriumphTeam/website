@@ -1,8 +1,8 @@
 package dev.triumphteam.website.docs.markdown.tab
 
-import dev.triumphteam.website.docs.markdown.CustomBlockParserFactory
-import dev.triumphteam.website.docs.markdown.FenceBlock
-import dev.triumphteam.website.docs.markdown.FenceBlockParser
+import dev.triumphteam.website.docs.markdown.fence.CustomBlockParserFactory
+import dev.triumphteam.website.docs.markdown.fence.FenceBlock
+import dev.triumphteam.website.docs.markdown.fence.FenceBlockParser
 import org.commonmark.node.Block
 
 public class TabsBlockParser(indent: Int) : FenceBlockParser('-') {
