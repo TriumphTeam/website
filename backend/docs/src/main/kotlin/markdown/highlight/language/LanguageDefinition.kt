@@ -11,7 +11,7 @@ import dev.triumphteam.website.docs.markdown.highlight.language.languages.Kotlin
 import dev.triumphteam.website.docs.markdown.highlight.language.languages.XmlLanguage
 
 public abstract class LanguageDefinition(
-    public val name: String = "",
+    public val name: String = "none",
     private val components: List<LanguageHighlightComponent> = emptyList(),
     private val globalValidator: List<HighlightValidator> = emptyList(),
     private val stepValidator: List<StepValidator> = emptyList(),
@@ -88,7 +88,7 @@ public sealed interface HighlightValidator {
         override fun shouldRemove(current: Highlight, highlights: List<Highlight>): Boolean {
             // Filter for only comments
             val comments = highlights.filter { it.type == HighlightType.COMMENT }
-            // Check if current is within a comment
+            // Check if the current is within a comment
             return comments.any { current in it }
         }
     }
@@ -99,7 +99,7 @@ public sealed interface HighlightValidator {
             if (current.type == HighlightType.STRING) return false
             // Filter for only string
             val strings = highlights.filter { it.type == HighlightType.STRING }
-            // Check if current is within a string
+            // Check if the current is within a string
             return strings.any { current in it }
         }
     }
@@ -110,7 +110,7 @@ public sealed interface HighlightValidator {
             if (current.type == HighlightType.ANNOTATION) return false
             // Filter for only annotations
             val annotations = highlights.filter { it.type == HighlightType.ANNOTATION }
-            // Check if current is within a string
+            // Check if the current is within a string
             return annotations.any { current in it }
         }
     }

@@ -21,7 +21,6 @@ public class HintNodeRenderer(
         html.line()
         html.tag("div", mapOf("class" to "hint hint-${node.type.name.lowercase()}"))
         html.tag("div", mapOf("class" to "hint-icon"))
-        html.raw(node.type.icon.trimIndent())
         html.tag("/div")
         html.tag("div", mapOf("class" to "hint-content"))
         renderChildren(node)

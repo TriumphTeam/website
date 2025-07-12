@@ -64,13 +64,7 @@ private val DEFAULT_EXTENSIONS = listOf(
     PlaceholderExtension.create(),
 )
 
-private val htmlRenderer =
-    HtmlRenderer.builder().nodeRendererFactory(::OldMarkdownRenderer).extensions(DEFAULT_EXTENSIONS).build()
-
-private val testRenderer =
-    HtmlRenderer.builder().nodeRendererFactory(::OldMarkdownRenderer).extensions(DEFAULT_EXTENSIONS).build()
-
-private val mdParser = Parser.builder()
+public val MARKDOWN_PARSER: Parser = Parser.builder()
     .extensions(DEFAULT_EXTENSIONS)
     .build()
 
@@ -234,12 +228,13 @@ private fun parseVersions(versions: List<File>, projectDir: File, repoSettings: 
                     replacement.nameWithoutExtension to when (replacement.extension) {
                         MD_FILE_EXTENSION -> Replacement.Markdown(replacement.readText())
                         HOCON_FILE_EXTENSION -> TODO("Not yet implemented")
-                        else -> error("Unknown file extension '${replacement.extension}'!")
+                        else -> error("Unsupported file extension '${replacement.extension}'!")
                     }
                 }
 
-                val pageNode = mdParser.parse(pageFile.readText())
-                val page = MarkdownRenderer().render(pageNode)
+                val pageNode = MARKDOWN_PARSER.parse(pageFile.readText())
+                val page = MarkdownRenderer(replacements).render(pageNode)
+                println(page)
                 println(replacements)
 
                 println(projectDir.name) // Project
