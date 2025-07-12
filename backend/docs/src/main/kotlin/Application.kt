@@ -4,7 +4,6 @@ import dev.triumphteam.website.HoconSerializer
 import dev.triumphteam.website.JsonSerializer
 import dev.triumphteam.website.api.Api
 import dev.triumphteam.website.docs.markdown.MarkdownRenderer
-import dev.triumphteam.website.docs.markdown.OldMarkdownRenderer
 import dev.triumphteam.website.docs.markdown.hint.HintExtension
 import dev.triumphteam.website.docs.markdown.placeholder.PlaceholderExtension
 import dev.triumphteam.website.docs.markdown.tab.TabExtension

@@ -1,9 +1,8 @@
 package dev.triumphteam.website.docs.markdown.hint
 
 import org.commonmark.parser.Parser
-import org.commonmark.renderer.html.HtmlRenderer
 
-public class HintExtension : Parser.ParserExtension, HtmlRenderer.HtmlRendererExtension {
+public class HintExtension : Parser.ParserExtension {
 
     public companion object {
 
@@ -12,9 +11,5 @@ public class HintExtension : Parser.ParserExtension, HtmlRenderer.HtmlRendererEx
 
     override fun extend(parserBuilder: Parser.Builder) {
         parserBuilder.customBlockParserFactory(HintBlockParser.Factory())
-    }
-
-    override fun extend(rendererBuilder: HtmlRenderer.Builder) {
-        rendererBuilder.nodeRendererFactory { HintNodeRenderer(it) }
     }
 }

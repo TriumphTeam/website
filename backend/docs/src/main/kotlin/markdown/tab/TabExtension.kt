@@ -1,9 +1,8 @@
 package dev.triumphteam.website.docs.markdown.tab
 
 import org.commonmark.parser.Parser
-import org.commonmark.renderer.html.HtmlRenderer
 
-public class TabExtension : Parser.ParserExtension, HtmlRenderer.HtmlRendererExtension {
+public class TabExtension : Parser.ParserExtension {
 
     public companion object {
 
@@ -12,9 +11,5 @@ public class TabExtension : Parser.ParserExtension, HtmlRenderer.HtmlRendererExt
 
     override fun extend(parserBuilder: Parser.Builder) {
         parserBuilder.customBlockParserFactory(TabsBlockParser.Factory())
-    }
-
-    override fun extend(rendererBuilder: HtmlRenderer.Builder) {
-        rendererBuilder.nodeRendererFactory { TabNodeRenderer(it) }
     }
 }
