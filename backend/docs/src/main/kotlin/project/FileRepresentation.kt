@@ -1,6 +1,5 @@
-package dev.triumphteam.website.docs.serialization
+package dev.triumphteam.website.docs.project
 
-import dev.triumphteam.website.project.Navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -26,12 +25,17 @@ public data class VersionConfig(
 )
 
 @Serializable
-public data class GroupConfig(public val header: String) {
-
-    public fun mapPages(): List<Navigation.Page> {
-        return emptyList()
-    }
-}
+public data class GroupConfig(public val name: String, public val order: Int)
 
 @Serializable
-public data class PageConfig(public val header: String, public val link: String, public val default: Boolean = false)
+public data class PageConfig(
+    public val id: String,
+    public val name: String,
+    public val description: String,
+    public val order: Int,
+)
+
+/*@Serializable
+public data class ConditionalPlaceholders(
+
+)*/

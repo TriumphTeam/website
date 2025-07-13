@@ -29,7 +29,7 @@ import org.commonmark.node.StrongEmphasis
 import org.commonmark.node.Text
 import org.commonmark.node.ThematicBreak
 
-public class MarkdownRenderer(private val replacements: Map<String, Replacement.Markdown>) {
+public class MarkdownRenderer(private val replacements: Map<String, Replacement>) {
 
     public fun render(node: Node): DocComponent {
         if (node !is Document) error("Root node must be a Document")

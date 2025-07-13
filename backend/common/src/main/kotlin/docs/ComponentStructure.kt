@@ -95,9 +95,12 @@ public sealed interface DocComponent {
     @Serializable
     @SerialName("hint")
     public data class Hint(public val hintType: HintType, override val children: List<DocComponent>) : DocComponent
+
 }
 
 @Serializable
 public enum class HintType {
     INFO, SUCCESS, WARNING, ERROR;
 }
+
+

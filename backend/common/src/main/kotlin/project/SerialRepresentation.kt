@@ -3,9 +3,7 @@ package dev.triumphteam.website.project
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class Repository(
-    public val projects: List<Project>,
-)
+public data class Repository(public val projects: List<Project>)
 
 @Serializable
 public data class Project(
