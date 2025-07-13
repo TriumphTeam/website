@@ -1,10 +1,12 @@
 package dev.triumphteam.website.docs.markdown
 
 import dev.triumphteam.website.docs.DocComponent
+import dev.triumphteam.website.docs.MARKDOWN_PARSER
 import dev.triumphteam.website.docs.markdown.highlight.language.LanguageDefinition
 import dev.triumphteam.website.docs.markdown.hint.HintBlock
 import dev.triumphteam.website.docs.markdown.placeholder.Placeholder
 import dev.triumphteam.website.docs.project.Replacement
+import dev.triumphteam.website.docs.project.Value
 import org.commonmark.ext.gfm.strikethrough.Strikethrough
 import org.commonmark.node.BlockQuote
 import org.commonmark.node.BulletList
@@ -42,20 +44,17 @@ public class MarkdownRenderer(private val replacements: Map<String, Replacement>
             is Document -> DocComponent.Document(children)
             is BlockQuote -> DocComponent.Quote(children)
             is BulletList -> DocComponent.BulletList(children)
-            is Code -> DocComponent.Code(node.literal, children)
+            is Code -> DocComponent.Code(node.literal)
             is CustomBlock -> renderCustomBlock(node, children)
             is CustomNode -> renderCustomNode(node, children)
             is Emphasis -> DocComponent.Italic(children)
 
             is FencedCodeBlock -> {
                 val languageDefinition = LanguageDefinition.fromString(node.info)
-                DocComponent.CodeBlock(
-                    content = languageDefinition.highlightCode(node.literal),
-                    children = children,
-                )
+                DocComponent.CodeBlock(content = languageDefinition.highlightCode(node.literal))
             }
 
-            is HardLineBreak -> DocComponent.HardLineBreak(children)
+            is HardLineBreak -> DocComponent.HardLineBreak
             is Heading -> DocComponent.Header(node.level, children)
             is HtmlBlock -> DocComponent.Html(node.literal, children)
             is HtmlInline -> DocComponent.Html(node.literal, children)
@@ -64,17 +63,17 @@ public class MarkdownRenderer(private val replacements: Map<String, Replacement>
             is ListItem -> DocComponent.ListItem(children)
             is OrderedList -> DocComponent.OrderedList(children)
             is Paragraph -> DocComponent.Paragraph(children)
-            is SoftLineBreak -> DocComponent.SoftLineBreak(children)
+            is SoftLineBreak -> DocComponent.SoftLineBreak
             is StrongEmphasis -> DocComponent.Bold(children)
-            is Text -> DocComponent.Text(node.literal, children)
-            is ThematicBreak -> DocComponent.Separator(children)
+            is Text -> DocComponent.Text(node.literal)
+            is ThematicBreak -> DocComponent.Separator
             else -> unsupportedNode(node)
         }
     }
 
     private fun renderCustomNode(node: CustomNode, children: List<DocComponent>): DocComponent {
         return when (node) {
-            is Placeholder -> DocComponent.Text(node.identifier, children)
+            is Placeholder -> replace(node.identifier)
             is Strikethrough -> DocComponent.Strikethrough(children)
             else -> unsupportedNode(node)
         }
@@ -98,6 +97,28 @@ public class MarkdownRenderer(private val replacements: Map<String, Replacement>
                 node = next
             }
         }.toList()
+    }
+
+    private fun replace(identifier: String): DocComponent {
+
+        fun parseMarkdown(markdown: String): DocComponent {
+            return MarkdownRenderer(replacements).render(MARKDOWN_PARSER.parse(markdown))
+        }
+
+        val replacement = requireNotNull(replacements[identifier]) {
+            "Could not find replacement for placeholder ${identifier}."
+        }
+
+        return when (replacement) {
+            is Replacement.Raw -> parseMarkdown(replacement.content)
+            is Replacement.Conditional -> DocComponent.Conditional(
+                condition = replacement.condition,
+                value = when (val replacementValue = replacement.value) {
+                    is Value.Raw -> parseMarkdown(replacementValue.value)
+                    is Value.Replacement -> replace(replacementValue.identifier)
+                }
+            )
+        }
     }
 
     private fun unsupportedNode(node: Node): Nothing = error("Unsupported node type: ${node.javaClass.simpleName}")

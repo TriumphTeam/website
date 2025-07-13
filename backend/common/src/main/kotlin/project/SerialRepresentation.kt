@@ -1,5 +1,6 @@
 package dev.triumphteam.website.project
 
+import dev.triumphteam.website.docs.DocComponent
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,62 +11,32 @@ public data class Project(
     public val id: String,
     public val name: String,
     public val color: String,
-    public val projectHome: String,
-    public val discord: String?,
-    public val versions: List<DocVersion>,
+    public val versions: List<Version>,
 )
 
 @Serializable
-public data class DocVersion(
+public data class Version(
     public val reference: String,
     public val recommended: Boolean,
     public val stable: Boolean,
-    public val navigation: Navigation,
-    public val pages: List<Page>,
+    public val groups: List<Group>,
+    public val platforms: List<String>,
+    public val languages: List<String>,
+    public val buildTools: List<String>,
     public val github: String?,
     public val discord: String?,
     public val javadocs: String?,
 )
 
 @Serializable
-public data class Navigation(public val groups: List<Group>) {
-
-    @Serializable
-    public data class Group(public val header: String, public val pages: List<Page>)
-
-    @Serializable
-    public data class Page(public val header: String, public val id: String)
-}
+public data class Group(public val name: String, public val order: Int, public val pages: List<Page>)
 
 @Serializable
 public data class Page(
     public val id: String,
-    public val content: String,
     public val path: String,
-    public val description: Description,
-    public val default: Boolean,
-) {
-
-    @Serializable
-    public data class Banner(
-        public val title: String?,
-        public val group: String,
-        public val subTitle: String?,
-    )
-
-    @Serializable
-    public data class Description(
-        public val title: String?,
-        public val group: String,
-        public val subTitle: String?,
-        public val summary: List<Summary>,
-    )
-
-    @Serializable
-    public data class Summary(
-        public val literal: String,
-        public val href: String,
-        public val terms: List<String>,
-        public val children: List<Summary>,
-    )
-}
+    public val name: String,
+    public val order: Int,
+    public val description: String,
+    public val content: DocComponent,
+)

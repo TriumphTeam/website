@@ -13,7 +13,9 @@ import dev.triumphteam.website.docs.project.PageConfig
 import dev.triumphteam.website.docs.project.ProjectConfig
 import dev.triumphteam.website.docs.project.RepoSettings
 import dev.triumphteam.website.docs.project.VersionConfig
-import dev.triumphteam.website.project.DocVersion
+import dev.triumphteam.website.project.Version
+import dev.triumphteam.website.project.Group
+import dev.triumphteam.website.project.Page
 import dev.triumphteam.website.project.Project
 import dev.triumphteam.website.project.Repository
 import io.ktor.client.HttpClient
@@ -95,36 +97,31 @@ public suspend fun main(args: Array<String>) {
 
     val inputFiles = inputPath.listFiles() ?: emptyArray()
 
-    val repoSettings =
-        HoconSerializer.from<RepoSettings>(requireNotNull(inputFiles.find { it.name == SETTINGS_CONFIG_FILE_NAME }))
+    val repoSettings = HoconSerializer.from<RepoSettings>(inputFiles.findFile(SETTINGS_CONFIG_FILE_NAME) {
+        "Found repository without a '$SETTINGS_CONFIG_FILE_NAME' file!"
+    })
 
     // Navigate through the file structure and parse all projects
     val projects = Projects(
-        projects = inputFiles.mapNotNull { projectDir ->
-            // Ignore non-directory files
-            if (!projectDir.isDirectory) return@mapNotNull null
+        projects = inputFiles.filter(File::isDirectory).map { projectDir ->
 
             val files = projectDir.listFiles() ?: emptyArray()
             val projectConfig = files.findFile(PROJECT_CONFIG_FILE_NAME) {
                 "Found project folder without a '$PROJECT_CONFIG_FILE_NAME' file"
-            }
-
-            val parsedProjectConfig = HoconSerializer.from<ProjectConfig>(projectConfig)
+            }.let { HoconSerializer.from<ProjectConfig>(it) }
 
             ProjectWithIcon(
                 project = Project(
-                    id = parsedProjectConfig.id,
-                    name = parsedProjectConfig.name,
-                    color = parsedProjectConfig.color,
-                    projectHome = parsedProjectConfig.projectHome,
-                    versions = parseVersions(files.filter(File::isDirectory), projectDir, repoSettings),
-                    discord = parsedProjectConfig.discord,
+                    id = projectConfig.id,
+                    name = projectConfig.name,
+                    color = projectConfig.color,
+                    versions = parseVersions(files.filter(File::isDirectory), inputPath, repoSettings),
                 ),
                 icon = files.findFile(ICON_FILE_NAME) {
                     "Found project folder without an '$ICON_FILE_NAME'. Please make sure to add an icon for the project!"
                 }
             ).also {
-                logger.info("Parsed project '${it.project.id}', with versions: ${it.project.versions.map(DocVersion::reference)}!")
+                logger.info("Parsed project '${it.project.id}', with versions: ${it.project.versions.map(Version::reference)}!")
             }
         },
     )
@@ -150,7 +147,7 @@ public suspend fun main(args: Array<String>) {
     }
 
     logger.info("Parsing complete!")
-    println(projects)
+    println(JsonSerializer.encode<Repository>(projects.toRepository()))
     return
     logger.info("Uploading..")
 
@@ -191,7 +188,7 @@ public suspend fun main(args: Array<String>) {
     client.close()
 }
 
-private fun parseVersions(versions: List<File>, projectDir: File, repoSettings: RepoSettings): List<DocVersion> {
+private fun parseVersions(versions: List<File>, rootDir: File, repoSettings: RepoSettings): List<Version> {
     return versions.map { versionDir ->
         val files = versionDir.listFiles() ?: emptyArray()
         val versionConfig = files.findFile(VERSION_CONFIG_FILE_NAME) {
@@ -200,7 +197,7 @@ private fun parseVersions(versions: List<File>, projectDir: File, repoSettings: 
 
         // Only directories are allowed at this stage, since we want to look into groups.
         // No pages are allowed outside a group.
-        files.filter(File::isDirectory).forEach { groupDir ->
+        val groups = files.filter(File::isDirectory).map { groupDir ->
             val groupFiles = groupDir.listFiles() ?: emptyArray()
 
             val groupConfig = groupFiles.findFile(GROUP_CONFIG_FILE_NAME) {
@@ -208,7 +205,7 @@ private fun parseVersions(versions: List<File>, projectDir: File, repoSettings: 
             }.let { HoconSerializer.from<GroupConfig>(it) }
 
             // The first level of a group is also only folders.
-            groupFiles.filter(File::isDirectory).forEach { pageDir ->
+            val pages = groupFiles.filter(File::isDirectory).map { pageDir ->
                 val pageFiles = pageDir.listFiles() ?: emptyArray()
 
                 // The configuration of the page, like name, id, order, etc.
@@ -222,87 +219,55 @@ private fun parseVersions(versions: List<File>, projectDir: File, repoSettings: 
                 }
 
                 // Map replacement.
-                val replacements = pageFiles.filter { it.name != pageFile.name }.associate { replacement ->
-                    replacement.nameWithoutExtension to when (replacement.extension) {
-                        MD_FILE_EXTENSION -> Replacement.Markdown(replacement.readText())
-                        HOCON_FILE_EXTENSION -> {
-                            println(replacement.readText())
-                            HoconSerializer.from<Replacement.Hocon>(replacement)
+                // Walk top down on child folders to collect all files.
+                val replacements = pageDir.walkTopDown()
+                    .asSequence()
+                    .filterNot { it.name == PAGE_FILE_NAME || it.name == PAGE_CONFIG_FILE_NAME } // Remove the main files from the list.
+                    .filter(File::isFile)
+                    .associate { replacement ->
+                        replacement.nameWithoutExtension to when (replacement.extension) {
+                            MD_FILE_EXTENSION -> Replacement.Raw(replacement.readText())
+                            HOCON_FILE_EXTENSION -> HoconSerializer.from<Replacement.Conditional>(replacement)
+                            else -> error("Unsupported file extension '${replacement.extension}'!")
                         }
-                        else -> error("Unsupported file extension '${replacement.extension}'!")
                     }
-                }
 
-                val pageNode = MARKDOWN_PARSER.parse(pageFile.readText())
-                val page = MarkdownRenderer(replacements).render(pageNode)
-                println(page)
-                println(replacements)
-
-                println(projectDir.name) // Project
-                println(versionDir.name) // Version
-                println(groupDir.name) // Group
-                println(pageDir.name) // File
-
-                Unit
-            }
-
-            // Group config parsed
-            // Figure out how to no need the "navigation collector" bs
-
-            /*val filesMap = groupFiles.associateBy(File::nameWithoutExtension)
-            parsedGroupConfig.pages.forEach { page ->
-                val pageFile = requireNotNull(filesMap[page.link]) {
-                    "Could not find file named '${page.link}', make sure the file is created before adding it to the group config."
-                }
-
-                if (pageFile.nameWithoutExtension.contains(" ")) {
-                    error("Page name cannot contain spaces.")
-                }
-
-                val parsedFile = mdParser.parse(pageFile.readText())
-                val summaryExtractor = SummaryExtractor()
-
-                val (title, subTitle) = PageDescriptionExtractor().extract(parsedFile)
-
-                pageCollector.collect(
-                    Page(
-                        id = pageFile.nameWithoutExtension.lowercase(),
-                        content = htmlRenderer.render(parsedFile),
-                        path = "${repoSettings.editPath.removeSuffix("/")}/${pageFile.relativeTo(parentDir).path}",
-                        description = Page.Description(
-                            title = title,
-                            subTitle = subTitle?.trimAround(contextLength = 100),
-                            group = parsedGroupConfig.header,
-                            summary = summaryExtractor.extract(parsedFile),
-                        ),
-                        default = page.default,
-                    )
+                Page(
+                    id = pageConfig.id,
+                    path = "${repoSettings.editPath.removeSuffix("/")}/${pageDir.relativeTo(rootDir).invariantSeparatorsPath}",
+                    name = pageConfig.name,
+                    description = pageConfig.description,
+                    order = pageConfig.order,
+                    content = MarkdownRenderer(replacements).render(MARKDOWN_PARSER.parse(pageFile.readText())),
                 )
-            }*/
-        }
+            }.sortedBy(Page::order)
 
-        null!!
-        /*DocVersion(
-            reference = parsedVersionConfig.reference,
-            recommended = parsedVersionConfig.recommended,
-            stable = parsedVersionConfig.stable,
-            navigation = navigationCollector.collection(),
-            pages = pageCollector.collection().also { pages ->
-                require(pages.count { it.default } == 1) {
-                    "Versions must have 1 and only 1 default page."
-                }
-            },
-            github = parsedVersionConfig.github,
-            discord = parsedVersionConfig.discord,
-            javadocs = parsedVersionConfig.javadocs,
-        )*/
+            Group(
+                name = groupConfig.name,
+                order = groupConfig.order,
+                pages = pages,
+            )
+        }.sortedBy(Group::order)
+
+        Version(
+            reference = versionConfig.reference,
+            recommended = versionConfig.recommended,
+            stable = versionConfig.stable,
+            platforms = versionConfig.platforms,
+            languages = versionConfig.languages,
+            buildTools = versionConfig.buildTools,
+            github = versionConfig.github,
+            discord = versionConfig.discord,
+            javadocs = versionConfig.javadocs,
+            groups = groups,
+        )
     }.also { docVersions ->
         if (docVersions.isEmpty()) {
-            logger.warn("No versions found for project '${projectDir.name}'.")
+            logger.warn("No versions found for project '${rootDir.name}'.")
             return@also
         }
 
-        require(docVersions.count(DocVersion::recommended) == 1) {
+        require(docVersions.count(Version::recommended) == 1) {
             "Only 1 recommended version is allowed per project."
         }
     }

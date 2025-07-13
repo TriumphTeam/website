@@ -10,8 +10,6 @@ public data class ProjectConfig(
     public val id: String,
     public val name: String,
     public val color: String,
-    public val projectHome: String,
-    public val discord: String?,
 )
 
 @Serializable
@@ -19,6 +17,9 @@ public data class VersionConfig(
     public val reference: String,
     public val recommended: Boolean = false,
     public val stable: Boolean = true,
+    public val platforms: List<String>,
+    public val languages: List<String>,
+    public val buildTools: List<String>,
     public val github: String? = null,
     public val discord: String? = null,
     public val javadocs: String? = null,
