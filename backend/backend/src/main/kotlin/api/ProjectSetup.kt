@@ -1,35 +1,28 @@
 package dev.triumphteam.backend.api
 
 import dev.triumphteam.backend.DATA_FOLDER
-import dev.triumphteam.backend.api.database.DocVersionEntity
-import dev.triumphteam.backend.api.database.PageEntity
-import dev.triumphteam.backend.api.database.ProjectEntity
-import dev.triumphteam.backend.banner.BannerMaker
-import dev.triumphteam.backend.meilisearch.Meili
+import dev.triumphteam.backend.database.DocVersionEntity
+import dev.triumphteam.backend.database.PageEntity
+import dev.triumphteam.backend.database.ProjectEntity
 import dev.triumphteam.website.JsonSerializer
-import dev.triumphteam.website.project.Page
-import dev.triumphteam.website.project.Repository
-import kotlinx.coroutines.CoroutineScope
+import dev.triumphteam.website.serializable.DocComponent
+import dev.triumphteam.website.serializable.Group
+import dev.triumphteam.website.serializable.PageDocument
+import dev.triumphteam.website.serializable.Repository
+import dev.triumphteam.website.serializable.VersionDocument
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import net.lingala.zip4j.ZipFile
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileNotFoundException
 import java.nio.file.Files
-import javax.imageio.ImageIO
-import kotlin.time.Duration.Companion.seconds
 
 private val logger = LoggerFactory.getLogger("project-setup")
-private val bannerMaker = BannerMaker()
 
-private val scope = CoroutineScope(Dispatchers.IO)
-
-public suspend fun setupRepository(meili: Meili, projects: File) {
+public suspend fun setupRepository(projects: File) {
 
     logger.info("Setup projects request received.")
 
@@ -59,118 +52,69 @@ public suspend fun setupRepository(meili: Meili, projects: File) {
     transaction {
         repo.projects.forEach { project ->
 
-            // Start by deleting project if exists
-            // This will cascade down to all other tables
+            // Start by deleting the project if exists.
+            // This will cascade down to all other tables.
             ProjectEntity.findById(project.id)?.delete()
 
-            val projectEntity = ProjectEntity.new(project.id) {
+            val projectEntity = ProjectEntity.new(id = project.id) {
                 this.name = project.name
                 this.color = project.color
-                this.github = project.projectHome
-                this.discord = project.discord
             }
-
-            ProjectEntity.findByIdAndUpdate(project.id) {
-
-            }
-
-            val projectIcon = ImageIO.read(coreDir.resolve("${project.id}/icon.png"))
 
             project.versions.forEach { version ->
 
-                val versionEntity = DocVersionEntity.new {
-                    this.reference = version.reference
+                val versionEntity = DocVersionEntity.new(id = version.reference) {
                     this.project = projectEntity
-                    this.navigation = version.navigation
-                    this.stable = version.stable
-                    this.recommended = version.recommended
-                    this.defaultPage = version.pages.find { it.default }?.id ?: error("Could not find default page.")
-                    this.github = version.github
-                    this.discord = version.discord
-                    this.javadocs = version.javadocs
-                }
-
-                val versionFolder = DATA_FOLDER.resolve("core/${project.id}/${version.reference}").also {
-                    it.mkdirs()
-                }
-
-                version.pages.forEach { page ->
-
-                    val pageDir = versionFolder.resolve(page.id).also {
-                        it.mkdirs()
-                    }
-
-                    val description = page.description
-
-                    bannerMaker.create(
-                        icon = projectIcon,
-                        group = description.group,
-                        title = description.title,
-                        subTitle = description.subTitle,
-                        output = pageDir.resolve("banner.png"),
-                    )
-
-                    PageEntity.new {
-                        this.pageId = page.id
-                        this.project = projectEntity
-                        this.version = versionEntity
-                        this.content = page.content
-                        this.path = page.path
-                        this.title = description.title ?: ""
-                        this.subTitle = description.subTitle ?: ""
-                        this.summary = description.summary
-                    }
-                }
-            }
-        }
-    }
-
-    logger.info("Preparing search...")
-    // Search setup
-    repo.projects.forEach { project ->
-        project.versions.forEach { version ->
-
-            val projectId = projectIndex(project.id, version.reference)
-
-            // First delete it all
-            meili.client.index(projectId).delete()
-
-            scope.launch {
-                // Delay insert
-                delay(1.seconds)
-
-                // Then re-add new stuff
-                meili.client.index(projectId, primaryKey = "id").addDocuments(
-                    version.pages.flatMap { page ->
-                        listOf(descriptionDocument(page.id, page.description))
-                            .plus(
-                                page.description.summary.map { summary ->
-                                    SearchDocument(
-                                        id = SearchDocument.createId(page.id, summary.href),
-                                        pageId = page.id,
-                                        anchor = summary.href,
-                                        isAnchor = true,
-                                        reference = summary.terms,
-                                    )
+                    this.versionDocument = VersionDocument(
+                        versions = project.versions.map { version ->
+                            VersionDocument.Version(version.reference)
+                        },
+                        color = project.color,
+                        stable = version.stable,
+                        groups = version.groups.map { group ->
+                            VersionDocument.Group(
+                                name = group.name,
+                                pages = group.pages.map { page ->
+                                    VersionDocument.Page(id = page.id, name = page.name)
                                 }
                             )
+                        },
+                        platforms = version.platforms,
+                        languages = version.languages,
+                        buildTools = version.buildTools,
+                        github = version.github,
+                        discord = version.discord,
+                        javadocs = version.javadocs,
+                    )
+                }
+
+                val pages = version.groups.flatMap(Group::pages)
+                pages.forEachIndexed { index, page ->
+
+                    PageEntity.new(id = page.id) {
+                        this.project = projectEntity
+                        this.version = versionEntity
+                        this.content = PageDocument(
+                            name = page.name,
+                            description = page.description,
+                            content = page.content,
+                            previous = pages.getOrNull(index - 1)?.let { previous ->
+                                PageDocument.Navigation(previous.id, previous.name)
+                            },
+                            next = pages.getOrNull(index + 1)?.let { next ->
+                                PageDocument.Navigation(next.id, next.name)
+                            },
+                            sections = page.content.children.filterIsInstance<DocComponent.Header>()
+                                .filter { it.level <= 2 }
+                                .map { PageDocument.PageContent(it.id, it.text, it.level) },
+                        )
                     }
-                )
+                }
             }
         }
     }
 
     logger.info("Setup projects done.")
-}
-
-private fun descriptionDocument(id: String, description: Page.Description): SearchDocument {
-    return SearchDocument(
-        id = id,
-        pageId = id,
-        anchor = id,
-        isAnchor = false,
-        reference = listOfNotNull(description.title, description.subTitle),
-    )
 }
 
 @Serializable

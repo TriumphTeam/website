@@ -1,4 +1,4 @@
-package dev.triumphteam.website.docs
+package dev.triumphteam.website.serializable
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -12,7 +12,7 @@ public sealed interface DocComponent {
 
     @Serializable
     @SerialName("document")
-    public data class Document(override val children: List<DocComponent>) : DocComponent, WithChildren
+    public data class Root(override val children: List<DocComponent>) : DocComponent, WithChildren
 
     @Serializable
     @SerialName("text")
@@ -26,7 +26,9 @@ public sealed interface DocComponent {
     @SerialName("header")
     public data class Header(
         public val level: Int,
-        override val children: List<DocComponent>
+        public val text: String,
+        public val id: String,
+        override val children: List<DocComponent>,
     ) : DocComponent, WithChildren
 
     @Serializable
@@ -86,28 +88,28 @@ public sealed interface DocComponent {
     public data class Link(
         public val destination: String,
         public val title: String?,
-        override val children: List<DocComponent>
+        override val children: List<DocComponent>,
     ) : DocComponent, WithChildren
 
     @Serializable
     @SerialName("Image")
     public data class Image(
         public val destination: String,
-        override val children: List<DocComponent>
+        override val children: List<DocComponent>,
     ) : DocComponent, WithChildren
 
     @Serializable
     @SerialName("html")
     public data class Html(
         public val html: String,
-        override val children: List<DocComponent>
+        override val children: List<DocComponent>,
     ) : DocComponent, WithChildren
 
     @Serializable
     @SerialName("hint")
     public data class Hint(
         public val hintType: HintType,
-        override val children: List<DocComponent>
+        override val children: List<DocComponent>,
     ) : DocComponent, WithChildren
 
     @Serializable

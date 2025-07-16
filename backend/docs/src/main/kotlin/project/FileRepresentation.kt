@@ -15,7 +15,6 @@ public data class ProjectConfig(
 @Serializable
 public data class VersionConfig(
     public val reference: String,
-    public val recommended: Boolean = false,
     public val stable: Boolean = true,
     public val platforms: List<String>,
     public val languages: List<String>,

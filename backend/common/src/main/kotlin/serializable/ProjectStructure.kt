@@ -1,6 +1,5 @@
-package dev.triumphteam.website.project
+package dev.triumphteam.website.serializable
 
-import dev.triumphteam.website.docs.DocComponent
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,7 +16,6 @@ public data class Project(
 @Serializable
 public data class Version(
     public val reference: String,
-    public val recommended: Boolean,
     public val stable: Boolean,
     public val groups: List<Group>,
     public val platforms: List<String>,
@@ -38,5 +36,5 @@ public data class Page(
     public val name: String,
     public val order: Int,
     public val description: String,
-    public val content: DocComponent,
+    public val content: DocComponent.Root,
 )

@@ -2,19 +2,19 @@ package dev.triumphteam.backend
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import dev.triumphteam.backend.api.database.DocVersions
-import dev.triumphteam.backend.api.database.Pages
-import dev.triumphteam.backend.api.database.Projects
+import dev.triumphteam.backend.database.DocVersions
+import dev.triumphteam.backend.database.Pages
+import dev.triumphteam.backend.database.Projects
 import io.ktor.server.application.Application
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import java.io.File
 import java.util.Properties
 
-public val DATA_FOLDER: File = File("data")
+public val DATA_FOLDER: File = File("data-ktor")
 
 public fun main() {
     // Database connection
@@ -35,15 +35,12 @@ public fun main() {
 
     // Creates all the tables
     transaction {
-        SchemaUtils.createMissingTablesAndColumns(
-            Projects,
-            DocVersions,
-            Pages,
-        )
+        SchemaUtils.createMissingTablesAndColumns(Projects, DocVersions, Pages)
+        //MigrationUtils.statementsRequiredForDatabaseMigration(Projects, DocVersions, Pages)
     }
 
     embeddedServer(
-        CIO,
+        factory = CIO,
         module = Application::module,
         port = System.getenv("WEBSITE_PORT")?.toIntOrNull() ?: 8001,
         watchPaths = listOf("classes"),

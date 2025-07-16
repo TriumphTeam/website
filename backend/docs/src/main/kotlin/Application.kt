@@ -13,11 +13,12 @@ import dev.triumphteam.website.docs.project.PageConfig
 import dev.triumphteam.website.docs.project.ProjectConfig
 import dev.triumphteam.website.docs.project.RepoSettings
 import dev.triumphteam.website.docs.project.VersionConfig
-import dev.triumphteam.website.project.Version
-import dev.triumphteam.website.project.Group
-import dev.triumphteam.website.project.Page
-import dev.triumphteam.website.project.Project
-import dev.triumphteam.website.project.Repository
+import dev.triumphteam.website.serializable.DocComponent
+import dev.triumphteam.website.serializable.Version
+import dev.triumphteam.website.serializable.Group
+import dev.triumphteam.website.serializable.Page
+import dev.triumphteam.website.serializable.Project
+import dev.triumphteam.website.serializable.Repository
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -91,7 +92,7 @@ public suspend fun main(args: Array<String>) {
     }
 
     val bearer = "bearer" //options.getOptionValue("b")
-    val url = "" //options.getOptionValue("u")
+    val url = "http://127.0.0.1:8001" //options.getOptionValue("u")
 
     logger.info("Starting project parsing!")
 
@@ -148,7 +149,7 @@ public suspend fun main(args: Array<String>) {
 
     logger.info("Parsing complete!")
     println(JsonSerializer.encode<Repository>(projects.toRepository()))
-    return
+
     logger.info("Uploading..")
 
     val client = HttpClient(CIO) {
@@ -251,7 +252,6 @@ private fun parseVersions(versions: List<File>, rootDir: File, repoSettings: Rep
 
         Version(
             reference = versionConfig.reference,
-            recommended = versionConfig.recommended,
             stable = versionConfig.stable,
             platforms = versionConfig.platforms,
             languages = versionConfig.languages,
@@ -265,10 +265,6 @@ private fun parseVersions(versions: List<File>, rootDir: File, repoSettings: Rep
         if (docVersions.isEmpty()) {
             logger.warn("No versions found for project '${rootDir.name}'.")
             return@also
-        }
-
-        require(docVersions.count(Version::recommended) == 1) {
-            "Only 1 recommended version is allowed per project."
         }
     }
 }

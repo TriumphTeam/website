@@ -1,6 +1,6 @@
 package dev.triumphteam.website.docs.markdown
 
-import dev.triumphteam.website.docs.DocComponent
+import dev.triumphteam.website.serializable.DocComponent
 import dev.triumphteam.website.docs.MARKDOWN_PARSER
 import dev.triumphteam.website.docs.markdown.highlight.language.LanguageDefinition
 import dev.triumphteam.website.docs.markdown.hint.HintBlock
@@ -33,15 +33,15 @@ import org.commonmark.node.ThematicBreak
 
 public class MarkdownRenderer(private val replacements: Map<String, Replacement>) {
 
-    public fun render(node: Node): DocComponent {
+    public fun render(node: Node): DocComponent.Root {
         if (node !is Document) error("Root node must be a Document")
-        return renderNode(node)
+        return renderNode(node) as? DocComponent.Root ?: error("Root node must be a Document")
     }
 
     private fun renderNode(node: Node): DocComponent {
         val children = renderChildren(node)
         return when (node) {
-            is Document -> DocComponent.Document(children)
+            is Document -> DocComponent.Root(children)
             is BlockQuote -> DocComponent.Quote(children)
             is BulletList -> DocComponent.BulletList(children)
             is Code -> DocComponent.Code(node.literal)
@@ -55,7 +55,17 @@ public class MarkdownRenderer(private val replacements: Map<String, Replacement>
             }
 
             is HardLineBreak -> DocComponent.HardLineBreak
-            is Heading -> DocComponent.Header(node.level, children)
+
+            is Heading -> {
+                val headerText = flatten(" ", children)
+                DocComponent.Header(
+                    level = node.level,
+                    text = headerText,
+                    id = headerText.lowercase().replace(Regex("\\s+"), "-"),
+                    children = children
+                )
+            }
+
             is HtmlBlock -> DocComponent.Html(node.literal, children)
             is HtmlInline -> DocComponent.Html(node.literal, children)
             is Image -> DocComponent.Image(node.destination, children)

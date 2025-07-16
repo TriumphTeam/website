@@ -1,6 +1,6 @@
 package dev.triumphteam.website.docs.project
 
-import dev.triumphteam.website.docs.Condition
+import dev.triumphteam.website.serializable.Condition
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

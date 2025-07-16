@@ -1,5 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import tasks.TailwindPrepare
 
 plugins {
     id("backend.base")
@@ -23,13 +22,6 @@ dependencies {
 }
 
 tasks {
-
-    register<TailwindPrepare>("tailwindPrepare") {
-        srcDir.set(project.sourceSets.main.get().kotlin.srcDirs.first())
-        resourcesDir.set(project.sourceSets.main.get().resources.srcDirs.first())
-        outputDir.set(rootDir.resolve("tailwind"))
-    }
-
     withType<ShadowJar> {
         archiveFileName.set("backend.jar")
     }
