@@ -16,6 +16,7 @@ public data class ProjectConfig(
 public data class VersionConfig(
     public val reference: String,
     public val stable: Boolean = true,
+    public val default: Boolean = false,
     public val platforms: List<String>,
     public val languages: List<String>,
     public val buildTools: List<String>,

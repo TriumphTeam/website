@@ -1,14 +1,17 @@
 package dev.triumphteam.backend.database
 
+import PageDocument
+import VersionDocument
 import dev.triumphteam.website.JsonSerializer
-import dev.triumphteam.website.serializable.PageDocument
-import dev.triumphteam.website.serializable.VersionDocument
 import org.jetbrains.exposed.v1.core.Column
 import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
+import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 import org.jetbrains.exposed.v1.dao.Entity
 import org.jetbrains.exposed.v1.dao.EntityClass
+import org.jetbrains.exposed.v1.dao.IntEntity
+import org.jetbrains.exposed.v1.dao.IntEntityClass
 import org.jetbrains.exposed.v1.json.json
 
 public object Projects : IdTable<String>("website_projects") {
@@ -26,8 +29,8 @@ public class ProjectEntity(id: EntityID<String>) : Entity<String>(id) {
     public var color: String by Projects.color
 }
 
-public object DocVersions : IdTable<String>("website_project_versions") {
-    public override val id: Column<EntityID<String>> = text("version_reference").entityId()
+public object Versions : IntIdTable("website_project_versions") {
+    public val reference: Column<String> = text("version_reference")
     public val project: Column<EntityID<String>> = reference(
         name = "project_id",
         refColumn = Projects.id,
@@ -36,43 +39,35 @@ public object DocVersions : IdTable<String>("website_project_versions") {
         fkName = "fk_versions_project_id"
     )
     public val versionDocument: Column<VersionDocument> = json<VersionDocument>("document", JsonSerializer.json)
-
-    override val primaryKey: PrimaryKey = PrimaryKey(id)
+    public val default: Column<Boolean> = bool("default").default(false)
 }
 
-public class DocVersionEntity(id: EntityID<String>) : Entity<String>(id) {
-    public companion object : EntityClass<String, DocVersionEntity>(DocVersions)
+public class VersionEntity(id: EntityID<Int>) : IntEntity(id) {
+    public companion object : IntEntityClass<VersionEntity>(Versions)
 
-    public var project: ProjectEntity by ProjectEntity referencedOn DocVersions.project
-    public var versionDocument: VersionDocument by DocVersions.versionDocument
+    public var reference: String by Versions.reference
+    public var project: ProjectEntity by ProjectEntity referencedOn Versions.project
+    public var versionDocument: VersionDocument by Versions.versionDocument
+    public var default: Boolean by Versions.default
 }
 
-public object Pages : IdTable<String>("website_project_pages") {
-    public override val id: Column<EntityID<String>> = text("page_id").entityId()
-    public val project: Column<EntityID<String>> = reference(
-        name = "project_id",
-        refColumn = Projects.id,
-        onDelete = ReferenceOption.CASCADE,
-        onUpdate = ReferenceOption.CASCADE,
-        fkName = "fk_pages_project_id"
-    )
-    public val version: Column<EntityID<String>> =
+public object Pages : IntIdTable("website_project_pages") {
+    public val reference: Column<String> = text("page_reference")
+    public val version: Column<EntityID<Int>> =
         reference(
-            name = "version_reference",
-            refColumn = DocVersions.id,
+            name = "version_id",
+            refColumn = Versions.id,
             onDelete = ReferenceOption.CASCADE,
             onUpdate = ReferenceOption.CASCADE,
-            fkName = "fk_pages_version_reference",
+            fkName = "fk_pages_version_id",
         )
     public val content: Column<PageDocument> = json<PageDocument>("content", JsonSerializer.json)
-
-    override val primaryKey: PrimaryKey = PrimaryKey(id)
 }
 
-public class PageEntity(id: EntityID<String>) : Entity<String>(id) {
-    public companion object : EntityClass<String, PageEntity>(Pages)
+public class PageEntity(id: EntityID<Int>) : IntEntity(id) {
+    public companion object : IntEntityClass<PageEntity>(Pages)
 
-    public var project: ProjectEntity by ProjectEntity referencedOn Pages.project
-    public var version: DocVersionEntity by DocVersionEntity referencedOn Pages.version
+    public var reference: String by Pages.reference
+    public var version: VersionEntity by VersionEntity referencedOn Pages.version
     public var content: PageDocument by Pages.content
 }

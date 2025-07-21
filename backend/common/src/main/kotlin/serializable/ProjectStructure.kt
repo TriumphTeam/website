@@ -1,5 +1,6 @@
 package dev.triumphteam.website.serializable
 
+import RootComponent
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,6 +18,7 @@ public data class Project(
 public data class Version(
     public val reference: String,
     public val stable: Boolean,
+    public val default: Boolean,
     public val groups: List<Group>,
     public val platforms: List<String>,
     public val languages: List<String>,
@@ -36,5 +38,5 @@ public data class Page(
     public val name: String,
     public val order: Int,
     public val description: String,
-    public val content: DocComponent.Root,
+    public val content: RootComponent,
 )

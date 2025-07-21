@@ -1,6 +1,28 @@
 package dev.triumphteam.website.docs.markdown
 
-import dev.triumphteam.website.serializable.DocComponent
+import BoldComponent
+import BulletListComponent
+import CodeBlockComponent
+import CodeComponent
+import ComponentChildren
+import ConditionalComponent
+import DocComponent
+import HardLineBreakComponent
+import HeaderComponent
+import HintComponent
+import HtmlComponent
+import ImageComponent
+import ItalicComponent
+import LinkComponent
+import ListItemComponent
+import OrderedListComponent
+import ParagraphComponent
+import QuoteComponent
+import RootComponent
+import SeparatorComponent
+import SoftLineBreakComponent
+import StrikethroughComponent
+import TextComponent
 import dev.triumphteam.website.docs.MARKDOWN_PARSER
 import dev.triumphteam.website.docs.markdown.highlight.language.LanguageDefinition
 import dev.triumphteam.website.docs.markdown.hint.HintBlock
@@ -33,32 +55,36 @@ import org.commonmark.node.ThematicBreak
 
 public class MarkdownRenderer(private val replacements: Map<String, Replacement>) {
 
-    public fun render(node: Node): DocComponent.Root {
+    public fun render(node: Node): RootComponent {
         if (node !is Document) error("Root node must be a Document")
-        return renderNode(node) as? DocComponent.Root ?: error("Root node must be a Document")
+        return renderNode(node) as? RootComponent ?: error("Root node must be a Document")
     }
 
     private fun renderNode(node: Node): DocComponent {
-        val children = renderChildren(node)
+        val children = ComponentChildren(renderChildren(node).toTypedArray())
         return when (node) {
-            is Document -> DocComponent.Root(children)
-            is BlockQuote -> DocComponent.Quote(children)
-            is BulletList -> DocComponent.BulletList(children)
-            is Code -> DocComponent.Code(node.literal)
+            is Document -> RootComponent(children)
+            is BlockQuote -> QuoteComponent(children)
+            is BulletList -> BulletListComponent(children)
+            is Code -> CodeComponent(node.literal)
             is CustomBlock -> renderCustomBlock(node, children)
             is CustomNode -> renderCustomNode(node, children)
-            is Emphasis -> DocComponent.Italic(children)
+            is Emphasis -> ItalicComponent(children)
 
             is FencedCodeBlock -> {
                 val languageDefinition = LanguageDefinition.fromString(node.info)
-                DocComponent.CodeBlock(content = languageDefinition.highlightCode(node.literal))
+                CodeBlockComponent(
+                    lang = node.info,
+                    content = languageDefinition.highlightCode(node.literal),
+                    raw = node.literal,
+                )
             }
 
-            is HardLineBreak -> DocComponent.HardLineBreak
+            is HardLineBreak -> HardLineBreakComponent
 
             is Heading -> {
                 val headerText = flatten(" ", children)
-                DocComponent.Header(
+                HeaderComponent(
                     level = node.level,
                     text = headerText,
                     id = headerText.lowercase().replace(Regex("\\s+"), "-"),
@@ -66,32 +92,38 @@ public class MarkdownRenderer(private val replacements: Map<String, Replacement>
                 )
             }
 
-            is HtmlBlock -> DocComponent.Html(node.literal, children)
-            is HtmlInline -> DocComponent.Html(node.literal, children)
-            is Image -> DocComponent.Image(node.destination, children)
-            is Link -> DocComponent.Link(node.destination, node.title, children)
-            is ListItem -> DocComponent.ListItem(children)
-            is OrderedList -> DocComponent.OrderedList(children)
-            is Paragraph -> DocComponent.Paragraph(children)
-            is SoftLineBreak -> DocComponent.SoftLineBreak
-            is StrongEmphasis -> DocComponent.Bold(children)
-            is Text -> DocComponent.Text(node.literal)
-            is ThematicBreak -> DocComponent.Separator
+            is HtmlBlock -> HtmlComponent(node.literal, children)
+            is HtmlInline -> HtmlComponent(node.literal, children)
+
+            is Image -> ImageComponent(
+                destination = node.destination,
+                alt = flatten(" ", children),
+                title = node.title,
+            )
+
+            is Link -> LinkComponent(node.destination, node.title, children)
+            is ListItem -> ListItemComponent(children)
+            is OrderedList -> OrderedListComponent(children)
+            is Paragraph -> ParagraphComponent(children)
+            is SoftLineBreak -> SoftLineBreakComponent
+            is StrongEmphasis -> BoldComponent(children)
+            is Text -> TextComponent(node.literal)
+            is ThematicBreak -> SeparatorComponent
             else -> unsupportedNode(node)
         }
     }
 
-    private fun renderCustomNode(node: CustomNode, children: List<DocComponent>): DocComponent {
+    private fun renderCustomNode(node: CustomNode, children: ComponentChildren): DocComponent {
         return when (node) {
             is Placeholder -> replace(node.identifier)
-            is Strikethrough -> DocComponent.Strikethrough(children)
+            is Strikethrough -> StrikethroughComponent(children)
             else -> unsupportedNode(node)
         }
     }
 
-    private fun renderCustomBlock(node: CustomBlock, children: List<DocComponent>): DocComponent {
+    private fun renderCustomBlock(node: CustomBlock, children: ComponentChildren): DocComponent {
         return when (node) {
-            is HintBlock -> DocComponent.Hint(node.type, children)
+            is HintBlock -> HintComponent(node.type, children)
             else -> unsupportedNode(node)
         }
     }
@@ -121,10 +153,10 @@ public class MarkdownRenderer(private val replacements: Map<String, Replacement>
 
         return when (replacement) {
             is Replacement.Raw -> parseMarkdown(replacement.content)
-            is Replacement.Conditional -> DocComponent.Conditional(
+            is Replacement.Conditional -> ConditionalComponent(
                 condition = replacement.condition,
                 value = when (val replacementValue = replacement.value) {
-                    is Value.Raw -> parseMarkdown(replacementValue.value)
+                    is Value.Raw -> parseMarkdown(replacementValue.value.trimIndent())
                     is Value.Replacement -> replace(replacementValue.identifier)
                 }
             )

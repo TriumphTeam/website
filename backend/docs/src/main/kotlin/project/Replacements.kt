@@ -1,6 +1,6 @@
 package dev.triumphteam.website.docs.project
 
-import dev.triumphteam.website.serializable.Condition
+import ComponentCondition
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -12,7 +12,7 @@ public sealed interface Replacement {
 
     @Serializable
     public data class Conditional(
-        public val condition: Condition,
+        public val condition: ComponentCondition,
         public val value: Value,
     ) : Replacement
 }

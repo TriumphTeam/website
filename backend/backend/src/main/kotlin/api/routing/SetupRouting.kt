@@ -1,12 +1,12 @@
-package dev.triumphteam.backend.api
+package dev.triumphteam.backend.api.routing
 
 import dev.triumphteam.backend.DATA_FOLDER
-import dev.triumphteam.website.api.Api
+import dev.triumphteam.backend.api.setupRepository
+import dev.triumphteam.website.api.InternalApi
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.http.content.streamProvider
-import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receiveMultipart
 import io.ktor.server.resources.post
@@ -16,11 +16,11 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 
-private val logger: Logger = LoggerFactory.getLogger("api-route")
+private val logger: Logger = LoggerFactory.getLogger("setup-route")
 
-public fun Routing.apiRoutes() {
+public fun Routing.setupRoutes() {
     authenticate("bearer") {
-        post<Api.Setup> {
+        post<InternalApi.Setup> {
             runCatching {
                 call.receiveMultipart()
             }.fold(

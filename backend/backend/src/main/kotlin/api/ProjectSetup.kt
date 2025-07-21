@@ -1,15 +1,21 @@
 package dev.triumphteam.backend.api
 
+import FooterNavigation
+import HeaderComponent
+import NavigationGroup
+import NavigationPage
+import PageContent
+import PageDocument
+import VersionData
+import VersionDocument
 import dev.triumphteam.backend.DATA_FOLDER
-import dev.triumphteam.backend.database.DocVersionEntity
 import dev.triumphteam.backend.database.PageEntity
 import dev.triumphteam.backend.database.ProjectEntity
+import dev.triumphteam.backend.database.VersionEntity
 import dev.triumphteam.website.JsonSerializer
-import dev.triumphteam.website.serializable.DocComponent
 import dev.triumphteam.website.serializable.Group
-import dev.triumphteam.website.serializable.PageDocument
 import dev.triumphteam.website.serializable.Repository
-import dev.triumphteam.website.serializable.VersionDocument
+import dev.triumphteam.website.serializable.Version
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -63,25 +69,27 @@ public suspend fun setupRepository(projects: File) {
 
             project.versions.forEach { version ->
 
-                val versionEntity = DocVersionEntity.new(id = version.reference) {
+                val versionEntity = VersionEntity.new {
+                    this.reference = version.reference
                     this.project = projectEntity
+                    this.default = version.default
                     this.versionDocument = VersionDocument(
-                        versions = project.versions.map { version ->
-                            VersionDocument.Version(version.reference)
-                        },
+                        versions = project.versions.map {
+                            VersionData(it.reference, it.reference == version.reference)
+                        }.toTypedArray(),
                         color = project.color,
                         stable = version.stable,
                         groups = version.groups.map { group ->
-                            VersionDocument.Group(
+                            NavigationGroup(
                                 name = group.name,
                                 pages = group.pages.map { page ->
-                                    VersionDocument.Page(id = page.id, name = page.name)
-                                }
+                                    NavigationPage(id = page.id, name = page.name)
+                                }.toTypedArray(),
                             )
-                        },
-                        platforms = version.platforms,
-                        languages = version.languages,
-                        buildTools = version.buildTools,
+                        }.toTypedArray(),
+                        platforms = version.platforms.toTypedArray(),
+                        languages = version.languages.toTypedArray(),
+                        buildTools = version.buildTools.toTypedArray(),
                         github = version.github,
                         discord = version.discord,
                         javadocs = version.javadocs,
@@ -91,22 +99,23 @@ public suspend fun setupRepository(projects: File) {
                 val pages = version.groups.flatMap(Group::pages)
                 pages.forEachIndexed { index, page ->
 
-                    PageEntity.new(id = page.id) {
-                        this.project = projectEntity
+                    PageEntity.new {
+                        this.reference = page.id
                         this.version = versionEntity
                         this.content = PageDocument(
                             name = page.name,
                             description = page.description,
                             content = page.content,
                             previous = pages.getOrNull(index - 1)?.let { previous ->
-                                PageDocument.Navigation(previous.id, previous.name)
+                                FooterNavigation(previous.id, previous.name)
                             },
                             next = pages.getOrNull(index + 1)?.let { next ->
-                                PageDocument.Navigation(next.id, next.name)
+                                FooterNavigation(next.id, next.name)
                             },
-                            sections = page.content.children.filterIsInstance<DocComponent.Header>()
+                            sections = page.content.children.children.filterIsInstance<HeaderComponent>()
                                 .filter { it.level <= 2 }
-                                .map { PageDocument.PageContent(it.id, it.text, it.level) },
+                                .map { PageContent(it.id, it.text, it.level) }
+                                .toTypedArray(),
                         )
                     }
                 }

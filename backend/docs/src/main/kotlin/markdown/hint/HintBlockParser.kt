@@ -1,6 +1,6 @@
 package dev.triumphteam.website.docs.markdown.hint
 
-import dev.triumphteam.website.serializable.HintType
+import HintType
 import dev.triumphteam.website.docs.markdown.fence.CustomBlockParserFactory
 import dev.triumphteam.website.docs.markdown.fence.FenceBlock
 import dev.triumphteam.website.docs.markdown.fence.FenceBlockParser

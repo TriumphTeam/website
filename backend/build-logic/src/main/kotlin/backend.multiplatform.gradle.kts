@@ -1,8 +1,3 @@
-import org.gradle.accessors.dm.LibrariesForLibs
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-val libs = the<LibrariesForLibs>()
-
 plugins {
     id("backend.configure")
     kotlin("multiplatform")

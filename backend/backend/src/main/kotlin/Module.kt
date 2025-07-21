@@ -1,7 +1,9 @@
 package dev.triumphteam.backend
 
-import dev.triumphteam.backend.api.apiRoutes
+import dev.triumphteam.backend.api.routing.setupRoutes
 import dev.triumphteam.backend.api.auth.TriumphPrincipal
+import dev.triumphteam.backend.api.routing.apiRoutes
+import dev.triumphteam.backend.database.PageEntity
 import dev.triumphteam.website.JsonSerializer
 import io.ktor.http.CacheControl
 import io.ktor.http.ContentType
@@ -25,8 +27,12 @@ import io.ktor.server.plugins.forwardedheaders.ForwardedHeaders
 import io.ktor.server.plugins.forwardedheaders.XForwardedHeaders
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.resources.Resources
+import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
+import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import org.slf4j.event.Level
 
 /** Module of the application. */
 public fun Application.module() {
@@ -38,22 +44,22 @@ public fun Application.module() {
         else -> propertyValue
     }*/
 
-    install(StatusPages) {
-        status(HttpStatusCode.NotFound) { call, _ ->
-            call.respondRedirect("/404")
-        }
-    }
-
     install(Resources)
     install(ContentNegotiation) {
         json(JsonSerializer.json)
     }
 
-    if (developmentMode) {
+    /*if (developmentMode) {
         install(CallLogging)
+    }*/
+    install(CallLogging) {
+        level = Level.INFO
     }
 
     install(CORS) {
+        //allowHost("*")
+        allowOrigins { true }
+        allowCredentials = true
         allowMethod(HttpMethod.Post)
         allowMethod(HttpMethod.Get)
         allowHeader(HttpHeaders.ContentType)
@@ -88,6 +94,7 @@ public fun Application.module() {
             }
         }
 
+        setupRoutes()
         apiRoutes()
     }
 }

@@ -2,7 +2,7 @@ package dev.triumphteam.backend
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import dev.triumphteam.backend.database.DocVersions
+import dev.triumphteam.backend.database.Versions
 import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.database.Projects
 import io.ktor.server.application.Application
@@ -35,7 +35,7 @@ public fun main() {
 
     // Creates all the tables
     transaction {
-        SchemaUtils.createMissingTablesAndColumns(Projects, DocVersions, Pages)
+        SchemaUtils.createMissingTablesAndColumns(Projects, Versions, Pages)
         //MigrationUtils.statementsRequiredForDatabaseMigration(Projects, DocVersions, Pages)
     }
 

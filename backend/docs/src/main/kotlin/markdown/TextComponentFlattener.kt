@@ -1,15 +1,17 @@
 package dev.triumphteam.website.docs.markdown
 
-import dev.triumphteam.website.serializable.DocComponent
-import dev.triumphteam.website.serializable.WithChildren
+import ComponentChildren
+import DocComponent
+import TextComponent
+import WithChildren
 
-public fun flatten(separator: String, component: List<DocComponent>): String {
-    return component.joinToString(separator) { flatten(separator, it) }
+public fun flatten(separator: String, component: ComponentChildren): String {
+    return component.children.joinToString(separator) { flatten(separator, it) }
 }
 
 private fun flatten(separator: String, component: DocComponent): String {
     return when (component) {
-        is DocComponent.Text -> component.content
+        is TextComponent -> component.content
         is WithChildren -> flatten(separator, component.children)
         else -> ""
     }

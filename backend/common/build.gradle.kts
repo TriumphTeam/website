@@ -5,4 +5,5 @@ plugins {
 dependencies {
     api(libs.zip)
     api(libs.ktor.resources)
+    api(projects.serializable)
 }

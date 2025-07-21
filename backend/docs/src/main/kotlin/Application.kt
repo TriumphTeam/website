@@ -2,23 +2,22 @@ package dev.triumphteam.website.docs
 
 import dev.triumphteam.website.HoconSerializer
 import dev.triumphteam.website.JsonSerializer
-import dev.triumphteam.website.api.Api
+import dev.triumphteam.website.api.InternalApi
 import dev.triumphteam.website.docs.markdown.MarkdownRenderer
 import dev.triumphteam.website.docs.markdown.hint.HintExtension
 import dev.triumphteam.website.docs.markdown.placeholder.PlaceholderExtension
 import dev.triumphteam.website.docs.markdown.tab.TabExtension
-import dev.triumphteam.website.docs.project.Replacement
 import dev.triumphteam.website.docs.project.GroupConfig
 import dev.triumphteam.website.docs.project.PageConfig
 import dev.triumphteam.website.docs.project.ProjectConfig
+import dev.triumphteam.website.docs.project.Replacement
 import dev.triumphteam.website.docs.project.RepoSettings
 import dev.triumphteam.website.docs.project.VersionConfig
-import dev.triumphteam.website.serializable.DocComponent
-import dev.triumphteam.website.serializable.Version
 import dev.triumphteam.website.serializable.Group
 import dev.triumphteam.website.serializable.Page
 import dev.triumphteam.website.serializable.Project
 import dev.triumphteam.website.serializable.Repository
+import dev.triumphteam.website.serializable.Version
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -164,7 +163,7 @@ public suspend fun main(args: Array<String>) {
         }
     }
 
-    val response = client.post(Api.Setup()) {
+    val response = client.post(InternalApi.Setup()) {
         setBody(
             MultiPartFormDataContent(
                 formData {
@@ -253,6 +252,7 @@ private fun parseVersions(versions: List<File>, rootDir: File, repoSettings: Rep
         Version(
             reference = versionConfig.reference,
             stable = versionConfig.stable,
+            default = versionConfig.default,
             platforms = versionConfig.platforms,
             languages = versionConfig.languages,
             buildTools = versionConfig.buildTools,
@@ -265,6 +265,10 @@ private fun parseVersions(versions: List<File>, rootDir: File, repoSettings: Rep
         if (docVersions.isEmpty()) {
             logger.warn("No versions found for project '${rootDir.name}'.")
             return@also
+        }
+
+        require(docVersions.count { it.default } == 1) {
+            "Project '${rootDir.name}' should only have one default version, but found ${docVersions.count { it.default }}!"
         }
     }
 }
