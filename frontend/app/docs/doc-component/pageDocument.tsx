@@ -159,36 +159,51 @@ export function PageDocumentComponent({document, buildTool, language, platform}:
 
     function HeaderDocComponent({component}: { component: HeaderComponent }) {
 
-        let size: string = "text-base"
+        let textSize: string = "text-base"
         switch (component.level) {
             case 1:
-                size = "text-2xl"
+                textSize = "text-2xl"
                 break
             case 2:
-                size = "text-xl"
+                textSize = "text-xl"
                 break
             case 3:
-                size = "text-lg"
+                textSize = "text-lg"
                 break
             case 4:
-                size = "text-md"
+                textSize = "text-md"
                 break
             case 5:
-                size = "text-base"
+                textSize = "text-base"
                 break
             case 6:
-                size = "text-sm"
+                textSize = "text-sm"
                 break
         }
 
-        return <div className="group">
+        const Header = ({id, level, textSize, children}: {
+            id: string,
+            level: number,
+            textSize: string,
+            children: ReactNode
+        }) => {
+            if (level === 1) return <h1 id={id} className={textSize}>{children}</h1>
+            if (level === 2) return <h2 id={id} className={textSize}>{children}</h2>
+            if (level === 3) return <h3 id={id} className={textSize}>{children}</h3>
+            if (level === 4) return <h4 id={id} className={textSize}>{children}</h4>
+            if (level === 5) return <h5 id={id} className={textSize}>{children}</h5>
+            return <h6 id={id} className="text-sm">{children}</h6>
+        }
+
+        return <div id="doc-section" key={component.id} className="group">
             <a
-                id={component.id}
                 href={`#${component.id}`}
-                className={`${size} inline-flex font-medium text-white`}
+                className={`${textSize} inline-flex font-medium text-white`}
             >
                 <span id="hash" className="absolute -ml-6 opacity-0 group-hover:opacity-20 transition-opacity">#</span>
-                <h2><ChildComponent components={component.children.children}/></h2>
+                <Header id={component.id} level={component.level} textSize={textSize}>
+                    <ChildComponent components={component.children.children}/>
+                </Header>
             </a>
         </div>
     }
@@ -251,7 +266,7 @@ export function PageDocumentComponent({document, buildTool, language, platform}:
         }
 
         return <div
-            className={`border-l-4 ${color} bg-dark-background-secondary !pl-4 !py-4 my-6 mx-2 rounded-l-sm rounded-r-md flex flex-row items-center`}>
+            className={`border-l-4 ${color} bg-dark-background-secondary-transparent !pl-4 !py-4 my-6 mx-2 rounded-l-sm rounded-r-md flex flex-row items-center`}>
             {icon && <i className={`${icon} pr-4 text-xl`}/>}
             {children}
         </div>

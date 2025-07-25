@@ -1,11 +1,11 @@
-import {useLocation, useParams} from "react-router"
+import {useParams} from "react-router"
 import type {ConfigurationState} from "~/hooks/useConfiguration"
 import useSWR from "swr"
-import {type PageDocument, type PageContent} from "@lichthund/triumph-docs-serializable"
-import {useEffect} from "react"
+import {type PageContent, type PageDocument} from "@lichthund/triumph-docs-serializable"
 import "./one_dark.css"
 import type {DocumentConfiguration} from "~/utils/Configurations"
 import {PageDocumentComponent, Separator} from "~/docs/doc-component/pageDocument"
+import {useEffect, useRef, useState} from "react"
 
 export function Content(
     {
@@ -38,7 +38,7 @@ export function Content(
 
             <PageContents
                 key="page-content"
-                document={data}
+                pageDocument={data}
                 buildTool={buildTool}
                 language={language}
                 platform={platform}
@@ -47,35 +47,87 @@ export function Content(
     )
 }
 
-function PageContents({document, buildTool, language, platform}: {
-    document: PageDocument,
+function PageContents({pageDocument, buildTool, language, platform}: {
+    pageDocument: PageDocument,
     buildTool: DocumentConfiguration,
     language: DocumentConfiguration,
     platform: DocumentConfiguration,
 }) {
 
-
     return <div
         className="w-full flex gap-8 overflow-x-hidden relative xl:ml-60 2xl:ml-72 px-12 py-8 z-5 bg-[radial-gradient(#202023_1px,transparent_1px)] [background-size:16px_16px]">
-        <div className="flex-1 w-full min-w-0 [&>*]:p-2">
-            <h1 className="text-4xl font-medium text-white text-center pointer-events-none">{document.name}</h1>
-            <h2 className="text-lg text-center">{document.description}</h2>
+        <div id="doc-content" className="flex-1 w-full min-w-0 [&>*]:p-2">
+            <h1 className="text-4xl font-medium text-white text-center pointer-events-none">{pageDocument.name}</h1>
+            <h2 className="text-lg text-center">{pageDocument.description}</h2>
             <Separator/>
             {/* More complex content is rendered from here on out.*/}
-            <PageDocumentComponent document={document} buildTool={buildTool} language={language} platform={platform}/>
+            <PageDocumentComponent document={pageDocument} buildTool={buildTool} language={language}
+                                   platform={platform}/>
         </div>
         <div className="max-w-72 flex-none [&>*]:p-1 sticky top-6">
             <h2 className="text-lg font-bold">ON THIS PAGE</h2>
-            <TableOfContents document={document}/>
+            <TableOfContents pageDocument={pageDocument} buildTool={buildTool} language={language} platform={platform}/>
         </div>
     </div>
 }
 
-function TableOfContents({document}: { document: PageDocument }) {
+type TrackedElement = {
+    id: string,
+    target: Element,
+}
+
+function TableOfContents({pageDocument, buildTool, language, platform}: {
+    pageDocument: PageDocument,
+    buildTool: DocumentConfiguration,
+    language: DocumentConfiguration,
+    platform: DocumentConfiguration,
+}) {
+
+    const params = useParams()
+    const [activeSection, setActiveSection] = useState<string | null>(null)
+
+    useEffect(() => {
+        const elements: TrackedElement[] = Array.from(document.querySelectorAll("#doc-section a"))
+            .map(element => element.lastChild as Element)
+            .filter(element => element.tagName === "H1" || element.tagName === "H2")
+            .map(element => ({id: element.id, target: element}))
+
+        let sections: Map<Element, string> = new Map()
+        for (let element of elements) {
+            sections.set(element.target, element.id)
+        }
+
+        let visibleElements = new Set<Element>()
+
+        const callback = (entries: IntersectionObserverEntry[]) => {
+            for (let entry of entries) {
+                if (entry.isIntersecting) {
+                    visibleElements.add(entry.target)
+                } else {
+                    visibleElements.delete(entry.target)
+                }
+            }
+
+            let firstVisibleSection = Array.from(sections.entries()).find(([element]) => visibleElements.has(element))
+            if (!firstVisibleSection) return
+            setActiveSection(firstVisibleSection[1])
+        }
+
+        const observer = new IntersectionObserver(callback, {
+            root: null,
+            rootMargin: "0px",
+            threshold: [1.0],
+        })
+
+        Array.from(sections.keys()).forEach((element) => observer.observe(element))
+
+        return () => observer.disconnect()
+    }, [params, language, platform, buildTool])
+
     return <>
         {
-            document.sections.map((section, index) => {
-                return <Section section={section} selected={false}/>
+            pageDocument.sections.map((section) => {
+                return <Section section={section} selected={section.id === activeSection}/>
             })
         }
     </>
