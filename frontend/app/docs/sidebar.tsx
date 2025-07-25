@@ -176,7 +176,7 @@ function NavigationPageArea({text, link}: { text: string, link: string }) {
     return (
         <div className={`pt-2 ${color}`}>
             <Link to={`../${link}`} relative="path"
-                  className="xl:text-base 2xl:text-lg transition ease-in-out delay-100 project-color-hover">
+                  className="xl:text-base 2xl:text-lg transition ease-in-out">
                 {text}
             </Link>
         </div>

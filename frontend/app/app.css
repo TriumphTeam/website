@@ -13,6 +13,10 @@
     --hint-error: #f44336;
 }
 
+* {
+    scroll-behavior: smooth;
+}
+
 html, body {
     @apply bg-white dark:bg-dark-background-primary text-default-text;
 
@@ -22,8 +26,8 @@ html, body {
 }
 
 html {
-    scroll-behavior: smooth;
     scroll-padding-top: 60px;
+    overflow-x: hidden;
 }
 
 body {
