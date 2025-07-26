@@ -1,3 +1,5 @@
+"use client"
+
 import {
     BOLD_COMPONENT_TYPE,
     BUILDTOOL_CONDITION_TYPE,
@@ -57,27 +59,28 @@ export function PageDocumentComponent({document, buildTool, language, platform}:
 }) {
 
     function DocComponents({component}: { component: RootComponent }) {
-        return <ChildComponent components={component.children.children}/>
+        return <ChildComponent childKey="root" components={component.children.children}/>
     }
 
-    function ChildComponent({components}: { components: any[] }) {
+    function ChildComponent({childKey, components}: { childKey: string, components: any[] }) {
         return <>
             {
-                components.map(component => {
+                components.map((component, index) => {
+                    const componentKey = `${childKey}-${index}`
                     if (component.type === ROOT_COMPONENT_TYPE.get()) {
-                        return <DocComponents component={component as RootComponent}/>
+                        return <DocComponents key={componentKey} component={component as RootComponent}/>
                     }
 
                     if (component.type === HEADER_COMPONENT_TYPE.get()) {
-                        return <HeaderDocComponent component={component as HeaderComponent}/>
+                        return <HeaderDocComponent key={componentKey} component={component as HeaderComponent}/>
                     }
 
                     if (component.type === TEXT_COMPONENT_TYPE.get()) {
-                        return <TextDocComponent component={component as TextComponent}/>
+                        return <TextDocComponent key={componentKey} component={component as TextComponent}/>
                     }
 
                     if (component.type === PARAGRAPH_COMPONENT_TYPE.get()) {
-                        return <ParagraphDocComponent component={component as ParagraphComponent}/>
+                        return <ParagraphDocComponent key={componentKey} component={component as ParagraphComponent}/>
                     }
 
                     if (component.type === SOFT_LINE_BREAK_COMPONENT_TYPE.get()) {
@@ -85,70 +88,71 @@ export function PageDocumentComponent({document, buildTool, language, platform}:
                     }
 
                     if (component.type === HARD_LINE_BREAK_COMPONENT_TYPE.get()) {
-                        return <br/> // a hard line break will break the line.
+                        return <br key={componentKey}/> // a hard line break will break the line.
                     }
 
                     if (component.type === QUOTE_COMPONENT_TYPE.get()) {
-                        return <QuoteDocComponent component={component as QuoteComponent}/>
+                        return <QuoteDocComponent key={componentKey} component={component as QuoteComponent}/>
                     }
 
                     if (component.type === BULLET_LIST_COMPONENT_TYPE.get()) {
-                        return <BulletListDocComponent component={component as BulletListComponent}/>
+                        return <BulletListDocComponent key={componentKey} component={component as BulletListComponent}/>
                     }
 
                     if (component.type === ORDERED_LIST_COMPONENT_TYPE.get()) {
-                        return <OrderedListDocComponent component={component as OrderedListComponent}/>
+                        return <OrderedListDocComponent key={componentKey} component={component as OrderedListComponent}/>
                     }
 
                     if (component.type === CODE_COMPONENT_TYPE.get()) {
-                        return <CodeDocComponent component={component as CodeComponent}/>
+                        return <CodeDocComponent key={componentKey} component={component as CodeComponent}/>
                     }
 
                     if (component.type === CODE_BLOCK_COMPONENT_TYPE.get()) {
-                        return <CodeBlockDocComponent component={component as CodeBlockComponent}/>
+                        return <CodeBlockDocComponent key={componentKey} component={component as CodeBlockComponent}/>
                     }
 
                     if (component.type === BOLD_COMPONENT_TYPE.get()) {
-                        return <span className="font-bold"><ChildComponent
-                            components={(component as WithChildren).children.children}/></span>
+                        return <span key={componentKey} className="font-bold">
+                            <ChildComponent childKey={`bold-${componentKey}`} components={(component as WithChildren).children.children}/>
+                        </span>
                     }
 
                     if (component.type === ITALIC_COMPONENT_TYPE.get()) {
-                        return <span className="italic">
-                        <ChildComponent components={(component as WithChildren).children.children}/>
+                        return <span key={componentKey} className="italic">
+                        <ChildComponent childKey={`italic-${componentKey}`} components={(component as WithChildren).children.children}/>
                     </span>
                     }
 
                     if (component.type === STRIKETHROUGH_COMPONENT_TYPE.get()) {
-                        return <span className="line-through">
-                        <ChildComponent components={(component as WithChildren).children.children}/>
+                        return <span key={componentKey} className="line-through">
+                        <ChildComponent childKey={`strike-${componentKey}`} components={(component as WithChildren).children.children}/>
                     </span>
                     }
 
                     if (component.type === UNDERLINE_COMPONENT_TYPE.get()) {
-                        return <span className="underline">
-                        <ChildComponent components={(component as WithChildren).children.children}/>
+                        return <span key={componentKey} className="underline">
+                        <ChildComponent childKey={`underline-${componentKey}`} components={(component as WithChildren).children.children}/>
                     </span>
                     }
 
                     if (component.type === SEPARATOR_COMPONENT_TYPE.get()) {
-                        return <Separator/>
+                        return <Separator key={componentKey}/>
                     }
 
                     if (component.type === LINK_COMPONENT_TYPE.get()) {
-                        return <LinkDocComponent component={component as LinkComponent}/>
+                        return <LinkDocComponent key={componentKey} component={component as LinkComponent}/>
                     }
 
                     if (component.type === IMAGE_COMPONENT_TYPE.get()) {
-                        return <ImageDocComponent component={component as ImageComponent}/>
+                        return <ImageDocComponent key={componentKey} component={component as ImageComponent}/>
                     }
 
                     if (component.type === HINT_COMPONENT_TYPE.get()) {
-                        return <HintDocComponent component={component as HintComponent}/>
+                        return <HintDocComponent key={componentKey} component={component as HintComponent}/>
                     }
 
                     if (component.type === CONDITIONAL_COMPONENT_TYPE.get()) {
-                        return <ConditionalDocComponent component={component as ConditionalComponent}/>
+                        return <ConditionalDocComponent key={componentKey} component={component as ConditionalComponent}/>
                     }
 
                     return <></>
@@ -202,7 +206,7 @@ export function PageDocumentComponent({document, buildTool, language, platform}:
             >
                 <span id="hash" className="absolute -ml-6 opacity-0 group-hover:opacity-20 transition-opacity">#</span>
                 <Header id={component.id} level={component.level} textSize={textSize}>
-                    <ChildComponent components={component.children.children}/>
+                    <ChildComponent childKey={`header-${component.id}`} components={component.children.children}/>
                 </Header>
             </a>
         </div>
@@ -213,18 +217,18 @@ export function PageDocumentComponent({document, buildTool, language, platform}:
     }
 
     function ParagraphDocComponent({component}: { component: ParagraphComponent }) {
-        return <p><ChildComponent components={component.children.children}/></p>
+        return <div><ChildComponent childKey="paragraph" components={component.children.children}/></div>
     }
 
     function QuoteDocComponent({component}: { component: QuoteComponent }) {
         return <HintBlock type={undefined}>
-            <ChildComponent components={component.children.children}/>
+            <ChildComponent childKey="quote" components={component.children.children}/>
         </HintBlock>
     }
 
     function HintDocComponent({component}: { component: HintComponent }) {
         return <HintBlock type={component.hintType}>
-            <ChildComponent components={component.children.children}/>
+            <ChildComponent childKey="hint" components={component.children.children}/>
         </HintBlock>
     }
 
@@ -274,35 +278,43 @@ export function PageDocumentComponent({document, buildTool, language, platform}:
 
     function BulletListDocComponent({component}: { component: BulletListComponent }) {
         return <ul className="list-disc list-outside !pl-8">
-            <ListItemDocComponent components={component.children.children}/>
+            <ListItemDocComponent key="list-component" components={component.children.children}/>
         </ul>
     }
 
     function OrderedListDocComponent({component}: { component: OrderedListComponent }) {
         return <ol className="list-decimal list-outside !pl-8">
-            <ListItemDocComponent components={component.children.children}/>
+            <ListItemDocComponent key="list-component" components={component.children.children}/>
         </ol>
     }
 
     function ListItemDocComponent({components}: { components: any[] }) {
         return <>
             {
-                components.map(component => {
+                components.map((component, index) => {
                     const anyComponent = component as any
 
                     if (anyComponent.type === LIST_ITEM_COMPONENT_TYPE.get()) {
                         const listItemComponent = anyComponent as ListItemComponent
-                        return <li><ChildComponent components={listItemComponent.children.children}/></li>
+                        return <li key={`list-${index}`}>
+                            <ChildComponent childKey={`list-${index}`} components={listItemComponent.children.children}/>
+                        </li>
                     }
 
                     if (anyComponent.type === BULLET_LIST_COMPONENT_TYPE.get()) {
                         const bulletListComponent = anyComponent as BulletListComponent
-                        return <BulletListDocComponent component={bulletListComponent}/>
+                        return <BulletListDocComponent
+                            key={`bullet-list-component-${index}`}
+                            component={bulletListComponent}
+                        />
                     }
 
                     if (anyComponent.type === ORDERED_LIST_COMPONENT_TYPE.get()) {
                         const orderedListComponent = anyComponent as OrderedListComponent
-                        return <OrderedListDocComponent component={orderedListComponent}/>
+                        return <OrderedListDocComponent
+                            key={`ordered-list-component-${index}`}
+                            component={orderedListComponent}
+                        />
                     }
 
                     return <></>
@@ -350,12 +362,12 @@ export function PageDocumentComponent({document, buildTool, language, platform}:
 
         if (!component.destination.startsWith("/")) {
             return <a className={className} href={component.destination} target="_blank" rel="noreferrer">
-                <ChildComponent components={component.children.children}/>
+                <ChildComponent childKey="link" components={component.children.children}/>
             </a>
         }
 
         return <Link to={`../${component.destination}`} relative="path" className={className}>
-            <ChildComponent components={component.children.children}/>
+            <ChildComponent childKey="link" components={component.children.children}/>
         </Link>
     }
 
@@ -371,7 +383,7 @@ export function PageDocumentComponent({document, buildTool, language, platform}:
             const platformCondition = condition as PlatformCondition
 
             if (platformCondition.platform === platform.key) {
-                return <ChildComponent components={[component.value] as const}/>
+                return <ChildComponent childKey="conditional" components={[component.value] as const}/>
             }
             return <></>
         }
@@ -380,7 +392,7 @@ export function PageDocumentComponent({document, buildTool, language, platform}:
             const languageCondition = condition as LanguageCondition
 
             if (languageCondition.language === language.key) {
-                return <ChildComponent components={[component.value] as const}/>
+                return <ChildComponent childKey="conditional" components={[component.value] as const}/>
             }
             return <></>
         }
@@ -389,7 +401,7 @@ export function PageDocumentComponent({document, buildTool, language, platform}:
             const buildToolCondition = condition as BuildToolCondition
 
             if (buildToolCondition.buildTool === buildTool.key) {
-                return <ChildComponent components={[component.value] as const}/>
+                return <ChildComponent childKey="conditional" components={[component.value] as const}/>
             }
             return <></>
         }

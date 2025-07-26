@@ -31,11 +31,7 @@ export function Content(
     if (error || !data) return <div>Failed to load</div>
 
     return (
-        <div className="max-w-full h-screen pt-12 flex overflow-y-auto">
-            <div
-                className="absolute top-0 z-2 h-screen w-full bg-[radial-gradient(75%_75%_at_95%_0%,rgba(0,163,255,0.1)_0,rgba(0,163,255,0)_75%,rgba(0,163,255,0)_100%)]"
-            />
-
+        <div className="max-w-full h-screen flex overflow-y-auto">
             <PageContents
                 key="page-content"
                 pageDocument={data}
@@ -55,8 +51,8 @@ function PageContents({pageDocument, buildTool, language, platform}: {
 }) {
 
     return <div
-        className="w-full flex gap-8 overflow-x-hidden relative xl:ml-60 2xl:ml-72 px-12 py-8 z-5 bg-[radial-gradient(#202023_1px,transparent_1px)] [background-size:16px_16px]">
-        <div id="doc-content" className="flex-1 w-full min-w-0 [&>*]:p-2">
+        className="w-full flex gap-8 overflow-x-hidden relative xl:ml-60 2xl:ml-72 px-12 py-12 z-5 bg-[radial-gradient(#202023_1px,transparent_1px)] [background-size:16px_16px]">
+        <div id="doc-content" className="flex-1 w-full min-w-0 [&>*]:p-2 pt-12">
             <h1 className="text-4xl font-medium text-white text-center pointer-events-none">{pageDocument.name}</h1>
             <h2 className="text-lg text-center">{pageDocument.description}</h2>
             <Separator/>
@@ -64,8 +60,8 @@ function PageContents({pageDocument, buildTool, language, platform}: {
             <PageDocumentComponent document={pageDocument} buildTool={buildTool} language={language}
                                    platform={platform}/>
         </div>
-        <div className="max-w-72 flex-none [&>*]:p-1 sticky top-6">
-            <h2 className="text-lg font-bold">ON THIS PAGE</h2>
+        <div className="max-w-72 flex-none [&>*]:p-1 sticky top-0">
+            <h2 className="text-lg font-bold mt-6">ON THIS PAGE</h2>
             <TableOfContents pageDocument={pageDocument} buildTool={buildTool} language={language} platform={platform}/>
         </div>
     </div>
