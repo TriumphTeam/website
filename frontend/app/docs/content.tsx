@@ -1,70 +1,150 @@
-import {useParams} from "react-router"
+import {Link, useParams} from "react-router"
 import type {ConfigurationState} from "~/hooks/useConfiguration"
 import useSWR from "swr"
 import {type PageContent, type PageDocument} from "@lichthund/triumph-docs-serializable"
 import "./one_dark.css"
-import type {DocumentConfiguration} from "~/utils/Configurations"
 import {PageDocumentComponent, Separator} from "~/docs/doc-component/pageDocument"
-import {useEffect, useRef, useState} from "react"
+import {useEffect, useState} from "react"
+import {motion} from "motion/react"
 
 export function Content(
     {
         version,
-        buildToolConfigurationState,
-        languageConfigurationState,
-        platformConfigurationState,
+        buildToolState,
+        languageState,
+        platformState,
     }: {
         version: number,
-        buildToolConfigurationState: ConfigurationState,
-        languageConfigurationState: ConfigurationState,
-        platformConfigurationState: ConfigurationState,
+        buildToolState: ConfigurationState,
+        languageState: ConfigurationState,
+        platformState: ConfigurationState,
     },
 ) {
 
     const {page} = useParams()
     const {data, error} = useSWR<PageDocument>(`/page?version=${version}&page=${page}`)
 
-    const [buildTool] = buildToolConfigurationState
-    const [language] = languageConfigurationState
-    const [platform] = platformConfigurationState
-
     if (error || !data) return <div>Failed to load</div>
 
-    return (
-        <div className="max-w-full h-screen flex overflow-y-auto">
-            <PageContents
-                key="page-content"
-                pageDocument={data}
-                buildTool={buildTool}
-                language={language}
-                platform={platform}
-            />
-        </div>
-    )
+    return <PageContents
+        key="page-content"
+        pageDocument={data}
+        buildToolState={buildToolState}
+        languageState={languageState}
+        platformState={platformState}
+    />
 }
 
-function PageContents({pageDocument, buildTool, language, platform}: {
+function PageContents({pageDocument, buildToolState, languageState, platformState}: {
     pageDocument: PageDocument,
-    buildTool: DocumentConfiguration,
-    language: DocumentConfiguration,
-    platform: DocumentConfiguration,
+    buildToolState: ConfigurationState,
+    languageState: ConfigurationState,
+    platformState: ConfigurationState,
 }) {
 
-    return <div
-        className="w-full flex gap-8 overflow-x-hidden relative xl:ml-60 2xl:ml-72 px-12 py-12 z-5 bg-[radial-gradient(#202023_1px,transparent_1px)] [background-size:16px_16px]">
-        <div id="doc-content" className="flex-1 w-full min-w-0 [&>*]:p-2 pt-12">
-            <h1 className="text-4xl font-medium text-white text-center pointer-events-none">{pageDocument.name}</h1>
-            <h2 className="text-lg text-center">{pageDocument.description}</h2>
-            <Separator/>
-            {/* More complex content is rendered from here on out.*/}
-            <PageDocumentComponent document={pageDocument} buildTool={buildTool} language={language}
-                                   platform={platform}/>
+    const previous = pageDocument.previous
+    const next = pageDocument.next
+
+    return <>
+        <div className="flex-1 flex flex-col min-h-0 min-w-0 px-6">
+            <div id="doc-content" className="flex-1 [&>*]:p-2 pt-12">
+                <h1 className="text-4xl font-medium text-white text-center pointer-events-none">{pageDocument.name}</h1>
+                <h2 className="text-lg text-center">{pageDocument.description}</h2>
+                <Separator/>
+                <PageDocumentComponent
+                    document={pageDocument}
+                    buildToolState={buildToolState}
+                    languageState={languageState}
+                    platformState={platformState}
+                />
+            </div>
+            <div className="px-2 mt-12 pb-8 flex items-center justify-between gap-2 text-sm">
+                <div>
+                    {
+                        previous && <Link to={`../${previous.id}`} relative="path"
+                                          className="flex items-center gap-2 hover:text-(--project-color) transition ease-in-out">
+                            <i className="fa-solid fa-angle-left"/>
+                            <span>{previous.name}</span>
+                        </Link>
+                    }
+                </div>
+                <div>
+                    {
+                        next != null && <Link to={`../${next.id}`} relative="path"
+                                              className="flex items-center gap-2 hover:text-(--project-color) transition ease-in-out">
+                            <span>{next.name}</span>
+                            <i className="fa-solid fa-angle-right"/>
+                        </Link>
+                    }
+                </div>
+            </div>
         </div>
-        <div className="max-w-72 flex-none [&>*]:p-1 sticky top-0">
-            <h2 className="text-lg font-bold mt-6">ON THIS PAGE</h2>
-            <TableOfContents pageDocument={pageDocument} buildTool={buildTool} language={language} platform={platform}/>
+        <ContentSidebar pageDocument={pageDocument} buildToolState={buildToolState} languageState={languageState}
+                        platformState={platformState}/>
+    </>
+}
+
+function ContentSidebar({pageDocument, buildToolState, languageState, platformState}: {
+    pageDocument: PageDocument,
+    buildToolState: ConfigurationState,
+    languageState: ConfigurationState,
+    platformState: ConfigurationState,
+}) {
+
+    const [open, setOpen] = useState(false)
+
+    function ControlButton() {
+        return <div className="lg:hidden fixed z-[49] top-0 right-0 text-2xl pr-6 py-8">
+            <motion.div
+                initial={{rotate: "0deg", scale: 0.5}}
+                animate={{rotate: "180deg", scale: 1}}
+                onClick={() => setOpen(!open)}
+            >
+                {open ? <i className="fa-solid fa-xmark"/> : <i className="fa-solid fa-gear"/>}
+            </motion.div>
         </div>
-    </div>
+    }
+
+    return <>
+        <ControlButton/>
+        <div className="lg:hidden w-6"/>
+        <motion.div
+            initial={{x: "100%"}}
+            animate={{x: open ? "0%" : "100%"}}
+            transition={{
+                type: "spring",
+                stiffness: 500,
+                damping: 25,
+                duration: 0.1,
+            }}
+            className="
+                fixed w-screen z-45 h-screen flex right-0
+                md:w-72
+                lg:sticky lg:top-0 lg:min-w-72 lg:w-72 lg:flex lg:!transform-none
+                flex-col gap-4 px-4 justify-center
+                bg-dark-background-primary noise
+                border-l-2 border-dark-background-secondary
+            "
+        >
+            <div className="flex flex-col w-full gap-2 pt-4">
+                <h1 className="text-lg font-bold text-center pb-2">SETTINGS</h1>
+                <ToggleElement id="build-tool" title="Build Tool" state={buildToolState}/>
+                <ToggleElement id="language" title="Language" state={languageState}/>
+                <ToggleElement id="platform" title="Platform" state={platformState}/>
+            </div>
+            <div className="[&>*]:p-1 grow">
+                <Separator/>
+                <h2 className="text-lg font-bold text-center !pt-2">ON THIS PAGE</h2>
+                <TableOfContents
+                    pageDocument={pageDocument}
+                    buildToolState={buildToolState}
+                    languageState={languageState}
+                    platformState={platformState}
+                />
+            </div>
+            <div className="">FOOTER</div>
+        </motion.div>
+    </>
 }
 
 type TrackedElement = {
@@ -72,12 +152,16 @@ type TrackedElement = {
     target: Element,
 }
 
-function TableOfContents({pageDocument, buildTool, language, platform}: {
+function TableOfContents({pageDocument, buildToolState, languageState, platformState}: {
     pageDocument: PageDocument,
-    buildTool: DocumentConfiguration,
-    language: DocumentConfiguration,
-    platform: DocumentConfiguration,
+    buildToolState: ConfigurationState,
+    languageState: ConfigurationState,
+    platformState: ConfigurationState,
 }) {
+
+    const [buildTool] = buildToolState
+    const [language] = languageState
+    const [platform] = platformState
 
     const params = useParams()
     const [activeSection, setActiveSection] = useState<string | null>(null)
@@ -136,7 +220,7 @@ function Section({section, selected}: { section: PageContent, selected: boolean 
     let level = ""
     switch (section.level) {
         case 2:
-            level = "ml-6"
+            level = "ml-6 text-sm"
             break
         case 3:
             level = "ml-12"
@@ -148,3 +232,47 @@ function Section({section, selected}: { section: PageContent, selected: boolean 
     </div>
 }
 
+function ToggleElement({id, title, state}: { id: string, title: string, state: ConfigurationState }) {
+    const [current, values, setStoredKey] = state
+
+    if (values.length <= 1) return <></>
+
+    return <>
+        <ElementTitle text={title}/>
+        <div className="flex gap-1">
+            {
+                values.map((option, index) => {
+
+                    const isFirst = index === 0
+                    const isLast = index === values.length - 1
+
+                    const leftBorder = isFirst ? "rounded-l-lg" : ""
+                    const rightBorder = isLast ? "rounded-r-lg" : ""
+
+                    const isSelected = option.key === current.key
+
+                    const pointer = isSelected ? "cursor-default" : "cursor-pointer"
+
+                    return <div
+                        key={`toggle-element-${index}`}
+                        className={`${pointer} ${leftBorder} ${rightBorder} relative h-8 flex-1 flex justify-center items-center bg-dark-background-primary`}
+                        onClick={() => setStoredKey(option.key)}
+                    >
+                        {isSelected && (
+                            <motion.div
+                                layoutId={`${id}-selected`}
+                                transition={{duration: 0.1}}
+                                className={`${leftBorder} ${rightBorder} z-30 absolute w-full h-full bg-(--project-color)`}
+                            />
+                        )}
+                        <span className="relative z-50">{option.name}</span>
+                    </div>
+                })
+            }
+        </div>
+    </>
+}
+
+function ElementTitle({text}: { text: string }) {
+    return <div className="flex justify-center items-center">{text}</div>
+}

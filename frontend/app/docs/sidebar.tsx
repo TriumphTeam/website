@@ -1,18 +1,51 @@
-import {Link, redirect, useParams} from "react-router"
+import {Link, NavLink, useParams} from "react-router"
 import {useDropdown} from "~/hooks/useDropdown"
 import {Dropdown, DropdownItem} from "~/docs/dropdown"
 import {
-    type VersionDocument,
     type NavigationPage,
-    type VersionData,
     type Nullable,
+    type VersionData,
+    type VersionDocument,
 } from "@lichthund/triumph-docs-serializable"
+import {useState} from "react"
+import {motion} from "motion/react"
 
 export function Sidebar({name, document}: { name: string, document: VersionDocument }) {
+    const [open, setOpen] = useState(false)
 
-    return (
-        <div
-            className="fixed z-10 w-screen xl:w-60 2xl:w-72 h-screen hidden xl:flex flex-col gap-4 px-4 justify-center bg-dark-background-primary">
+    function ControlButton() {
+        return <div className="xl:hidden fixed z-[100] top-0 text-2xl pl-6 py-8">
+            <motion.div
+                initial={{rotate: "0deg", scale: 0.5}}
+                animate={{rotate: "180deg", scale: 1}}
+                onClick={() => setOpen(!open)}
+            >
+                {open ? <i className="fa-solid fa-xmark"/> : <i className="fa-solid fa-bars"/>}
+            </motion.div>
+        </div>
+    }
+
+    return <>
+        <ControlButton/>
+        <div className="xl:hidden w-6"/>
+        <motion.div
+            initial={{x: "-100%"}}
+            animate={{x: open ? "0%" : "-100%"}}
+            transition={{
+                type: "spring",
+                stiffness: 500,
+                damping: 25,
+                duration: 0.1,
+            }}
+            className={`
+                fixed w-screen z-50 h-screen flex
+                md:w-72
+                xl:sticky xl:top-0 xl:min-w-60 xl:w-60 xl:flex xl:!transform-none
+                2xl:min-w-72 2xl:w-72
+                flex-col gap-4 px-4 justify-center
+                bg-dark-background-primary noise
+                border-r-2 border-dark-background-secondary
+            `}>
             <ProjectHeader
                 key="project-header"
                 projectName={name}
@@ -25,10 +58,13 @@ export function Sidebar({name, document}: { name: string, document: VersionDocum
                 javadocs={document.javadocs}
             />
             <SearchBar key="search-bar"/>
-            <NavigationArea key="navigation-area" document={document}/>
+            <NavigationArea
+                key="navigation-area"
+                document={document}
+            />
             <SmallFooter key="small-footer"/>
-        </div>
-    )
+        </motion.div>
+    </>
 }
 
 function ProjectHeader({projectName, versions}: { projectName: string, versions: Array<VersionData> }) {
@@ -144,7 +180,8 @@ function NavigationArea({document}: { document: VersionDocument }) {
             <div className="grid grid-cols-1 gap-10">
                 {
                     document.groups.map((group) => <NavigationGroupArea
-                        key={`navigation-group-${group}`} text="Example"
+                        key={`navigation-group-${group}`}
+                        text={group.name}
                         pages={group.pages}
                     />)
                 }
@@ -153,7 +190,7 @@ function NavigationArea({document}: { document: VersionDocument }) {
     )
 }
 
-function NavigationGroupArea({text, pages}: { text: string, pages: NavigationPage[] }) {
+function NavigationGroupArea({text, pages}: { text: string, pages: NavigationPage[], }) {
     return (
         <div>
             <h1 className="text-white xl:text-lg 2xl:text-xl font-bold">{text}</h1>
@@ -168,17 +205,19 @@ function NavigationGroupArea({text, pages}: { text: string, pages: NavigationPag
     )
 }
 
-function NavigationPageArea({text, link}: { text: string, link: string }) {
+function NavigationPageArea({text, link}: { text: string, link: string, }) {
     const {page} = useParams()
 
     const color = page === link ? "text-(--project-color)" : ""
 
     return (
         <div className={`pt-2 ${color}`}>
-            <Link to={`../${link}`} relative="path"
-                  className="xl:text-base 2xl:text-lg transition ease-in-out">
+            <NavLink
+                to={`../${link}`} relative="path"
+                className="xl:text-base 2xl:text-lg hover:text-(--project-color) transition ease-in-out"
+            >
                 {text}
-            </Link>
+            </NavLink>
         </div>
     )
 }

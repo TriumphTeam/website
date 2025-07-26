@@ -49,14 +49,18 @@ import {
 import {type ReactNode, useState} from "react"
 import parse from "html-react-parser"
 import {Link} from "react-router"
-import type {DocumentConfiguration} from "~/utils/Configurations"
+import type {ConfigurationState} from "~/hooks/useConfiguration"
 
-export function PageDocumentComponent({document, buildTool, language, platform}: {
+export function PageDocumentComponent({document, buildToolState, languageState, platformState}: {
     document: PageDocument,
-    buildTool: DocumentConfiguration,
-    language: DocumentConfiguration,
-    platform: DocumentConfiguration,
+    buildToolState: ConfigurationState,
+    languageState: ConfigurationState,
+    platformState: ConfigurationState,
 }) {
+
+    const [buildTool] = buildToolState
+    const [language] = languageState
+    const [platform] = platformState
 
     function DocComponents({component}: { component: RootComponent }) {
         return <ChildComponent childKey="root" components={component.children.children}/>
