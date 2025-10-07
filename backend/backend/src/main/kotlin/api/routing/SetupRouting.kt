@@ -7,18 +7,29 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.http.content.streamProvider
+import io.ktor.resources.Resource
 import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receiveMultipart
+import io.ktor.server.resources.get
 import io.ktor.server.resources.post
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
+import io.ktor.server.routing.get
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 
 private val logger: Logger = LoggerFactory.getLogger("setup-route")
 
+@Resource("/test/{name}")
+public data class Test(public val name: String)
+
 public fun Routing.setupRoutes() {
+
+    get<Test> { test ->
+        call.respond(HttpStatusCode.OK, test)
+    }
+
     authenticate("bearer") {
         post<InternalApi.Setup> {
             runCatching {

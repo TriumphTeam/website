@@ -2,9 +2,9 @@ package dev.triumphteam.backend
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import dev.triumphteam.backend.database.Versions
 import dev.triumphteam.backend.database.Pages
 import dev.triumphteam.backend.database.Projects
+import dev.triumphteam.backend.database.Versions
 import io.ktor.server.application.Application
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
@@ -24,8 +24,8 @@ public fun main() {
                 Properties().apply {
                     setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource")
                     setProperty("dataSource.user", System.getenv("DB_USER") ?: "matt")
-                    setProperty("dataSource.password", System.getenv("DB_PASS") ?: "test")
-                    setProperty("dataSource.databaseName", System.getenv("DB_NAME") ?: "website")
+                    setProperty("dataSource.password", System.getenv("DB_PASS") ?: "123456")
+                    setProperty("dataSource.databaseName", System.getenv("DB_NAME") ?: "test")
                     setProperty("dataSource.portNumber", System.getenv("DB_PORT") ?: "5432")
                     setProperty("dataSource.serverName", System.getenv("DB_SERVER") ?: "localhost")
                 }

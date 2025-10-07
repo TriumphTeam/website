@@ -12,7 +12,7 @@
     "@lichthund/triumph-docs-serializable": "^1.0.36992",
     "@react-router/node": "^7.1.5",
     "@react-router/serve": "^7.1.5",
-    "axios": "^1.10.0",
+    "axios": "^1.12.2",
     "html-react-parser": "^5.2.6",
     "isbot": "^5.1.17",
     "motion": "^12.23.9",
