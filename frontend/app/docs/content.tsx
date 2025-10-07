@@ -128,9 +128,9 @@ function ContentSidebar({pageDocument, buildToolState, languageState, platformSt
         >
             <div className="flex flex-col w-full gap-2 pt-4">
                 <h1 className="text-lg font-bold text-center pb-2">SETTINGS</h1>
-                <ToggleElement id="build-tool" title="Build Tool" state={buildToolState}/>
-                <ToggleElement id="language" title="Language" state={languageState}/>
-                <ToggleElement id="platform" title="Platform" state={platformState}/>
+                <ToggleElement id={`${pageDocument.name}-build-tool`} title="Build Tool" state={buildToolState}/>
+                <ToggleElement id={`${pageDocument.name}-language`} title="Language" state={languageState}/>
+                <ToggleElement id={`${pageDocument.name}-platform`} title="Platform" state={platformState}/>
             </div>
             <div className="[&>*]:p-1 grow">
                 <Separator/>
@@ -142,7 +142,6 @@ function ContentSidebar({pageDocument, buildToolState, languageState, platformSt
                     platformState={platformState}
                 />
             </div>
-            <div className="">FOOTER</div>
         </motion.div>
     </>
 }
@@ -259,11 +258,8 @@ function ToggleElement({id, title, state}: { id: string, title: string, state: C
                         onClick={() => setStoredKey(option.key)}
                     >
                         {isSelected && (
-                            <motion.div
-                                layoutId={`${id}-selected`}
-                                transition={{duration: 0.1}}
-                                className={`${leftBorder} ${rightBorder} z-30 absolute w-full h-full bg-(--project-color)`}
-                            />
+                            <div
+                                className={`${leftBorder} ${rightBorder} z-30 absolute w-full h-full bg-(--project-color)`}/>
                         )}
                         <span className="relative z-50">{option.name}</span>
                     </div>
