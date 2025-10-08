@@ -1,30 +1,31 @@
+"use client"
 import {Link, useParams} from "react-router"
 import type {ConfigurationState} from "~/hooks/useConfiguration"
 import useSWR from "swr"
 import {type PageContent, type PageDocument} from "@lichthund/triumph-docs-serializable"
 import "./one_dark.css"
 import {PageDocumentComponent, Separator} from "~/docs/doc-component/pageDocument"
-import {useEffect, useState} from "react"
+import React, {useEffect, useState} from "react"
 import {motion} from "motion/react"
 
 export function Content(
     {
         version,
+        page,
         buildToolState,
         languageState,
         platformState,
     }: {
         version: number,
+        page: string,
         buildToolState: ConfigurationState,
         languageState: ConfigurationState,
         platformState: ConfigurationState,
     },
 ) {
-
-    const {page} = useParams()
     const {data, error} = useSWR<PageDocument>(`/page?version=${version}&page=${page}`)
 
-    if (error || !data) return <div>Failed to load</div>
+    if (error || !data) return <></>
 
     return <PageContents
         key="page-content"
@@ -206,7 +207,7 @@ function TableOfContents({pageDocument, buildToolState, languageState, platformS
     return <>
         {
             pageDocument.sections.map((section) => {
-                return <Section section={section} selected={section.id === activeSection}/>
+                return <Section key={section.id} section={section} selected={section.id === activeSection}/>
             })
         }
     </>
@@ -226,8 +227,18 @@ function Section({section, selected}: { section: PageContent, selected: boolean 
             break
     }
 
+    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault()
+        const element = document.getElementById(section.id)
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            // Update the URL hash without triggering navigation
+            window.history.pushState(null, '', `#${section.id}`)
+        }
+    }
+
     return <div className={`${level} ${color} transition ease-in-out hover:text-(--project-color)`}>
-        <a href={`#${section.id}`}>{section.name}</a>
+        <a href={`#${section.id}`} onClick={handleClick}>{section.name}</a>
     </div>
 }
 

@@ -1,3 +1,4 @@
+"use client"
 import {Link, NavLink, useParams} from "react-router"
 import {useDropdown} from "~/hooks/useDropdown"
 import {Dropdown, DropdownItem} from "~/docs/dropdown"
@@ -10,7 +11,7 @@ import {
 import {useState} from "react"
 import {motion} from "motion/react"
 
-export function Sidebar({name, document}: { name: string, document: VersionDocument }) {
+export function Sidebar({project, name, document}: { project: string, name: string, document: VersionDocument }) {
     const [open, setOpen] = useState(false)
 
     function ControlButton() {
@@ -48,6 +49,7 @@ export function Sidebar({name, document}: { name: string, document: VersionDocum
             `}>
             <ProjectHeader
                 key="project-header"
+                project={project}
                 projectName={name}
                 versions={document.versions}
             />
@@ -67,12 +69,18 @@ export function Sidebar({name, document}: { name: string, document: VersionDocum
     </>
 }
 
-function ProjectHeader({projectName, versions}: { projectName: string, versions: Array<VersionData> }) {
+function ProjectHeader({project, projectName, versions}: {
+    project: string,
+    projectName: string,
+    versions: Array<VersionData>
+}) {
     return (
         <div className="grid grid-cols-1 w-full justify-items-center gap-4 pt-6 select-none">
             <div className="flex items-center">
-                <img className="self-center h-16"
-                     src="https://github.com/TriumphTeam/docs/blob/main/triumph-gui/icon.png?raw=true" alt="Logo"/>
+                <Link to="/" relative="path">
+                    <img className="self-center h-16"
+                         src={`http://localhost:8001/assets/${project}/icon.png`} alt="Logo"/>
+                </Link>
             </div>
             <div className="flex items-center gap-2">
                 <div className="col-span-1 text-center font-bold text-lg uppercase">
@@ -158,7 +166,7 @@ function ProjectButton({tooltip, icon, link}: { tooltip: string, icon: string, l
 
 function SearchBar() {
     return (
-        <div className="flex items-center w-full mx-auto bg-dark-background-secondary rounded-lg h-12 cursor-pointer">
+        <div className="flex items-center w-full mx-auto bg-dark-background-secondary rounded-lg h-12 cursor-default">
             <div className="w-full">
         <span
             className="w-full px-4 py-1 rounded-full focus:outline-none pointer-events-none text-white/50 select-none">

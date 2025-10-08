@@ -3,16 +3,13 @@ import {useEffect, useState} from "react"
 function setValue(key: string, value: string) {
     try {
         window.localStorage.setItem(key, value)
-    } catch (error) {
-        console.log(error)
-    }
+    } catch (error) {}
 }
 
 function getValue(key: string): string | null {
     try {
         return window.localStorage.getItem(key)
     } catch (error) {
-        console.log(error)
         return null
     }
 }

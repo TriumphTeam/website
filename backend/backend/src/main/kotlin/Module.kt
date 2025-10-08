@@ -1,15 +1,13 @@
 package dev.triumphteam.backend
 
-import dev.triumphteam.backend.api.routing.setupRoutes
 import dev.triumphteam.backend.api.auth.TriumphPrincipal
 import dev.triumphteam.backend.api.routing.apiRoutes
-import dev.triumphteam.backend.database.PageEntity
+import dev.triumphteam.backend.api.routing.setupRoutes
 import dev.triumphteam.website.JsonSerializer
 import io.ktor.http.CacheControl
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.CachingOptions
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
@@ -25,13 +23,8 @@ import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.defaultheaders.DefaultHeaders
 import io.ktor.server.plugins.forwardedheaders.ForwardedHeaders
 import io.ktor.server.plugins.forwardedheaders.XForwardedHeaders
-import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.resources.Resources
-import io.ktor.server.response.respond
-import io.ktor.server.response.respondRedirect
-import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
-import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.event.Level
 
 /** Module of the application. */

@@ -1,3 +1,4 @@
+"use client"
 import type {ReactNode} from "react";
 
 export function Dropdown({small, children}: { small: boolean, children: ReactNode }) {

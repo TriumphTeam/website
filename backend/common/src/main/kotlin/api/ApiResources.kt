@@ -12,6 +12,9 @@ public object Api {
         public val project: String,
     )
 
+    @Resource("/projects")
+    public data class Projects(public val parent: Api = Api)
+
     @Resource("/page")
     public data class Page(
         public val parent: Api = Api,

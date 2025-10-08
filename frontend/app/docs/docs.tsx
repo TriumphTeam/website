@@ -1,7 +1,6 @@
 "use client"
-
-import type {Route} from "../+types/home"
-import {redirect, useLoaderData, useNavigation} from "react-router"
+import type {Route} from "../../.react-router/types/app/routes/+types"
+import {redirect, useLoaderData, useNavigate} from "react-router"
 import {Sidebar} from "~/docs/sidebar"
 import {Content} from "~/docs/content"
 import api from "~/axios/Api"
@@ -11,6 +10,11 @@ import {BuildTools, Languages, Platforms, type StorageKeys} from "~/utils/Config
 import {useConfiguration} from "~/hooks/useConfiguration"
 import {SWRConfig} from "swr"
 
+type RequestParams = {
+    data: ProjectVersion,
+    params: PageUrl,
+}
+
 type PageUrl = {
     version: string | null,
     project: string,
@@ -18,11 +22,9 @@ type PageUrl = {
 }
 
 // provides `loaderData` to the component
-export async function clientLoader({params}: Route.ClientLoaderArgs): Promise<ProjectVersion | undefined> {
+export async function clientLoader({params}: Route.ClientLoaderArgs): Promise<RequestParams> {
     const requestUrl = createRequestUrl(params.versionProject, params.projectPage, params.page)
-    if (!requestUrl) return undefined
-
-    console.log("Loading", requestUrl)
+    if (!requestUrl) throw redirect("/404")
 
     return api.get<ProjectVersion>(
         "/project",
@@ -34,22 +36,20 @@ export async function clientLoader({params}: Route.ClientLoaderArgs): Promise<Pr
         },
     )
         .then(r => r.data)
-        .catch(e => undefined)
-}
-
-export function shouldRevalidate({currentParams, nextParams}: { currentParams: any, nextParams: any }) {
-    const current = createRequestUrl(currentParams.versionProject, currentParams.projectPage, currentParams.page)
-    const next = createRequestUrl(nextParams.versionProject, nextParams.projectPage, nextParams.page)
-
-    if (!current || !next) return true
-
-    return current.project !== next.project || current.version !== next.version
+        .then(data => {
+            return {data: data, params: requestUrl}
+        })
+        .catch(e => {
+            throw redirect("/404")
+        })
 }
 
 export default function Docs() {
-    const data = useLoaderData<typeof clientLoader>() as ProjectVersion | undefined
+    const request = useLoaderData<typeof clientLoader>()
+    const navigate = useNavigate()
 
-    if (!data) return redirect("/404")
+    const data = request.data
+    const params = request.params
 
     const storageKeys: StorageKeys = {
         buildTool: `${data.project}-build-tool`,
@@ -62,21 +62,22 @@ export default function Docs() {
         className="bg-[radial-gradient(#202023_1px,transparent_1px)] [background-size:16px_16px]"
     >
         <div className="flex gap-8">
-            <Sidebar key="side-bar" name={data.name} document={data.document}/>
+            <Sidebar key="side-bar" project={data.project} name={data.name} document={data.document}/>
             <SWRConfig value={{
                 dedupingInterval: 15000,
                 fetcher: (url: string) => api.get(url).then(r => r.data),
-                onErrorRetry: (error) => {
-                    if (error.status === 404) redirect("/404")
+                onError: (error) => {
+                    navigate("/404")
                 },
+                shouldRetryOnError: false,
             }}>
-                <MainContent key="main-content" storageKeys={storageKeys} data={data}/>
+                <MainContent key="main-content" storageKeys={storageKeys} data={data} params={params}/>
             </SWRConfig>
         </div>
     </div>
 }
 
-function MainContent({storageKeys, data}: { storageKeys: StorageKeys, data: ProjectVersion }) {
+function MainContent({storageKeys, data, params}: { storageKeys: StorageKeys, data: ProjectVersion, params: PageUrl }) {
 
     const document = data.document
 
@@ -84,18 +85,10 @@ function MainContent({storageKeys, data}: { storageKeys: StorageKeys, data: Proj
     const languagesState = useConfiguration(storageKeys.language, document.languages.map(value => Languages[value]))
     const platformsState = useConfiguration(storageKeys.platform, document.platforms.map(value => Platforms[value]))
 
-    /*
-    <Navbar
-            key="nav-bar"
-            buildToolConfigurationState={buildToolsState}
-            languageConfigurationState={languagesState}
-            platformConfigurationState={platformsState}
-        />
-     */
-
     return <Content
         key="content"
         version={data.version}
+        page={params.page}
         buildToolState={buildToolsState}
         languageState={languagesState}
         platformState={platformsState}

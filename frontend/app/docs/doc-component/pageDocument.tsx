@@ -346,9 +346,7 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
                             setIsCopied(false)
                         }, 3000)
                     },
-                    e => {
-                        console.log(e)
-                    },
+                    e => {},
                 )
         }
 
