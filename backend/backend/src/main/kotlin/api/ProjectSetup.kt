@@ -1,5 +1,6 @@
 package dev.triumphteam.backend.api
 
+import ContentSection
 import FooterNavigation
 import HeaderComponent
 import NavigationGroup
@@ -9,16 +10,15 @@ import PageDocument
 import VersionData
 import VersionDocument
 import dev.triumphteam.backend.DATA_FOLDER
+import dev.triumphteam.backend.content.ContentExtractor
 import dev.triumphteam.backend.database.PageEntity
 import dev.triumphteam.backend.database.ProjectEntity
 import dev.triumphteam.backend.database.VersionEntity
 import dev.triumphteam.website.JsonSerializer
 import dev.triumphteam.website.serializable.Group
 import dev.triumphteam.website.serializable.Repository
-import dev.triumphteam.website.serializable.Version
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.Serializable
 import net.lingala.zip4j.ZipFile
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.LoggerFactory
@@ -69,6 +69,8 @@ public suspend fun setupRepository(projects: File) {
 
             project.versions.forEach { version ->
 
+                val pages = version.groups.flatMap(Group::pages)
+
                 val versionEntity = VersionEntity.new {
                     this.reference = version.reference
                     this.project = projectEntity
@@ -94,9 +96,13 @@ public suspend fun setupRepository(projects: File) {
                         discord = version.discord,
                         javadocs = version.javadocs,
                     )
+                    this.searchSections = pages.map { page ->
+                        ContentExtractor(page.content) { header, content ->
+                            ContentSection(page.id, page.name, header.text, content, header.id)
+                        }.extract()
+                    }.flatten()
                 }
 
-                val pages = version.groups.flatMap(Group::pages)
                 pages.forEachIndexed { index, page ->
 
                     PageEntity.new {
@@ -105,6 +111,7 @@ public suspend fun setupRepository(projects: File) {
                         this.content = PageDocument(
                             name = page.name,
                             description = page.description,
+                            banner = page.banner,
                             content = page.content,
                             previous = pages.getOrNull(index - 1)?.let { previous ->
                                 FooterNavigation(previous.id, previous.name)
@@ -125,22 +132,3 @@ public suspend fun setupRepository(projects: File) {
 
     logger.info("Setup projects done.")
 }
-
-@Serializable
-public data class SearchDocument(
-    public val id: String,
-    public val pageId: String,
-    public val anchor: String,
-    public val isAnchor: Boolean,
-    public val reference: List<String>,
-) {
-
-    public companion object {
-
-        public fun createId(page: String, id: String): String {
-            return "$page-$id"
-        }
-    }
-}
-
-public fun projectIndex(project: String, version: String): String = "$project-${version.replace(".", "_")}"

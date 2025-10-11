@@ -3,7 +3,7 @@ import {motion} from "motion/react"
 import React from "react"
 import type {VersionData} from "@lichthund/triumph-docs-serializable"
 import useSWR, {SWRConfig} from "swr"
-import api from "~/axios/Api"
+import api, {ASSETS_URL} from "~/axios/Api"
 import {Link} from "react-router"
 
 type Project = {
@@ -54,25 +54,30 @@ function ProjectCard({project}: { project: Project }) {
     function Version({projectId, version}: { projectId: string, version: VersionData }) {
         const color = version.current ? "bg-(--project-color)" : "bg-dark-background-secondary"
         return <Link to={`/docs/${version.reference}/${projectId}/introduction`} relative="path">
-            <div className={`${color} px-3 py-1 rounded-sm`}>{version.reference}</div>
+            <motion.div
+                whileHover={{scale: 1.1}}
+                className={`${color} px-3 py-1 rounded-sm`}
+            >
+                {version.reference}
+            </motion.div>
         </Link>
     }
 
-    return <motion.div
-        whileHover={{scale: 1.05}}
+    return <div
         style={{"--project-color": project.color} as React.CSSProperties}
         className="flex flex-col p-8 gap-3 justify-center items-center
-     bg-dark-background-primary noise border-2 border-dark-background-secondary rounded-lg"
+     bg-dark-background-primary noise border-2 border-(--project-color)/10 rounded-lg"
     >
         <div>
             <img className="h-16 justify-self-center"
-                 src={`http://localhost:8001/assets/${project.id}/icon.png`} alt="Logo"/>
+                 src={`${ASSETS_URL}/${project.id}/icon.png`} alt="Logo"/>
         </div>
         <div className="text-white text-xl uppercase">{project.name}</div>
         <div className="flex flex-row gap-3">
             {
-                project.versions.map((version, _) => <Version key={`version-${version}`} projectId={project.id} version={version}/>)
+                project.versions.map((version, _) => <Version key={`version-${version}`} projectId={project.id}
+                                                              version={version}/>)
             }
         </div>
-    </motion.div>
+    </div>
 }

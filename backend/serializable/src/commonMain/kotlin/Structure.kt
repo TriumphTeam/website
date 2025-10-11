@@ -64,6 +64,15 @@ public data class VersionDocument(
 }
 
 @Serializable
+public class ContentSection(
+    public val pageId: String,
+    public val title: String,
+    public val section: String,
+    public val sectionId: String,
+    public val content: String,
+)
+
+@Serializable
 public data class VersionData(
     public val reference: String,
     public val current: Boolean,
@@ -97,6 +106,7 @@ public data class NavigationPage(public val id: String, public val name: String)
 public data class PageDocument(
     public val name: String,
     public val description: String,
+    public val banner: String?,
     public val content: RootComponent,
     public val previous: FooterNavigation?,
     public val next: FooterNavigation?,

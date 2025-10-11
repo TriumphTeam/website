@@ -14,8 +14,10 @@ import io.ktor.server.resources.get
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.innerJoin
+import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.slf4j.Logger
@@ -79,6 +81,14 @@ public fun Routing.apiRoutes() {
         } ?: return@get call.respond(HttpStatusCode.NotFound)
 
         call.respond(pageEntity.content)
+    }
+
+    get<Api.SearchData> { searchData ->
+        val searchData = transaction {
+            VersionEntity.findById(searchData.version)?.searchSections
+        } ?: return@get call.respond(HttpStatusCode.NotFound)
+
+        return@get call.respond(searchData)
     }
 }
 

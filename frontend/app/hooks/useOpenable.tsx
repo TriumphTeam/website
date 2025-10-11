@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from "react"
 
-export function useDropdown() {
+export function useOpenable() {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 

@@ -7,6 +7,7 @@ import "./one_dark.css"
 import {PageDocumentComponent, Separator} from "~/docs/doc-component/pageDocument"
 import React, {useEffect, useState} from "react"
 import {motion} from "motion/react"
+import {ASSETS_URL} from "~/axios/Api"
 
 export function Content(
     {
@@ -46,12 +47,19 @@ function PageContents({pageDocument, buildToolState, languageState, platformStat
     const previous = pageDocument.previous
     const next = pageDocument.next
 
+    const banner = pageDocument.banner
+
     return <>
         <div className="flex-1 flex flex-col min-h-0 min-w-0 px-6">
             <div id="doc-content" className="flex-1 [&>*]:p-2 pt-12">
                 <h1 className="text-4xl font-medium text-white text-center pointer-events-none">{pageDocument.name}</h1>
                 <h2 className="text-lg text-center">{pageDocument.description}</h2>
                 <Separator/>
+                {
+                    banner && <div className="flex justify-center items-center">
+                        <img className="w-4/5" src={`${ASSETS_URL}${banner}`} alt="page-banner"/>
+                    </div>
+                }
                 <PageDocumentComponent
                     document={pageDocument}
                     buildToolState={buildToolState}

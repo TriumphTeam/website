@@ -1,15 +1,17 @@
 "use client"
 import {Link, NavLink, useParams} from "react-router"
-import {useDropdown} from "~/hooks/useDropdown"
+import {useOpenable} from "~/hooks/useOpenable"
 import {Dropdown, DropdownItem} from "~/docs/dropdown"
 import {
+    ContentSection,
     type NavigationPage,
-    type Nullable,
+    type Nullable, type PageDocument,
     type VersionData,
     type VersionDocument,
 } from "@lichthund/triumph-docs-serializable"
-import {useState} from "react"
-import {motion} from "motion/react"
+import React, {useState} from "react"
+import {AnimatePresence, motion} from "motion/react"
+import useSWR from "swr"
 
 export function Sidebar({project, name, document}: { project: string, name: string, document: VersionDocument }) {
     const [open, setOpen] = useState(false)
@@ -86,14 +88,14 @@ function ProjectHeader({project, projectName, versions}: {
                 <div className="col-span-1 text-center font-bold text-lg uppercase">
                     <h1>{projectName}</h1>
                 </div>
-                <VersionComponent key="version-component" versions={versions}/>
+                <VersionComponent key="version-component" project={project} versions={versions}/>
             </div>
         </div>
     )
 }
 
-function VersionComponent({versions}: { versions: Array<VersionData> }) {
-    const [open, toggleOpen, ref] = useDropdown()
+function VersionComponent({project, versions}: { project: string, versions: Array<VersionData> }) {
+    const [open, toggleOpen, ref] = useOpenable()
 
     const isSingular = versions.length <= 1
     const cursor = isSingular ? "default" : "pointer"
@@ -106,21 +108,21 @@ function VersionComponent({versions}: { versions: Array<VersionData> }) {
             className={`relative flex items-center justify-center rounded-sm bg-(--project-color) px-2 text-center text-md cursor-${cursor}`}
             ref={ref} onClick={toggleOpen}>
             {current.reference}
-            {
-                (open && versions.length > 1) && (
-                    <Dropdown key="version-dropdown" small={true}>
-                        {
-                            versions.map((version) => <DropdownItem
-                                key={`version-dropdown-${version}`}
-                                text={version.reference}
-                                onClick={() => {
-                                    console.log("click click version")
-                                }}
-                            />)
-                        }
-                    </Dropdown>
-                )
-            }
+            <AnimatePresence initial={false}>
+                {
+                    (open && versions.length > 1) && (
+                        <Dropdown key="version-dropdown" small={true}>
+                            {
+                                versions.map((version) => <DropdownItem
+                                    key={`version-dropdown-${version}`}
+                                    text={version.reference}
+                                    destination={`docs/${version.reference}/${project}/introduction`}
+                                />)
+                            }
+                        </Dropdown>
+                    )
+                }
+            </AnimatePresence>
         </div>
     )
 }
@@ -165,8 +167,14 @@ function ProjectButton({tooltip, icon, link}: { tooltip: string, icon: string, l
 }
 
 function SearchBar() {
-    return (
-        <div className="flex items-center w-full mx-auto bg-dark-background-secondary rounded-lg h-12 cursor-default">
+
+    const [open, toggleOpen, ref] = useOpenable()
+
+    return <>
+        <div
+            className="flex items-center w-full mx-auto bg-dark-background-secondary rounded-lg h-12 cursor-pointer"
+            onClick={toggleOpen}
+        >
             <div className="w-full">
         <span
             className="w-full px-4 py-1 rounded-full focus:outline-none pointer-events-none text-white/50 select-none">
@@ -179,7 +187,49 @@ function SearchBar() {
                 </div>
             </div>
         </div>
-    )
+        <AnimatePresence initial={false}>
+            {
+                open && <SearchArea reference={ref}/>
+            }
+        </AnimatePresence>
+    </>
+}
+
+function SearchArea({reference}: { reference: React.RefObject<HTMLDivElement | null> }) {
+    return <motion.div
+        initial={{opacity: 0}}
+        animate={{opacity: 1}}
+        exit={{opacity: 0}}
+        className="fixed w-screen h-screen top-0 left-0 bg-black/60 backdrop-blur-sm z-100 flex justify-center items-center"
+    >
+        <motion.div
+            initial={{y: "100%"}}
+            animate={{y: "0%"}}
+            transition={{
+                type: "spring",
+                stiffness: 500,
+                damping: 25,
+            }}
+            ref={reference}
+            className="w-32 h-32 bg-blue-500"
+        >
+            <SearchDataArea/>
+        </motion.div>
+    </motion.div>
+}
+
+function SearchDataArea() {
+    const {data, error} = useSWR<ContentSection[]>(`/search-data?version=3`)
+
+    if (error || !data) {
+        console.log(error)
+        console.log(data)
+        return <></>
+    }
+
+    console.log(data)
+
+    return <>TITS</>
 }
 
 function NavigationArea({document}: { document: VersionDocument }) {

@@ -62,7 +62,6 @@ export default function Docs() {
         className="bg-[radial-gradient(#202023_1px,transparent_1px)] [background-size:16px_16px]"
     >
         <div className="flex gap-8">
-            <Sidebar key="side-bar" project={data.project} name={data.name} document={data.document}/>
             <SWRConfig value={{
                 dedupingInterval: 15000,
                 fetcher: (url: string) => api.get(url).then(r => r.data),
@@ -71,6 +70,7 @@ export default function Docs() {
                 },
                 shouldRetryOnError: false,
             }}>
+                <Sidebar key="side-bar" project={data.project} name={data.name} document={data.document}/>
                 <MainContent key="main-content" storageKeys={storageKeys} data={data} params={params}/>
             </SWRConfig>
         </div>

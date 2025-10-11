@@ -33,10 +33,6 @@ public data class PageConfig(
     public val id: String,
     public val name: String,
     public val description: String,
+    public val banner: String? = null,
     public val order: Int,
 )
-
-/*@Serializable
-public data class ConditionalPlaceholders(
-
-)*/

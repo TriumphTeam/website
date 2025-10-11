@@ -36,6 +36,7 @@ public data class Page(
     public val id: String,
     public val path: String,
     public val name: String,
+    public val banner: String?,
     public val order: Int,
     public val description: String,
     public val content: RootComponent,

@@ -17,7 +17,7 @@ import {
     type HeaderComponent,
     HINT_COMPONENT_TYPE,
     HintComponent,
-    HintType,
+    HintType, HTML_COMPONENT_TYPE, HtmlComponent,
     IMAGE_COMPONENT_TYPE,
     ImageComponent,
     ITALIC_COMPONENT_TYPE,
@@ -50,6 +50,7 @@ import {type ReactNode, useState} from "react"
 import parse from "html-react-parser"
 import {Link} from "react-router"
 import type {ConfigurationState} from "~/hooks/useConfiguration"
+import {ASSETS_URL} from "~/axios/Api"
 
 export function PageDocumentComponent({document, buildToolState, languageState, platformState}: {
     document: PageDocument,
@@ -73,6 +74,11 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
                     const componentKey = `${childKey}-${index}`
                     if (component.type === ROOT_COMPONENT_TYPE.get()) {
                         return <DocComponents key={componentKey} component={component as RootComponent}/>
+                    }
+
+                    if (component.type === HTML_COMPONENT_TYPE.get()) {
+                        const htmlComponent = component as HtmlComponent
+                        return <div className="p-2" key={componentKey}>{parse(htmlComponent.html)}</div>
                     }
 
                     if (component.type === HEADER_COMPONENT_TYPE.get()) {
@@ -178,15 +184,6 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
             case 3:
                 textSize = "text-lg"
                 break
-            case 4:
-                textSize = "text-md"
-                break
-            case 5:
-                textSize = "text-base"
-                break
-            case 6:
-                textSize = "text-sm"
-                break
         }
 
         const Header = ({id, level, textSize, children}: {
@@ -197,13 +194,10 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
         }) => {
             if (level === 1) return <h1 id={id} className={textSize}>{children}</h1>
             if (level === 2) return <h2 id={id} className={textSize}>{children}</h2>
-            if (level === 3) return <h3 id={id} className={textSize}>{children}</h3>
-            if (level === 4) return <h4 id={id} className={textSize}>{children}</h4>
-            if (level === 5) return <h5 id={id} className={textSize}>{children}</h5>
-            return <h6 id={id} className="text-sm">{children}</h6>
+            return <h3 id={id} className={textSize}>{children}</h3>
         }
 
-        return <div id="doc-section" key={component.id} className="group">
+        return <div id="doc-section" key={component.id} className="group p-2">
             <a
                 href={`#${component.id}`}
                 className={`${textSize} inline-flex font-medium text-white`}
@@ -221,7 +215,7 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
     }
 
     function ParagraphDocComponent({component}: { component: ParagraphComponent }) {
-        return <div><ChildComponent childKey="paragraph" components={component.children.children}/></div>
+        return <div className="p-2 text-md leading-8"><ChildComponent childKey="paragraph" components={component.children.children}/></div>
     }
 
     function QuoteDocComponent({component}: { component: QuoteComponent }) {
@@ -281,13 +275,13 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
     }
 
     function BulletListDocComponent({component}: { component: BulletListComponent }) {
-        return <ul className="list-disc list-outside !pl-8">
+        return <ul className="list-disc list-outside !pl-8 [&_*]:leading-3">
             <ListItemDocComponent key="list-component" components={component.children.children}/>
         </ul>
     }
 
     function OrderedListDocComponent({component}: { component: OrderedListComponent }) {
-        return <ol className="list-decimal list-outside !pl-8">
+        return <ol className="list-decimal list-outside !pl-8 [&_*]:leading-3">
             <ListItemDocComponent key="list-component" components={component.children.children}/>
         </ol>
     }
@@ -374,7 +368,11 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
     }
 
     function ImageDocComponent({component}: { component: ImageComponent }) {
-        return <img src={component.destination} alt={component.alt} title={component.title ?? ""}/>
+        let destination = component.destination
+        if (destination.startsWith("/")) {
+            destination = `${ASSETS_URL}${destination}`
+        }
+        return <img src={destination} alt={component.alt} title={component.title ?? ""}/>
     }
 
     function ConditionalDocComponent({component}: { component: ConditionalComponent }) {

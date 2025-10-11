@@ -37,9 +37,9 @@ export const Languages: Record<string, DocumentConfiguration> = {
 }
 
 export const Platforms: Record<string, DocumentConfiguration> = {
-    "bukkit": {
-        key: "bukkit",
-        name: "Bukkit",
+    "spigot": {
+        key: "spigot",
+        name: "Spigot",
     },
     "paper": {
         key: "paper",

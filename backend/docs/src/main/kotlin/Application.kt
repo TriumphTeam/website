@@ -57,6 +57,7 @@ private const val ICON_FILE_NAME = "icon.png"
 private const val PAGE_FILE_NAME = "index.md"
 private const val MD_FILE_EXTENSION = "md"
 private const val HOCON_FILE_EXTENSION = "conf"
+private const val ASSETS_DIRECTORY = "assets"
 
 private val DEFAULT_EXTENSIONS = listOf(
     StrikethroughExtension.create(),
@@ -103,7 +104,7 @@ public suspend fun main(args: Array<String>) {
 
     // Navigate through the file structure and parse all projects
     val projects = Projects(
-        projects = inputFiles.filter(File::isDirectory).map { projectDir ->
+        projects = inputFiles.filter(File::isDirectory).filterNot { it.name == ASSETS_DIRECTORY }.map { projectDir ->
 
             val files = projectDir.listFiles() ?: emptyArray()
             val projectConfig = files.findFile(PROJECT_CONFIG_FILE_NAME) {
@@ -126,6 +127,8 @@ public suspend fun main(args: Array<String>) {
         },
     )
 
+    val assets = inputPath.resolve(ASSETS_DIRECTORY).takeIf(File::exists)?.listFiles() ?: emptyArray()
+
     val outputDir = File("output").also(File::mkdirs)
 
     val repository = outputDir.resolve(OUTPUT_FILE_NAME).also {
@@ -139,16 +142,18 @@ public suspend fun main(args: Array<String>) {
         }
     }
 
+    val outputAssetsDir = outputDir.resolve("static").also { it.mkdirs() }
+    assets.forEach { it.copyTo(outputAssetsDir.resolve(it.name), overwrite = true) }
+
     val zip = ZipFile("projects.zip").also {
         icons.forEach { dir ->
             it.addFolder(dir)
         }
         it.addFile(repository)
+        it.addFolder(outputAssetsDir)
     }
 
     logger.info("Parsing complete!")
-    println(JsonSerializer.encode<Repository>(projects.toRepository()))
-
     logger.info("Uploading..")
 
     val client = HttpClient(CIO) {
@@ -221,7 +226,6 @@ private fun parseVersions(versions: List<File>, rootDir: File, repoSettings: Rep
                 // Map replacement.
                 // Walk top down on child folders to collect all files.
                 val replacements = pageDir.walkTopDown()
-                    .asSequence()
                     .filterNot { it.name == PAGE_FILE_NAME || it.name == PAGE_CONFIG_FILE_NAME } // Remove the main files from the list.
                     .filter(File::isFile)
                     .associate { replacement ->
@@ -237,6 +241,7 @@ private fun parseVersions(versions: List<File>, rootDir: File, repoSettings: Rep
                     path = "${repoSettings.editPath.removeSuffix("/")}/${pageDir.relativeTo(rootDir).invariantSeparatorsPath}",
                     name = pageConfig.name,
                     description = pageConfig.description,
+                    banner = pageConfig.banner,
                     order = pageConfig.order,
                     content = MarkdownRenderer(replacements).render(MARKDOWN_PARSER.parse(pageFile.readText())),
                 )

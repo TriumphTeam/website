@@ -1,5 +1,6 @@
 package dev.triumphteam.backend.database
 
+import ContentSection
 import PageDocument
 import VersionDocument
 import dev.triumphteam.website.JsonSerializer
@@ -39,6 +40,8 @@ public object Versions : IntIdTable("website_project_versions") {
         fkName = "fk_versions_project_id"
     )
     public val versionDocument: Column<VersionDocument> = json<VersionDocument>("document", JsonSerializer.json)
+    public val searchSections: Column<List<ContentSection>> =
+        json<List<ContentSection>>("search-sections", JsonSerializer.json)
     public val default: Column<Boolean> = bool("default").default(false)
 }
 
@@ -48,6 +51,7 @@ public class VersionEntity(id: EntityID<Int>) : IntEntity(id) {
     public var reference: String by Versions.reference
     public var project: ProjectEntity by ProjectEntity referencedOn Versions.project
     public var versionDocument: VersionDocument by Versions.versionDocument
+    public var searchSections: List<ContentSection> by Versions.searchSections
     public var default: Boolean by Versions.default
 }
 
