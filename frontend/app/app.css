@@ -5,6 +5,7 @@
     --font-sans: Poppins, sans-serif;
     --color-dark-background-primary: #141417;
     --color-dark-background-secondary: rgba(25, 25, 28);
+    --color-dark-background-secondary-hover: rgb(40, 40, 45);
     --color-dark-background-secondary-transparent: rgba(31, 31, 33, 0.6);
     --color-disabled: oklch(0.299 0.007 285.959);
     --color-default-text: rgba(255, 255, 255, 0.7);

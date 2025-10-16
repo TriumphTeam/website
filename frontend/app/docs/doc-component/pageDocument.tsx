@@ -197,7 +197,7 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
             return <h3 id={id} className={textSize}>{children}</h3>
         }
 
-        return <div id="doc-section" key={component.id} className="group p-2">
+        return <div id="doc-section" key={component.id} className="group py-4">
             <a
                 href={`#${component.id}`}
                 className={`${textSize} inline-flex font-medium text-white`}
@@ -215,7 +215,7 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
     }
 
     function ParagraphDocComponent({component}: { component: ParagraphComponent }) {
-        return <div className="p-2 text-md leading-8"><ChildComponent childKey="paragraph" components={component.children.children}/></div>
+        return <div className="leading-8"><ChildComponent childKey="paragraph" components={component.children.children}/></div>
     }
 
     function QuoteDocComponent({component}: { component: QuoteComponent }) {
@@ -268,7 +268,7 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
         }
 
         return <div
-            className={`border-l-4 ${color} bg-dark-background-secondary-transparent !pl-4 !py-4 my-6 mx-2 rounded-l-sm rounded-r-md flex flex-row items-center`}>
+            className={`border-l-4 ${color} bg-dark-background-secondary-transparent !pl-4 !py-4 my-2 mx-2 rounded-l-sm rounded-r-md flex flex-row items-center`}>
             {icon && <i className={`${icon} pr-4 text-xl`}/>}
             {children}
         </div>
@@ -294,7 +294,7 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
 
                     if (anyComponent.type === LIST_ITEM_COMPONENT_TYPE.get()) {
                         const listItemComponent = anyComponent as ListItemComponent
-                        return <li key={`list-${index}`}>
+                        return <li className="py-2" key={`list-${index}`}>
                             <ChildComponent childKey={`list-${index}`} components={listItemComponent.children.children}/>
                         </li>
                     }
@@ -344,7 +344,7 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
                 )
         }
 
-        return <div className="relative group">
+        return <div className="relative group py-2">
             {!isCopied ? <i className={className} onClick={handleCopy}/> : <i className={className}/>}
             <pre lang={component.lang}>
                 <code lang={component.lang}>{parse(component.content)}</code>
@@ -362,7 +362,7 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
             </a>
         }
 
-        return <Link to={`../${component.destination}`} relative="path" className={className}>
+        return <Link to={`..${component.destination}`} relative="path" className={className}>
             <ChildComponent childKey="link" components={component.children.children}/>
         </Link>
     }
@@ -372,7 +372,12 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
         if (destination.startsWith("/")) {
             destination = `${ASSETS_URL}${destination}`
         }
-        return <img src={destination} alt={component.alt} title={component.title ?? ""}/>
+
+        if (destination.endsWith(".mp4")) {
+            return <video src={destination} loop={true} autoPlay={true} muted={true} className="w-full md:max-w-[620px] rounded-lg"/>
+        }
+
+        return <img src={destination} alt={component.alt} title={component.title ?? ""} className="w-full md:max-w-[620px] rounded-lg"/>
     }
 
     function ConditionalDocComponent({component}: { component: ConditionalComponent }) {

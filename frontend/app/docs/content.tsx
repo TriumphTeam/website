@@ -49,9 +49,39 @@ function PageContents({pageDocument, buildToolState, languageState, platformStat
 
     const banner = pageDocument.banner
 
+    // Handle scrolling to hash on mount and hash changes
+    useEffect(() => {
+        const scrollToHash = () => {
+            const hash = window.location.hash.slice(1) // Remove the '#' character
+            if (hash) {
+                // Small delay to ensure content is rendered
+                setTimeout(() => {
+                    const element = document.getElementById(hash)
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }
+                }, 100)
+            }
+        }
+
+        // Scroll on mount if hash exists
+        scrollToHash()
+
+        // Listen for hash changes
+        window.addEventListener('hashchange', (e) => {
+            if (e.oldURL === e.newURL) return
+            console.log(`hash changed ${e.oldURL} -> ${e.newURL}`)
+            scrollToHash()
+        })
+
+        return () => {
+            window.removeEventListener('hashchange', scrollToHash)
+        }
+    }, [pageDocument])
+
     return <>
-        <div className="flex-1 flex flex-col min-h-0 min-w-0 px-6">
-            <div id="doc-content" className="flex-1 [&>*]:p-2 pt-12">
+        <div className="flex-1 flex flex-col min-h-0 min-w-0 px-6 items-center">
+            <div id="doc-content" className="flex-1 [&>*]:px-2 pt-12 w-full md:w-8/10">
                 <h1 className="text-4xl font-medium text-white text-center pointer-events-none">{pageDocument.name}</h1>
                 <h2 className="text-lg text-center">{pageDocument.description}</h2>
                 <Separator/>
@@ -67,7 +97,7 @@ function PageContents({pageDocument, buildToolState, languageState, platformStat
                     platformState={platformState}
                 />
             </div>
-            <div className="px-2 mt-12 pb-8 flex items-center justify-between gap-2 text-sm">
+            <div className="px-2 mt-12 pb-8 flex items-center justify-between gap-2 text-sm w-full md:w-8/10">
                 <div>
                     {
                         previous && <Link to={`../${previous.id}`} relative="path"
@@ -235,18 +265,8 @@ function Section({section, selected}: { section: PageContent, selected: boolean 
             break
     }
 
-    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        e.preventDefault()
-        const element = document.getElementById(section.id)
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-            // Update the URL hash without triggering navigation
-            window.history.pushState(null, '', `#${section.id}`)
-        }
-    }
-
     return <div className={`${level} ${color} transition ease-in-out hover:text-(--project-color)`}>
-        <a href={`#${section.id}`} onClick={handleClick}>{section.name}</a>
+        <a href={`#${section.id}`}>{section.name}</a>
     </div>
 }
 

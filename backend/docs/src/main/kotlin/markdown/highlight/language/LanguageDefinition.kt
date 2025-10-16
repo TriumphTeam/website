@@ -64,7 +64,7 @@ public abstract class LanguageDefinition(
 
     public fun highlightCode(code: String): String {
         val highlights = captureHighlights(code)
-        return buildString {
+        val highlightedCode = buildString {
             code.forEachIndexed { index, char ->
                 val steps = highlights[index]
                 steps?.forEach { append(it.createTag()) }
@@ -74,6 +74,11 @@ public abstract class LanguageDefinition(
                 step.forEach { append(it.createTag()) }
             }
         }
+
+        return highlightedCode
+            .trimIndent()
+            .split("\n")
+            .joinToString("") { "<span class=\"code-line\">$it</span>" }
     }
 
     public data object Empty : LanguageDefinition()
@@ -97,6 +102,7 @@ public sealed interface HighlightValidator {
 
         override fun shouldRemove(current: Highlight, highlights: List<Highlight>): Boolean {
             if (current.type == HighlightType.STRING) return false
+            if (current.type == HighlightType.STRING_INTERPOLATION) return false
             // Filter for only string
             val strings = highlights.filter { it.type == HighlightType.STRING }
             // Check if the current is within a string
@@ -146,8 +152,9 @@ public sealed interface StepValidator {
 
         override fun shouldRemove(current: HighlightStep, steps: List<HighlightStep>): Boolean {
             return when (current.type) {
-                HighlightType.KEYWORD -> false
+                HighlightType.FUNCTION -> false
                 HighlightType.END -> false
+                HighlightType.KEYWORD -> steps.any { it.type == HighlightType.FUNCTION }
                 else -> steps.any { it.type == HighlightType.KEYWORD }
             }
         }

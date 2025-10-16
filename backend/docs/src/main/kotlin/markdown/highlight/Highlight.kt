@@ -45,11 +45,13 @@ public enum class HighlightType(public val tag: String) {
     PUNCTUATION("<span class=\"token punctuation\">"),
     KEYWORD("<span class=\"token keyword\">"),
     FUNCTION("<span class=\"token function\">"),
+    FUNCTION_LAMBDA("<span class=\"token function\">"),
     ANNOTATION("<span class=\"token annotation\">"),
     TYPE("<span class=\"token type\">"),
     LABEL("<span class=\"token label\">"),
     NUMBER("<span class=\"token number\">"),
     CONSTANT("<span class=\"token constant\">"),
+    STRING_INTERPOLATION("<span class=\"token string-interpolation\">"),
 
     END("</span>"),
 }

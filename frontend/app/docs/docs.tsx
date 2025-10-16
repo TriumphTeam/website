@@ -70,7 +70,7 @@ export default function Docs() {
                 },
                 shouldRetryOnError: false,
             }}>
-                <Sidebar key="side-bar" project={data.project} name={data.name} document={data.document}/>
+                <Sidebar key="side-bar" project={data.project} data={data} name={data.name} document={data.document}/>
                 <MainContent key="main-content" storageKeys={storageKeys} data={data} params={params}/>
             </SWRConfig>
         </div>

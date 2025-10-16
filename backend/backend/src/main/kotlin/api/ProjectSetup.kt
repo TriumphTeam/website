@@ -98,7 +98,7 @@ public suspend fun setupRepository(projects: File) {
                     )
                     this.searchSections = pages.map { page ->
                         ContentExtractor(page.content) { header, content ->
-                            ContentSection(page.id, page.name, header.text, content, header.id)
+                            ContentSection(page.id, page.name, header.text,  header.id, content)
                         }.extract()
                     }.flatten()
                 }

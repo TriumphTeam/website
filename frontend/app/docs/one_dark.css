@@ -10,6 +10,7 @@ code {
 
 pre > code {
     padding: 0 !important;
+    display: block;
 }
 
 code[class*="lang-"],
@@ -53,6 +54,30 @@ pre {
     overflow: auto;
     border-radius: .5em;
     background: #282C34;
+    counter-reset: line;
+}
+
+/* Line numbers */
+pre > code > .code-line {
+    display: block;
+    counter-increment: line;
+    position: relative;
+    padding-left: 3.5em;
+    line-height: 1.4em;
+    min-height: 1.4em;
+}
+
+pre > code > .code-line::before {
+    content: counter(line);
+    position: absolute;
+    left: 0;
+    width: 2.5em;
+    text-align: right;
+    color: #475F63;
+    opacity: 0.5;
+    user-select: none;
+    padding-right: 1em;
+    border-right: 1px solid #2E3C43;
 }
 
 pre::-webkit-scrollbar {

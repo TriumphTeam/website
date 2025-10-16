@@ -48,9 +48,14 @@ public object KotlinLanguage : LanguageDefinition(
             type = HighlightType.FUNCTION,
             expressions = listOf(
                 FUNCTION_REGEX, // Normal calls
-                LAMBDA_FUNCTION_REGEX, // Lambda calls
                 GENERIC_FUNCTION_REGEX, // Generics calls
                 GENERIC_LAMBDA_FUNCTION_REGEX, // Generics lambda calls
+            ),
+        ),
+        RegexHighlighter(
+            type = HighlightType.FUNCTION_LAMBDA,
+            expressions = listOf(
+                LAMBDA_FUNCTION_REGEX, // Lambda calls
             ),
         ),
         TYPE_COMPONENT,
@@ -61,6 +66,10 @@ public object KotlinLanguage : LanguageDefinition(
         ),
         NUMBER_COMPONENT,
         CONSTANT_COMPONENT,
+        RegexHighlighter(
+            type = HighlightType.STRING_INTERPOLATION,
+            expressions = listOf("""\$+(?:\{(?:[^{}]|\{[^}]*})*}|[a-zA-Z_][a-zA-Z0-9_]*)""".toRegex())
+        )
     ),
     globalValidator = listOf(
         // The order matters, string first is easier

@@ -144,7 +144,7 @@ public class MarkdownRenderer(private val replacements: Map<String, Replacement>
     private fun replace(identifier: String): DocComponent {
 
         fun parseMarkdown(markdown: String): DocComponent {
-            return MarkdownRenderer(replacements).render(MARKDOWN_PARSER.parse(markdown))
+            return MarkdownRenderer(replacements).render(MARKDOWN_PARSER.parse(markdown.trimIndent()))
         }
 
         val replacement = requireNotNull(replacements[identifier]) {
@@ -156,7 +156,7 @@ public class MarkdownRenderer(private val replacements: Map<String, Replacement>
             is Replacement.Conditional -> ConditionalComponent(
                 condition = replacement.condition,
                 value = when (val replacementValue = replacement.value) {
-                    is Value.Raw -> parseMarkdown(replacementValue.value.trimIndent())
+                    is Value.Raw -> parseMarkdown(replacementValue.value)
                     is Value.Replacement -> replace(replacementValue.identifier)
                 }
             )

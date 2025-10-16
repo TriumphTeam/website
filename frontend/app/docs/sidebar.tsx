@@ -5,15 +5,27 @@ import {Dropdown, DropdownItem} from "~/docs/dropdown"
 import {
     ContentSection,
     type NavigationPage,
-    type Nullable, type PageDocument,
+    type Nullable,
+    type ProjectVersion,
     type VersionData,
     type VersionDocument,
 } from "@lichthund/triumph-docs-serializable"
 import React, {useState} from "react"
 import {AnimatePresence, motion} from "motion/react"
 import useSWR from "swr"
+import Fuse from "fuse.js"
 
-export function Sidebar({project, name, document}: { project: string, name: string, document: VersionDocument }) {
+const fuseOptions = {
+    threshold: 0.4,
+    keys: ["content"],
+}
+
+export function Sidebar({project, data, name, document}: {
+    project: string,
+    data: ProjectVersion,
+    name: string,
+    document: VersionDocument
+}) {
     const [open, setOpen] = useState(false)
 
     function ControlButton() {
@@ -61,7 +73,7 @@ export function Sidebar({project, name, document}: { project: string, name: stri
                 github={document.github}
                 javadocs={document.javadocs}
             />
-            <SearchBar key="search-bar"/>
+            <SearchBar key="search-bar" version={data.version}/>
             <NavigationArea
                 key="navigation-area"
                 document={document}
@@ -166,7 +178,7 @@ function ProjectButton({tooltip, icon, link}: { tooltip: string, icon: string, l
     )
 }
 
-function SearchBar() {
+function SearchBar({version}: { version: number }) {
 
     const [open, toggleOpen, ref] = useOpenable()
 
@@ -189,13 +201,17 @@ function SearchBar() {
         </div>
         <AnimatePresence initial={false}>
             {
-                open && <SearchArea reference={ref}/>
+                open && <SearchArea reference={ref} click={toggleOpen} version={version}/>
             }
         </AnimatePresence>
     </>
 }
 
-function SearchArea({reference}: { reference: React.RefObject<HTMLDivElement | null> }) {
+function SearchArea({reference, version, click}: {
+    reference: React.RefObject<HTMLDivElement | null>,
+    version: number,
+    click: () => void
+}) {
     return <motion.div
         initial={{opacity: 0}}
         animate={{opacity: 1}}
@@ -211,25 +227,160 @@ function SearchArea({reference}: { reference: React.RefObject<HTMLDivElement | n
                 damping: 25,
             }}
             ref={reference}
-            className="w-32 h-32 bg-blue-500"
+            className="w-3/4 md:w-[725px]"
         >
-            <SearchDataArea/>
+            <SearchDataArea version={version} click={click}/>
         </motion.div>
     </motion.div>
 }
 
-function SearchDataArea() {
-    const {data, error} = useSWR<ContentSection[]>(`/search-data?version=3`)
+function SearchDataArea({version, click}: { version: number, click: () => void }) {
+    const {data, error} = useSWR<ContentSection[]>(`/search-data?version=${version}`)
 
-    if (error || !data) {
-        console.log(error)
-        console.log(data)
-        return <></>
+    if (error || !data) return <></>
+
+    const fuse = new Fuse(data, fuseOptions)
+
+    return <Search key="search-bar-search" fuse={fuse} click={click}/>
+}
+
+function Search({fuse, click}: { fuse: Fuse<ContentSection>, click: () => void }) {
+    const [searchQuery, setSearchQuery] = useState("")
+
+    const results = fuse.search(searchQuery)
+    const words = searchQuery.split(" ")
+
+    // This is horrible to look at.
+    function MatchContent({content}: { content: string }) {
+        const contentWords = content.split(" ")
+        let firstMatchIndex = -1
+
+        // Find the first matching word
+        for (let i = 0; i < contentWords.length; i++) {
+            for (const searchWord of words) {
+                if (contentWords[i].toLowerCase().includes(searchWord.toLowerCase())) {
+                    firstMatchIndex = i
+                    break
+                }
+            }
+            if (firstMatchIndex !== -1) break
+        }
+
+        if (firstMatchIndex === -1) return <>{content}</>
+
+        // Get 2 words before and 2 words after the match.
+        const start = Math.max(0, firstMatchIndex - 5)
+        const end = Math.min(contentWords.length, firstMatchIndex + 6)
+        const relevantWords = contentWords.slice(start, end)
+
+        const parts = relevantWords.map((word, index) => {
+            let matchFound = false
+            let matchStart = -1
+            let matchLength = 0
+
+            for (const searchWord of words) {
+                const wordIndex = word.toLowerCase().indexOf(searchWord.toLowerCase())
+                if (wordIndex !== -1 && searchWord.length > matchLength) {
+                    matchFound = true
+                    matchStart = wordIndex
+                    matchLength = searchWord.length
+                }
+            }
+
+            if (matchFound) {
+                return (
+                    <>
+                        {word.substring(0, matchStart)}
+                        <span className="text-white">
+                            {word.substring(matchStart, matchStart + matchLength)}
+                        </span>
+                        {word.substring(matchStart + matchLength)}
+                        {" "}
+                    </>
+                )
+            }
+
+            return word + " "
+        })
+
+        return <>{start > 0 ? "... " : ""}{parts}{end < contentWords.length ? "..." : ""}</>
     }
 
-    console.log(data)
+    function Results() {
+        if (results.length === 0) return <div
+            className="w-full h-full flex justify-center items-center text-white/50 text-center">
+            <div>No results found</div>
+        </div>
 
-    return <>TITS</>
+        return <>
+            {
+                map(
+                    groupBy(
+                        results
+                            .map((result) => result.item),
+                        (item) => item.pageId,
+                    ),
+                    (key, value) => {
+
+                        let first: ContentSection
+                        if (value.length > 0) {
+                            first = value[0]
+                        } else {
+                            return <></>
+                        }
+
+                        return <div>
+                            <div key={`search-${key}`} className="font-bold py-2">{first.title}</div>
+                            <div className="flex flex-col gap-2">
+                                {
+                                    value.map((item) => {
+                                        return <Link to={`../${item.pageId}#${item.sectionId}`} relative="path"
+                                                     onClick={click}>
+                                            <div
+                                                key={item.pageId + item.sectionId}
+                                                className="bg-dark-background-secondary hover:bg-dark-background-secondary-hover rounded-lg flex flex-row"
+                                            >
+                                                <div className="px-4 flex justify-center items-center"><i
+                                                    className="fa-solid fa-hashtag"/></div>
+                                                <div className="flex flex-col py-2">
+                                                    <div className="text-white/50 text-sm py-1">{item.section}</div>
+                                                    <div className="text-white/50 py-1"><MatchContent
+                                                        content={item.content}/></div>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    })
+                                }
+                            </div>
+                        </div>
+                    })
+            }
+        </>
+    }
+
+    return <div className="flex flex-col gap-2 p-4 w-full rounded-lg bg-dark-background-primary">
+        <div className="flex justify-between items-center bg-dark-background-secondary w-full p-4 rounded-lg">
+            <input
+                autoFocus={true}
+                autoCorrect="off"
+                autoComplete="off"
+                className="text-white text-lg w-full outline-none"
+                type="text"
+                placeholder="Search"
+                maxLength={64}
+                value={searchQuery}
+                onChange={(e) => {
+                    setSearchQuery(e.target.value)
+                }}
+            />
+            <i className="fa-solid fa-xmark text-white/50 hover:text-white cursor-pointer" onClick={() => {
+                setSearchQuery("")
+            }}/>
+        </div>
+        <div className="w-full h-[625px] overflow-auto p-4 rounded-lg">
+            <Results/>
+        </div>
+    </div>
 }
 
 function NavigationArea({document}: { document: VersionDocument }) {
@@ -238,7 +389,7 @@ function NavigationArea({document}: { document: VersionDocument }) {
             <div className="grid grid-cols-1 gap-10">
                 {
                     document.groups.map((group) => <NavigationGroupArea
-                        key={`navigation-group-${group}`}
+                        key={`navigation-group-${group.name}`}
                         text={group.name}
                         pages={group.pages}
                     />)
@@ -289,4 +440,28 @@ function SmallFooter() {
             Copyright © 2020-{year}, TriumphTeam. All Rights Reserved.
         </div>
     )
+}
+
+function groupBy<T, K>(items: T[], keySelector: (i: T) => K): Map<K, T[]> {
+    const destination = new Map<K, T[]>()
+
+    for (const item of items) {
+        const key = keySelector(item)
+        const list = destination.get(key) ?? []
+        list.push(item)
+        destination.set(key, list)
+    }
+
+    return destination
+}
+
+function map<T, K, V>(map: Map<K, T>, transform: (key: K, value: T) => V): V[] {
+    const entries = map.entries()
+    const result: V[] = []
+
+    for (const [key, value] of entries) {
+        result.push(transform(key, value))
+    }
+
+    return result
 }
