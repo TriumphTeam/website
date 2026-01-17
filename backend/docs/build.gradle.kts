@@ -20,15 +20,6 @@ dependencies {
     implementation(libs.bundles.logger)
     implementation(libs.bundles.commonmark)
     implementation(libs.commons.cli)
-
-    implementation(projects.scripting)
-
-    implementation("org.jetbrains.kotlin:kotlin-scripting-jvm")
-    implementation("org.jetbrains.kotlin:kotlin-scripting-jvm-host")
-    implementation("org.jetbrains.kotlin:kotlin-main-kts")
-    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT")
-    implementation("net.kyori:adventure-api:4.16.0")
-    implementation("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
 }
 
 application {

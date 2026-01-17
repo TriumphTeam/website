@@ -1,6 +1,6 @@
 "use client"
 import {motion} from "motion/react"
-import React from "react"
+import React, {useState} from "react"
 import type {VersionData} from "@lichthund/triumph-docs-serializable"
 import useSWR, {SWRConfig} from "swr"
 import api, {ASSETS_URL} from "~/axios/Api"
@@ -25,6 +25,7 @@ export default function Home() {
                         Team</h1>
                     <h2 className="text-white/50 text-center">Making libraries for your block game projects.</h2>
                 </div>
+                <Test/>
                 <SWRConfig value={{
                     dedupingInterval: 15000,
                     fetcher: (url: string) => api.get(url).then(r => r.data),
@@ -34,6 +35,22 @@ export default function Home() {
                 </SWRConfig>
             </div>
         </div>
+    </div>
+}
+
+function Test() {
+    const [open, setOpen] = useState(false)
+
+    return <div className="fixed z-[100] top-0 text-2xl pl-6 py-8">
+        <motion.div
+            animate={{
+                rotate: open ? "180deg" : "0deg",
+                scale: open ? 1 : 0.5,
+            }}
+            onClick={() => setOpen(!open)}
+        >
+            {open ? <i className="fa-solid fa-xmark"/> : <i className="fa-solid fa-bars"/>}
+        </motion.div>
     </div>
 }
 

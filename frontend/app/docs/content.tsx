@@ -58,7 +58,7 @@ function PageContents({pageDocument, buildToolState, languageState, platformStat
                 setTimeout(() => {
                     const element = document.getElementById(hash)
                     if (element) {
-                        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                        element.scrollIntoView({behavior: "smooth", block: "start"})
                     }
                 }, 100)
             }
@@ -68,14 +68,14 @@ function PageContents({pageDocument, buildToolState, languageState, platformStat
         scrollToHash()
 
         // Listen for hash changes
-        window.addEventListener('hashchange', (e) => {
+        window.addEventListener("hashchange", (e) => {
             if (e.oldURL === e.newURL) return
             console.log(`hash changed ${e.oldURL} -> ${e.newURL}`)
             scrollToHash()
         })
 
         return () => {
-            window.removeEventListener('hashchange', scrollToHash)
+            window.removeEventListener("hashchange", scrollToHash)
         }
     }, [pageDocument])
 
@@ -90,6 +90,7 @@ function PageContents({pageDocument, buildToolState, languageState, platformStat
                         <img className="w-4/5" src={`${ASSETS_URL}${banner}`} alt="page-banner"/>
                     </div>
                 }
+                <TestGui rows={6}/>
                 <PageDocumentComponent
                     document={pageDocument}
                     buildToolState={buildToolState}
@@ -121,6 +122,53 @@ function PageContents({pageDocument, buildToolState, languageState, platformStat
         <ContentSidebar pageDocument={pageDocument} buildToolState={buildToolState} languageState={languageState}
                         platformState={platformState}/>
     </>
+}
+
+function TestGui({rows}: { rows: number }) {
+    return <div style={{imageRendering: "pixelated"}}>
+        <div
+            className="w-[352px] h-[264px] bg-cover bg-[url(/assets/generic_chest_top.png)] p-[5px] font-[Monocraft] select-none"
+        >
+            <div className="h-full">
+                <div className="px-[10px] w-full text-lg">Title goes here</div>
+                <div className="w-full h-full flex flex-col gap-1.5 pt-[2px] px-[10px] pb-[40px]">
+                    {
+                        Array.from({length: rows}).map((_, index) => {
+                            return <div className="flex flex-row gap-1 flex-1">
+                                {
+                                    Array.from({length: 9}).map((_, index) => {
+                                        return <McSlot/>
+                                    })
+                                }
+                            </div>
+                        })
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+function McSlot() {
+
+    return <>
+        <div
+            className="flex-1 hover:bg-white/20 flex justify-center items-center w-full h-full hover:[&_#tooltip]:block"
+        >
+            <McTooltip text="Bitch"/>
+        </div>
+    </>
+}
+
+function McTooltip({text}: { text: string }) {
+    return (
+        <div
+            id="tooltip"
+            className="hidden fixed ml-32 mb-16 p-4 z-50 bg-violet-950 pointer-events-none"
+        >
+            {text}
+        </div>
+    )
 }
 
 function ContentSidebar({pageDocument, buildToolState, languageState, platformState}: {
