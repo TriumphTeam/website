@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     application
-    id("backend.base")
+    id("backend.jvm")
     id("io.github.goooler.shadow") version "8.1.7"
 }
 
@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation(projects.common)
+    implementation(projects.websiteCommon)
 
     implementation(libs.bundles.ktor.client)
 

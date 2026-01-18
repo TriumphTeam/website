@@ -1,9 +1,9 @@
 plugins {
-    id("backend.base")
+    id("backend.jvm")
 }
 
 dependencies {
     api(libs.zip)
     api(libs.ktor.resources)
-    api(projects.serializable)
+    // api(projects.websiteSerializable)
 }

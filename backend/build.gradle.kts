@@ -1,8 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    id("backend.base")
-    id("io.ktor.plugin") version "2.3.10"
+    id("backend.jvm")
+    id("io.ktor.plugin") version "3.3.3"
 }
 
 application {
@@ -11,7 +11,7 @@ application {
 }
 
 dependencies {
-    implementation(projects.common)
+    // implementation(projects.websiteCommon)
 
     implementation(libs.bundles.logger)
     implementation(libs.bundles.ktor.client)

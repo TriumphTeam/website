@@ -1,29 +1,33 @@
+import dev.triumphteam.root.KotlinOpt
+import dev.triumphteam.root.repository.Repository
+import dev.triumphteam.root.repository.applyRepo
 import org.gradle.accessors.dm.LibrariesForLibs
 
 val libs = the<LibrariesForLibs>()
 
 plugins {
-    id("backend.configure")
     kotlin("jvm")
     kotlin("plugin.serialization")
+    id("dev.triumphteam.root")
 }
 
 repositories {
     mavenCentral()
-    maven("https://repo.triumphteam.dev/snapshots/")
+    applyRepo(Repository.TRIUMPH_SNAPSHOTS)
 }
 
-dependencies {
+/*dependencies {
     implementation(kotlin("stdlib"))
     implementation(libs.serialization.json)
     implementation(libs.serialization.hocon)
     implementation(libs.coroutines)
-}
+}*/
 
-kotlin {
-    explicitApi()
-
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+root {
+    configureKotlin {
+        explicitApi()
+        optIn(KotlinOpt.STD)
+        previewAll()
     }
 }
+

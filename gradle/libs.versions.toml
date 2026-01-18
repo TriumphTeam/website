@@ -1,11 +1,12 @@
 [versions]
 # kotlin
-kotlin = "2.2.0"
+kotlin = "2.3.0"
 serialization = "1.9.0"
 coroutines = "1.10.2"
+vite = "16.5.0"
 
 # Core
-ktor = "3.2.2"
+ktor = "3.3.3"
 commonmark = "0.25.0"
 caffeine = "3.1.8"
 
@@ -88,13 +89,17 @@ zip = { module = "net.lingala.zip4j:zip4j", version.ref = "zip" }
 wrapper-browser = { module = "org.jetbrains.kotlin-wrappers:kotlin-browser", version.ref = "wrapper" }
 
 # build
-build-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 build-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+build-kotlin-multiplatform = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "kotlin" }
+build-kotlin-js-plain-objects = { module = "org.jetbrains.kotlin.plugin.js-plain-objects:org.jetbrains.kotlin.plugin.js-plain-objects.gradle.plugin", version.ref = "kotlin" }
+build-vite = { module = "io.github.turansky.kfc.application:io.github.turansky.kfc.application.gradle.plugin", version.ref = "vite" }
 
 [bundles]
 build = [
-    "build-kotlin",
+    "build-kotlin-multiplatform",
+    "build-kotlin-js-plain-objects",
     "build-serialization",
+    "build-vite",
 ]
 commonmark = [
     "commonmark",
