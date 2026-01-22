@@ -16,13 +16,6 @@ repositories {
     applyRepo(Repository.TRIUMPH_SNAPSHOTS)
 }
 
-/*dependencies {
-    implementation(kotlin("stdlib"))
-    implementation(libs.serialization.json)
-    implementation(libs.serialization.hocon)
-    implementation(libs.coroutines)
-}*/
-
 root {
     configureKotlin {
         explicitApi()

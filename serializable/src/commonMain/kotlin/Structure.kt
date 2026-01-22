@@ -1,10 +1,5 @@
-@file:OptIn(ExperimentalJsExport::class)
-@file:JsExport
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
 import kotlin.js.JsName
 
 @Serializable

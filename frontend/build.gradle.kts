@@ -1,22 +1,19 @@
 plugins {
-    id("website.multiplatform")
+    id("website.vite")
 }
 
 root {
     configureMultiplatform {
-        jvm()
-
         js {
             target {
                 browser()
+                binaries.executable()
                 useEsModules()
-                binaries.library()
             }
-        }
 
-        common {
             dependencies {
-                api(libs.serialization.core)
+                implementation("dev.triumphteam:horizon-core:1.0.0-SNAPSHOT")
+                implementation(npm("@tailwindcss/vite", "4.1.18"))
             }
         }
     }

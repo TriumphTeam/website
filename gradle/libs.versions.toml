@@ -94,6 +94,11 @@ build-kotlin-multiplatform = { module = "org.jetbrains.kotlin.multiplatform:org.
 build-kotlin-js-plain-objects = { module = "org.jetbrains.kotlin.plugin.js-plain-objects:org.jetbrains.kotlin.plugin.js-plain-objects.gradle.plugin", version.ref = "kotlin" }
 build-vite = { module = "io.github.turansky.kfc.application:io.github.turansky.kfc.application.gradle.plugin", version.ref = "vite" }
 
+[plugins]
+kotlin-js-objects = { id = "org.jetbrains.kotlin.plugin.js-plain-objects", version.ref = "kotlin" }
+vite = { id = "io.github.turansky.kfc.application", version.ref = "vite" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+
 [bundles]
 build = [
     "build-kotlin-multiplatform",

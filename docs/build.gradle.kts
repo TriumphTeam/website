@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     application
-    id("backend.jvm")
+    id("website.jvm")
     id("io.github.goooler.shadow") version "8.1.7"
 }
 

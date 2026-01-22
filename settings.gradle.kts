@@ -23,10 +23,10 @@ plugins {
 
 projects {
     single(id = "common")
-    // single(id = "serializable")
+    single(id = "serializable")
 
     single(id = "docs")
 
     single(id = "backend")
-    // single(id = "frontend")
+    single(id = "frontend")
 }
