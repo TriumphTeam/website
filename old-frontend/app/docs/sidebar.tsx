@@ -58,8 +58,8 @@ export function Sidebar({project, data, name, document}: {
                 xl:sticky xl:top-0 xl:min-w-60 xl:w-60 xl:flex xl:!transform-none
                 2xl:min-w-72 2xl:w-72
                 flex-col gap-4 px-4 justify-center
-                bg-dark-background-primary noise
-                border-r-2 border-dark-background-secondary
+                bg-dark-background noise
+                border-r-2 border-dark-surface
             `}>
             <ProjectHeader
                 key="project-header"
@@ -157,7 +157,7 @@ function ProjectButton({tooltip, icon, link}: { tooltip: string, icon: string, l
 
     const isEnabled = link != null
 
-    const className = `w-1/3 flex justify-center items-center bg-dark-background-secondary rounded-md p-2`
+    const className = `w-1/3 flex justify-center items-center bg-dark-surface rounded-md p-2`
 
     if (!isEnabled) return (
         <div className={`${className} text-white/10`}>
@@ -184,7 +184,7 @@ function SearchBar({version}: { version: number }) {
 
     return <>
         <div
-            className="flex items-center w-full mx-auto bg-dark-background-secondary rounded-lg h-12 cursor-pointer"
+            className="flex items-center w-full mx-auto bg-dark-surface rounded-lg h-12 cursor-pointer"
             onClick={toggleOpen}
         >
             <div className="w-full">
@@ -338,7 +338,7 @@ function Search({fuse, click}: { fuse: Fuse<ContentSection>, click: () => void }
                                                      onClick={click}>
                                             <div
                                                 key={item.pageId + item.sectionId}
-                                                className="bg-dark-background-secondary hover:bg-dark-background-secondary-hover rounded-lg flex flex-row"
+                                                className="bg-dark-surface hover:bg-dark-surface-hover rounded-lg flex flex-row"
                                             >
                                                 <div className="px-4 flex justify-center items-center"><i
                                                     className="fa-solid fa-hashtag"/></div>
@@ -358,8 +358,8 @@ function Search({fuse, click}: { fuse: Fuse<ContentSection>, click: () => void }
         </>
     }
 
-    return <div className="flex flex-col gap-2 p-4 w-full rounded-lg bg-dark-background-primary">
-        <div className="flex justify-between items-center bg-dark-background-secondary w-full p-4 rounded-lg">
+    return <div className="flex flex-col gap-2 p-4 w-full rounded-lg bg-dark-background">
+        <div className="flex justify-between items-center bg-dark-surface w-full p-4 rounded-lg">
             <input
                 autoFocus={true}
                 autoCorrect="off"

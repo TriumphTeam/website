@@ -69,7 +69,7 @@ function Projects() {
 function ProjectCard({project}: { project: Project }) {
 
     function Version({projectId, version}: { projectId: string, version: VersionData }) {
-        const color = version.current ? "bg-(--project-color)" : "bg-dark-background-secondary"
+        const color = version.current ? "bg-(--project-color)" : "bg-dark-surface"
         return <Link to={`/docs/${version.reference}/${projectId}/introduction`} relative="path">
             <motion.div
                 whileHover={{scale: 1.1}}
@@ -83,7 +83,7 @@ function ProjectCard({project}: { project: Project }) {
     return <div
         style={{"--project-color": project.color} as React.CSSProperties}
         className="flex flex-col p-8 gap-3 justify-center items-center
-     bg-dark-background-primary noise border-2 border-(--project-color)/10 rounded-lg"
+     bg-dark-background noise border-2 border-(--project-color)/10 rounded-lg"
     >
         <div>
             <img className="h-16 justify-self-center"

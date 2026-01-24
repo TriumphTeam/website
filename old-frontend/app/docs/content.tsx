@@ -209,8 +209,8 @@ function ContentSidebar({pageDocument, buildToolState, languageState, platformSt
                 md:w-72
                 lg:sticky lg:top-0 lg:min-w-72 lg:w-72 lg:flex lg:!transform-none
                 flex-col gap-4 px-4 justify-center
-                bg-dark-background-primary noise
-                border-l-2 border-dark-background-secondary
+                bg-dark-background noise
+                border-l-2 border-dark-surface
             "
         >
             <div className="flex flex-col w-full gap-2 pt-4">
@@ -341,7 +341,7 @@ function ToggleElement({id, title, state}: { id: string, title: string, state: C
 
                     return <div
                         key={`toggle-element-${index}`}
-                        className={`${pointer} ${leftBorder} ${rightBorder} relative h-8 flex-1 flex justify-center items-center bg-dark-background-primary`}
+                        className={`${pointer} ${leftBorder} ${rightBorder} relative h-8 flex-1 flex justify-center items-center bg-dark-background`}
                         onClick={() => setStoredKey(option.key)}
                     >
                         {isSelected && (

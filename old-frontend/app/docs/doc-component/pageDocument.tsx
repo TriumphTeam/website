@@ -268,7 +268,7 @@ export function PageDocumentComponent({document, buildToolState, languageState, 
         }
 
         return <div
-            className={`border-l-4 ${color} bg-dark-background-secondary-transparent !pl-4 !py-4 my-2 mx-2 rounded-l-sm rounded-r-md flex flex-row items-center`}>
+            className={`border-l-4 ${color} bg-dark-surface-transparent !pl-4 !py-4 my-2 mx-2 rounded-l-sm rounded-r-md flex flex-row items-center`}>
             {icon && <i className={`${icon} pr-4 text-xl`}/>}
             {children}
         </div>
