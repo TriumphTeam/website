@@ -124,36 +124,12 @@ gradle-app.setting
 data/
 test-module/
 
-backend/src/main/resources/static/scripts/*
-
 kotlin-js-store/
-
-tailwind/
-
-backend/src/main/resources/static/css/tailwind.css
 
 output/
 
 projects.zip
 
-### react ###
-.DS_*
-*.log
-logs
-**/*.backup.*
-**/*.back.*
-
-node_modules
-bower_components
-
-*.sublime*
-
-psd
-thumb
-sketch
-
-# End of https://www.toptal.com/developers/gitignore/api/react
-frontend/.idea/
-frontend/.react-router/
-
 .idea/
+
+old-frontend/
