@@ -5,6 +5,8 @@ import dev.triumphteam.horizon.html.div
 import dev.triumphteam.horizon.html.h1
 import dev.triumphteam.horizon.html.img
 import dev.triumphteam.horizon.router.navigate
+import dev.triumphteam.horizon.state.mutableStateOf
+import org.w3c.dom.HTMLDivElement
 
 public fun FlowContent.projectHeader() {
     div(className = "grid grid-cols-1 w-full justify-items-center gap-4 pt-6 select-none") {

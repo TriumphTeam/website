@@ -6,10 +6,11 @@ import dev.triumphteam.frontend.pages.docs.components.sidebar.projectHeader
 import dev.triumphteam.horizon.html.FlowContent
 import dev.triumphteam.horizon.html.div
 import dev.triumphteam.horizon.state.State
+import dev.triumphteam.website.serializable.ProjectVersion
 
 private const val RESPONSIVE_BAR_POSITION = "fixed xl:static"
 
-public fun FlowContent.docs(pageState: State<String>) {
+public fun FlowContent.docs(pageState: State<String>, projectData: ProjectVersion) {
     div(className = "w-screen h-screen bg-darker-background p-3") {
         style = "--project-color: todo"
 
@@ -22,7 +23,7 @@ public fun FlowContent.docs(pageState: State<String>) {
 }
 
 private fun FlowContent.sideBar() {
-    div(className = "$RESPONSIVE_BAR_POSITION $DEFAULT_BACKGROUND w-128 rounded-lg ") {
+    div(className = "$RESPONSIVE_BAR_POSITION $DEFAULT_BACKGROUND md:w-72 xl:min-w-60 xl:w-60 2xl:min-w-72 2xl:w-72 rounded-lg") {
         projectHeader()
     }
 }

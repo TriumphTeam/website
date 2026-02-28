@@ -20,7 +20,12 @@ public data class DocsRouteVariables(
 public data class ProjectRouteVariable(
     public val version: String?,
     public val project: String,
-)
+) {
+    public fun createPath(): String {
+        if (version == null) return project
+        return "$version/$project"
+    }
+}
 
 public class DocsRoute(
     version: String?,
