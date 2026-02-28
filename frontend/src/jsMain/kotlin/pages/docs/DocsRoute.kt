@@ -17,6 +17,11 @@ public data class DocsRouteVariables(
     public val page: String,
 )
 
+public data class ProjectRouteVariable(
+    public val version: String?,
+    public val project: String,
+)
+
 public class DocsRoute(
     version: String?,
     project: String,
@@ -29,18 +34,17 @@ public class DocsRoute(
         public const val PAGE_VARIABLE: String = "page"
     }
 
-    public val versionState: RouteVariableState<String?> = RouteVariableState(version)
-    public val projectState: RouteVariableState<String> = RouteVariableState(project)
+    public val projectState: RouteVariableState<ProjectRouteVariable> =
+        RouteVariableState(ProjectRouteVariable(version, project))
     public val pageState: RouteVariableState<String> = RouteVariableState(page)
 
     override fun updateVariables(variables: Map<String, String>): RouteVariablesUpdateResult {
         val variables = createRouteVariables(variables) ?: return RouteVariablesUpdateResult.ERROR
 
-        val versionResult = versionState.setValue(variables.version)
-        val projectResult = projectState.setValue(variables.project)
+        val projectResult = projectState.setValue(ProjectRouteVariable(variables.version, variables.project))
         val pageResult = pageState.setValue(variables.page)
 
-        if (versionResult || projectResult || pageResult) RouteVariablesUpdateResult.UPDATED
+        if (projectResult || pageResult) RouteVariablesUpdateResult.UPDATED
         return RouteVariablesUpdateResult.NOT_UPDATED
     }
 }

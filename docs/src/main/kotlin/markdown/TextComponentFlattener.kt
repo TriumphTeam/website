@@ -1,9 +1,9 @@
 package dev.triumphteam.website.docs.markdown
 
-import ComponentChildren
-import DocComponent
-import TextComponent
-import WithChildren
+import dev.triumphteam.website.serializable.ComponentChildren
+import dev.triumphteam.website.serializable.DocComponent
+import dev.triumphteam.website.serializable.TextComponent
+import dev.triumphteam.website.serializable.WithChildren
 
 public fun flatten(separator: String, component: ComponentChildren): String {
     return component.children.joinToString(separator) { flatten(separator, it) }

@@ -6,7 +6,7 @@ import dev.triumphteam.horizon.html.button
 
 @TagMarker
 public fun FlowContent.simpleButton(children: FlowContent.() -> Unit) {
-    button(className = "flex justify-center cursor-pointer text-2xl text-light-text dark:text-dark-text bg-light-accent hover:bg-light-accent/80 dark:bg-dark-accent dark:hover:bg-dark-accent/80 rounded-md p-4 hover:scale-110") {
+    button(className = "flex justify-center cursor-pointer text-2xl text-dark-text bg-dark-accent hover:bg-dark-accent/80 rounded-md p-4 hover:scale-110") {
         children()
     }
 }

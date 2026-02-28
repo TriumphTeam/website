@@ -1,22 +1,22 @@
 package dev.triumphteam.backend.api
 
-import ContentSection
-import FooterNavigation
-import HeaderComponent
-import NavigationGroup
-import NavigationPage
-import PageContent
-import PageDocument
-import VersionData
-import VersionDocument
 import dev.triumphteam.backend.DATA_FOLDER
 import dev.triumphteam.backend.content.ContentExtractor
 import dev.triumphteam.backend.database.PageEntity
 import dev.triumphteam.backend.database.ProjectEntity
 import dev.triumphteam.backend.database.VersionEntity
 import dev.triumphteam.website.JsonSerializer
+import dev.triumphteam.website.serializable.ContentSection
+import dev.triumphteam.website.serializable.FooterNavigation
 import dev.triumphteam.website.serializable.Group
+import dev.triumphteam.website.serializable.HeaderComponent
+import dev.triumphteam.website.serializable.NavigationGroup
+import dev.triumphteam.website.serializable.NavigationPage
+import dev.triumphteam.website.serializable.PageContent
+import dev.triumphteam.website.serializable.PageDocument
 import dev.triumphteam.website.serializable.Repository
+import dev.triumphteam.website.serializable.VersionData
+import dev.triumphteam.website.serializable.VersionDocument
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
@@ -98,7 +98,7 @@ public suspend fun setupRepository(projects: File) {
                     )
                     this.searchSections = pages.map { page ->
                         ContentExtractor(page.content) { header, content ->
-                            ContentSection(page.id, page.name, header.text,  header.id, content)
+                            ContentSection(page.id, page.name, header.text, header.id, content)
                         }.extract()
                     }.flatten()
                 }

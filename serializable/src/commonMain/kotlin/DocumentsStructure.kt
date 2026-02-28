@@ -1,3 +1,5 @@
+package dev.triumphteam.website.serializable
+
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.JsName

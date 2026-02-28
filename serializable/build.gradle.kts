@@ -17,6 +17,7 @@ root {
         common {
             dependencies {
                 api(libs.serialization.core)
+                api(libs.ktor.resources)
             }
         }
     }

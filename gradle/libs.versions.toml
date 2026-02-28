@@ -44,7 +44,6 @@ coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version
 # Ktor server
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-server-cio = { module = "io.ktor:ktor-server-cio-jvm", version.ref = "ktor" }
-ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-server-cors = { module = "io.ktor:ktor-server-cors", version.ref = "ktor" }
 ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
 ktor-server-resources = { module = "io.ktor:ktor-server-resources", version.ref = "ktor" }
@@ -62,7 +61,7 @@ ktor-resources = { module = "io.ktor:ktor-resources", version.ref = "ktor" }
 # Ktor client
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
-ktor-client-jetty = { module = "io.ktor:ktor-client-jetty", version.ref = "ktor" }
+ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 ktor-client-negociation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
@@ -116,7 +115,6 @@ commonmark = [
 ktor-server = [
     "ktor-server-core",
     "ktor-server-cio",
-    "ktor-server-netty",
     "ktor-server-cors",
     "ktor-server-auth",
     "ktor-server-resources",
@@ -130,12 +128,9 @@ ktor-server = [
 ]
 ktor-client = [
     "ktor-client-core",
-    "ktor-client-cio",
-    "ktor-client-jetty",
     "ktor-client-auth",
     "ktor-client-negociation",
     "ktor-client-json",
-    "ktor-client-resources",
     "ktor-client-logging",
 ]
 logger = [

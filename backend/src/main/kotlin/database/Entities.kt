@@ -1,9 +1,9 @@
 package dev.triumphteam.backend.database
 
-import ContentSection
-import PageDocument
-import VersionDocument
 import dev.triumphteam.website.JsonSerializer
+import dev.triumphteam.website.serializable.ContentSection
+import dev.triumphteam.website.serializable.PageDocument
+import dev.triumphteam.website.serializable.VersionDocument
 import org.jetbrains.exposed.v1.core.Column
 import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.dao.id.EntityID

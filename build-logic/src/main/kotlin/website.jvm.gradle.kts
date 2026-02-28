@@ -18,6 +18,7 @@ repositories {
 
 root {
     configureKotlin {
+        jvmVersion(25)
         explicitApi()
         optIn(KotlinOpt.STD)
         previewAll()

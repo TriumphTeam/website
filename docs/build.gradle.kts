@@ -17,6 +17,9 @@ dependencies {
 
     implementation(libs.bundles.ktor.client)
 
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.resources)
+
     implementation(libs.bundles.logger)
     implementation(libs.bundles.commonmark)
     implementation(libs.commons.cli)

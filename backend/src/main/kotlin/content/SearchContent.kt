@@ -1,12 +1,12 @@
 package dev.triumphteam.backend.content
 
-import CodeComponent
-import ContentSection
-import DocComponent
-import HeaderComponent
-import RootComponent
-import TextComponent
-import WithChildren
+import dev.triumphteam.website.serializable.CodeComponent
+import dev.triumphteam.website.serializable.ContentSection
+import dev.triumphteam.website.serializable.DocComponent
+import dev.triumphteam.website.serializable.HeaderComponent
+import dev.triumphteam.website.serializable.RootComponent
+import dev.triumphteam.website.serializable.TextComponent
+import dev.triumphteam.website.serializable.WithChildren
 
 public class ContentExtractor(
     private val root: RootComponent,

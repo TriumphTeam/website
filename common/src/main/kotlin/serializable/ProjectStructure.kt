@@ -1,6 +1,5 @@
 package dev.triumphteam.website.serializable
 
-import RootComponent
 import kotlinx.serialization.Serializable
 
 @Serializable

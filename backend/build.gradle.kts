@@ -11,7 +11,7 @@ application {
 }
 
 dependencies {
-    // implementation(projects.websiteCommon)
+    implementation(projects.websiteCommon)
 
     implementation(libs.bundles.logger)
     implementation(libs.bundles.ktor.client)

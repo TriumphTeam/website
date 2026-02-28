@@ -1,6 +1,5 @@
 package dev.triumphteam.website.docs
 
-import dev.triumphteam.gui.title.SimpleGuiTitle
 import dev.triumphteam.website.HoconSerializer
 import dev.triumphteam.website.JsonSerializer
 import dev.triumphteam.website.api.InternalApi
@@ -14,8 +13,6 @@ import dev.triumphteam.website.docs.project.ProjectConfig
 import dev.triumphteam.website.docs.project.Replacement
 import dev.triumphteam.website.docs.project.RepoSettings
 import dev.triumphteam.website.docs.project.VersionConfig
-import dev.triumphteam.website.scripting.SimpleScript
-import dev.triumphteam.website.scripting.gui.DocsGui
 import dev.triumphteam.website.serializable.Group
 import dev.triumphteam.website.serializable.Page
 import dev.triumphteam.website.serializable.Project
@@ -49,12 +46,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import kotlin.io.path.Path
-import kotlin.script.experimental.api.EvaluationResult
-import kotlin.script.experimental.api.ResultValue
-import kotlin.script.experimental.api.ResultWithDiagnostics
-import kotlin.script.experimental.host.toScriptSource
-import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
-import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
 
 private const val OUTPUT_FILE_NAME = "repository.json"
 private const val SETTINGS_CONFIG_FILE_NAME = "settings.conf"
@@ -84,57 +75,7 @@ public val MARKDOWN_PARSER: Parser = Parser.builder()
 
 private val logger: Logger = LoggerFactory.getLogger("docs")
 
-private fun evalFile(scriptFile: String): ResultWithDiagnostics<EvaluationResult> {
-    val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<SimpleScript>()
-    return BasicJvmScriptingHost().eval(scriptFile.toScriptSource(), compilationConfiguration, null)
-}
-
-public fun main() {
-
-    val test = """
-        @file:Repository("https://repo.triumphteam.dev/snapshots/")
-        @file:Repository("https://repo.maven.apache.org/maven2/")
-        @file:DependsOn("dev.triumphteam:triumph-gui-kotlin:4.0.0-SNAPSHOT")
-        @file:DependsOn("net.kyori:adventure-api:4.16.0")
-        
-        import dev.triumphteam.website.scripting.gui.*
-        import net.kyori.adventure.text.Component
-        
-        buildGui {
-            title(Component.text("My Simple GUI!"))
-        }
-    """.trimIndent()
-
-    val result = evalFile(test)
-
-    when (result) {
-        is ResultWithDiagnostics.Success -> {
-            val evaluationResult = result.value
-            when (val returnValue = evaluationResult.returnValue) {
-                is ResultValue.Value -> {
-                    println("Result: ${returnValue.value}") // This will print the actual result (1 in this case)
-                    val actualValue = returnValue.value as? DocsGui // Cast to expected type
-
-                    val title = actualValue?.title as? SimpleGuiTitle
-                    println("Title: ${title?.render()}")
-                    println("Actual value: $actualValue")
-                }
-
-                is ResultValue.Unit -> println("Script returned Unit")
-                is ResultValue.Error -> println("Error: ${returnValue.error} -> ${returnValue.error.stackTraceToString()}")
-                else -> println("Other result type")
-            }
-        }
-
-        is ResultWithDiagnostics.Failure -> {
-            result.reports.forEach { diagnostic ->
-                println("${diagnostic.severity}: ${diagnostic.message}")
-            }
-        }
-    }
-}
-
-public suspend fun mains(args: Array<String>) {
+public suspend fun main(args: Array<String>) {
 
     val options = DefaultParser().parse(
         Options().apply {
