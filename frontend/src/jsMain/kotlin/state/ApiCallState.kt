@@ -31,7 +31,7 @@ public class ApiCallState<T : Any>(
 
         // If there are no jobs, re launch a new one.
         parentCoroutine.launch {
-            delay(3000)
+            delay(500)
             setValue(block())
         }
 

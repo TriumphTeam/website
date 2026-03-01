@@ -19,10 +19,10 @@ public object Api {
 
     @Resource(PAGE_ROUTE)
     public data class Page(
-        public val version: Int,
+        public val version: String,
         public val page: String,
     )
 
     @Resource(SEARCH_DATA_ROUTE)
-    public data class SearchData(public val version: Int)
+    public data class SearchData(public val version: String)
 }

@@ -8,57 +8,23 @@ import kotlin.js.JsName
 public data class ProjectVersion(
     public val project: String,
     public val name: String,
-    public val version: Int,
+    public val version: String,
     public val document: VersionDocument,
 )
 
 @Serializable
 public data class VersionDocument(
-    public val versions: Array<VersionData>,
+    public val versions: List<VersionData>,
     public val color: String,
     public val stable: Boolean,
-    public val groups: Array<NavigationGroup>,
-    public val platforms: Array<String>,
-    public val languages: Array<String>,
-    public val buildTools: Array<String>,
+    public val groups: List<NavigationGroup>,
+    public val platforms: List<String>,
+    public val languages: List<String>,
+    public val buildTools: List<String>,
     public val github: String?,
     public val discord: String?,
     public val javadocs: String?,
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class != other::class) return false
-
-        other as VersionDocument
-
-        if (stable != other.stable) return false
-        if (!versions.contentEquals(other.versions)) return false
-        if (color != other.color) return false
-        if (!groups.contentEquals(other.groups)) return false
-        if (!platforms.contentEquals(other.platforms)) return false
-        if (!languages.contentEquals(other.languages)) return false
-        if (!buildTools.contentEquals(other.buildTools)) return false
-        if (github != other.github) return false
-        if (discord != other.discord) return false
-        if (javadocs != other.javadocs) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = stable.hashCode()
-        result = 31 * result + versions.contentHashCode()
-        result = 31 * result + color.hashCode()
-        result = 31 * result + groups.contentHashCode()
-        result = 31 * result + platforms.contentHashCode()
-        result = 31 * result + languages.contentHashCode()
-        result = 31 * result + buildTools.contentHashCode()
-        result = 31 * result + (github?.hashCode() ?: 0)
-        result = 31 * result + (discord?.hashCode() ?: 0)
-        result = 31 * result + (javadocs?.hashCode() ?: 0)
-        return result
-    }
-}
+)
 
 @Serializable
 public class ContentSection(
@@ -76,25 +42,7 @@ public data class VersionData(
 )
 
 @Serializable
-public data class NavigationGroup(public val name: String, public val pages: Array<NavigationPage>) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class != other::class) return false
-
-        other as NavigationGroup
-
-        if (name != other.name) return false
-        if (!pages.contentEquals(other.pages)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = name.hashCode()
-        result = 31 * result + pages.contentHashCode()
-        return result
-    }
-}
+public data class NavigationGroup(public val name: String, public val pages: List<NavigationPage>)
 
 @Serializable
 public data class NavigationPage(public val id: String, public val name: String)
@@ -107,34 +55,8 @@ public data class PageDocument(
     public val content: RootComponent,
     public val previous: FooterNavigation?,
     public val next: FooterNavigation?,
-    public val sections: Array<PageContent>,
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class != other::class) return false
-
-        other as PageDocument
-
-        if (name != other.name) return false
-        if (description != other.description) return false
-        if (content != other.content) return false
-        if (previous != other.previous) return false
-        if (next != other.next) return false
-        if (!sections.contentEquals(other.sections)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = name.hashCode()
-        result = 31 * result + description.hashCode()
-        result = 31 * result + content.hashCode()
-        result = 31 * result + (previous?.hashCode() ?: 0)
-        result = 31 * result + (next?.hashCode() ?: 0)
-        result = 31 * result + sections.contentHashCode()
-        return result
-    }
-}
+    public val sections: List<PageContent>,
+)
 
 @Serializable
 public data class PageContent(
@@ -147,7 +69,7 @@ public data class PageContent(
 public data class FooterNavigation(public val id: String, public val name: String)
 
 public interface WithChildren {
-    public val children: ComponentChildren
+    public val children: List<DocComponent>
 }
 
 public const val ROOT_COMPONENT_TYPE: String = "root"
@@ -179,7 +101,7 @@ public sealed interface DocComponent
 
 @Serializable
 @SerialName(ROOT_COMPONENT_TYPE)
-public data class RootComponent(override val children: ComponentChildren) : DocComponent, WithChildren
+public data class RootComponent(override val children: List<DocComponent>) : DocComponent, WithChildren
 
 @Serializable
 @SerialName(TEXT_COMPONENT_TYPE)
@@ -187,7 +109,7 @@ public data class TextComponent(public val content: String) : DocComponent
 
 @Serializable
 @SerialName(PARAGRAPH_COMPONENT_TYPE)
-public data class ParagraphComponent(override val children: ComponentChildren) : DocComponent, WithChildren
+public data class ParagraphComponent(override val children: List<DocComponent>) : DocComponent, WithChildren
 
 @Serializable
 @SerialName(HEADER_COMPONENT_TYPE)
@@ -195,7 +117,7 @@ public data class HeaderComponent(
     public val level: Int,
     public val text: String,
     public val id: String,
-    override val children: ComponentChildren,
+    override val children: List<DocComponent>,
 ) : DocComponent, WithChildren
 
 @Serializable
@@ -208,19 +130,19 @@ public data object HardLineBreakComponent : DocComponent
 
 @Serializable
 @SerialName(QUOTE_COMPONENT_TYPE)
-public data class QuoteComponent(override val children: ComponentChildren) : DocComponent, WithChildren
+public data class QuoteComponent(override val children: List<DocComponent>) : DocComponent, WithChildren
 
 @Serializable
 @SerialName(BULLET_LIST_COMPONENT_TYPE)
-public data class BulletListComponent(override val children: ComponentChildren) : DocComponent, WithChildren
+public data class BulletListComponent(override val children: List<DocComponent>) : DocComponent, WithChildren
 
 @Serializable
 @SerialName(ORDERED_LIST_COMPONENT_TYPE)
-public data class OrderedListComponent(override val children: ComponentChildren) : DocComponent, WithChildren
+public data class OrderedListComponent(override val children: List<DocComponent>) : DocComponent, WithChildren
 
 @Serializable
 @SerialName(LIST_ITEM_COMPONENT_TYPE)
-public data class ListItemComponent(override val children: ComponentChildren) : DocComponent, WithChildren
+public data class ListItemComponent(override val children: List<DocComponent>) : DocComponent, WithChildren
 
 @Serializable
 @SerialName(CODE_COMPONENT_TYPE)
@@ -236,19 +158,19 @@ public data class CodeBlockComponent(
 
 @Serializable
 @SerialName(BOLD_COMPONENT_TYPE)
-public data class BoldComponent(override val children: ComponentChildren) : DocComponent, WithChildren
+public data class BoldComponent(override val children: List<DocComponent>) : DocComponent, WithChildren
 
 @Serializable
 @SerialName(ITALIC_COMPONENT_TYPE)
-public data class ItalicComponent(override val children: ComponentChildren) : DocComponent, WithChildren
+public data class ItalicComponent(override val children: List<DocComponent>) : DocComponent, WithChildren
 
 @Serializable
 @SerialName(STRIKETHROUGH_COMPONENT_TYPE)
-public data class StrikethroughComponent(override val children: ComponentChildren) : DocComponent, WithChildren
+public data class StrikethroughComponent(override val children: List<DocComponent>) : DocComponent, WithChildren
 
 @Serializable
 @SerialName(UNDERLINE_COMPONENT_TYPE)
-public data class UnderlineComponent(override val children: ComponentChildren) : DocComponent, WithChildren
+public data class UnderlineComponent(override val children: List<DocComponent>) : DocComponent, WithChildren
 
 @Serializable
 @SerialName(SEPARATOR_COMPONENT_TYPE)
@@ -259,7 +181,7 @@ public data object SeparatorComponent : DocComponent
 public data class LinkComponent(
     public val destination: String,
     public val title: String?,
-    override val children: ComponentChildren,
+    override val children: List<DocComponent>,
 ) : DocComponent, WithChildren
 
 @Serializable
@@ -274,19 +196,20 @@ public data class ImageComponent(
 @SerialName(HTML_COMPONENT_TYPE)
 public data class HtmlComponent(
     public val html: String,
-    override val children: ComponentChildren,
+    override val children: List<DocComponent>,
 ) : DocComponent, WithChildren
 
 @Serializable
 @SerialName(HINT_COMPONENT_TYPE)
 public data class HintComponent(
     public val hintType: HintType,
-    override val children: ComponentChildren,
+    override val children: List<DocComponent>,
 ) : DocComponent, WithChildren
 
 @Serializable
 @SerialName(CONDITIONAL_COMPONENT_TYPE)
-public data class ConditionalComponent(public val condition: ComponentCondition, public val value: DocComponent) : DocComponent
+public data class ConditionalComponent(public val condition: ComponentCondition, public val value: DocComponent) :
+    DocComponent
 
 public const val LANGUAGE_CONDITION_TYPE: String = "language"
 public const val BUILDTOOL_CONDITION_TYPE: String = "buildtool"
@@ -310,19 +233,4 @@ public data class PlatformCondition(public val platform: String) : ComponentCond
 @Serializable
 public enum class HintType {
     INFO, SUCCESS, WARNING, ERROR;
-}
-
-@Serializable
-public data class ComponentChildren(public val children: Array<DocComponent>) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class != other::class) return false
-
-        other as ComponentChildren
-        return children.contentEquals(other.children)
-    }
-
-    override fun hashCode(): Int {
-        return children.contentHashCode()
-    }
 }

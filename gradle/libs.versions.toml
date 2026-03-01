@@ -11,7 +11,7 @@ commonmark = "0.25.0"
 caffeine = "3.1.8"
 
 # Database
-exposed = "1.0.0-beta-4"
+exposed = "1.1.1"
 hikari = "6.3.0"
 postgress = "42.7.7"
 
@@ -31,7 +31,7 @@ wrapper = "1.0.0-pre.760"
 exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 exposed-json = { module = "org.jetbrains.exposed:exposed-json", version.ref = "exposed" }
-exposed-migration = { module = "org.jetbrains.exposed:exposed-migration", version.ref = "exposed" }
+exposed-migration = { module = "org.jetbrains.exposed:exposed-migration-jdbc", version.ref = "exposed" }
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 postgress = { module = "org.postgresql:postgresql", version.ref = "postgress" }
 

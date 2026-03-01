@@ -1,10 +1,15 @@
 package dev.triumphteam.website.docs.markdown
 
+import dev.triumphteam.website.docs.MARKDOWN_PARSER
+import dev.triumphteam.website.docs.markdown.highlight.language.LanguageDefinition
+import dev.triumphteam.website.docs.markdown.hint.HintBlock
+import dev.triumphteam.website.docs.markdown.placeholder.Placeholder
+import dev.triumphteam.website.docs.project.Replacement
+import dev.triumphteam.website.docs.project.Value
 import dev.triumphteam.website.serializable.BoldComponent
 import dev.triumphteam.website.serializable.BulletListComponent
 import dev.triumphteam.website.serializable.CodeBlockComponent
 import dev.triumphteam.website.serializable.CodeComponent
-import dev.triumphteam.website.serializable.ComponentChildren
 import dev.triumphteam.website.serializable.ConditionalComponent
 import dev.triumphteam.website.serializable.DocComponent
 import dev.triumphteam.website.serializable.HardLineBreakComponent
@@ -23,12 +28,6 @@ import dev.triumphteam.website.serializable.SeparatorComponent
 import dev.triumphteam.website.serializable.SoftLineBreakComponent
 import dev.triumphteam.website.serializable.StrikethroughComponent
 import dev.triumphteam.website.serializable.TextComponent
-import dev.triumphteam.website.docs.MARKDOWN_PARSER
-import dev.triumphteam.website.docs.markdown.highlight.language.LanguageDefinition
-import dev.triumphteam.website.docs.markdown.hint.HintBlock
-import dev.triumphteam.website.docs.markdown.placeholder.Placeholder
-import dev.triumphteam.website.docs.project.Replacement
-import dev.triumphteam.website.docs.project.Value
 import org.commonmark.ext.gfm.strikethrough.Strikethrough
 import org.commonmark.node.BlockQuote
 import org.commonmark.node.BulletList
@@ -61,7 +60,7 @@ public class MarkdownRenderer(private val replacements: Map<String, Replacement>
     }
 
     private fun renderNode(node: Node): DocComponent {
-        val children = ComponentChildren(renderChildren(node).toTypedArray())
+        val children = renderChildren(node)
         return when (node) {
             is Document -> RootComponent(children)
             is BlockQuote -> QuoteComponent(children)
@@ -88,7 +87,7 @@ public class MarkdownRenderer(private val replacements: Map<String, Replacement>
                     level = node.level,
                     text = headerText,
                     id = headerText.lowercase().replace(Regex("\\s+"), "-"),
-                    children = children
+                    children = children,
                 )
             }
 
@@ -113,7 +112,7 @@ public class MarkdownRenderer(private val replacements: Map<String, Replacement>
         }
     }
 
-    private fun renderCustomNode(node: CustomNode, children: ComponentChildren): DocComponent {
+    private fun renderCustomNode(node: CustomNode, children: List<DocComponent>): DocComponent {
         return when (node) {
             is Placeholder -> replace(node.identifier)
             is Strikethrough -> StrikethroughComponent(children)
@@ -121,7 +120,7 @@ public class MarkdownRenderer(private val replacements: Map<String, Replacement>
         }
     }
 
-    private fun renderCustomBlock(node: CustomBlock, children: ComponentChildren): DocComponent {
+    private fun renderCustomBlock(node: CustomBlock, children: List<DocComponent>): DocComponent {
         return when (node) {
             is HintBlock -> HintComponent(node.type, children)
             else -> unsupportedNode(node)
@@ -158,7 +157,7 @@ public class MarkdownRenderer(private val replacements: Map<String, Replacement>
                 value = when (val replacementValue = replacement.value) {
                     is Value.Raw -> parseMarkdown(replacementValue.value)
                     is Value.Replacement -> replace(replacementValue.identifier)
-                }
+                },
             )
         }
     }

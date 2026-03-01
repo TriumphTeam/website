@@ -27,6 +27,7 @@ public fun main() {
             path = "docs/:$VERSION_PROJECT_VARIABLE?/:$PROJECT_PAGE_VARIABLE?/:$PAGE_VARIABLE?",
             routeProvider = { _, variables -> provideDocsRoute(variables) },
         ) { route ->
+            println("is it triggering a full re-render?")
 
             component {
                 // The docs page directly depends on the version and project.
@@ -40,6 +41,7 @@ public fun main() {
                 }
 
                 render {
+                    println("rendering docs")
                     projectDataResult.fold(
                         onSuccess = {
                             docs(route.pageState, data)

@@ -18,7 +18,7 @@ public class ContentExtractor(
     private var current: Builder? = null
 
     public fun extract(): List<ContentSection> {
-        root.children.children.forEach { component ->
+        root.children.forEach { component ->
             extractFromComponent(component)
         }
 
@@ -53,9 +53,9 @@ public class ContentExtractor(
 
         if (component !is WithChildren) return
 
-        if (component.children.children.isEmpty()) return
+        if (component.children.isEmpty()) return
 
-        component.children.children.forEach { child ->
+        component.children.forEach { child ->
             extractFromComponent(child)
         }
     }

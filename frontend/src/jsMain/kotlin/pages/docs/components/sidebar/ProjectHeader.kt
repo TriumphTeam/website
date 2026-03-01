@@ -5,10 +5,10 @@ import dev.triumphteam.horizon.html.div
 import dev.triumphteam.horizon.html.h1
 import dev.triumphteam.horizon.html.img
 import dev.triumphteam.horizon.router.navigate
-import dev.triumphteam.horizon.state.mutableStateOf
-import org.w3c.dom.HTMLDivElement
+import dev.triumphteam.website.serializable.ProjectVersion
+import dev.triumphteam.website.serializable.VersionData
 
-public fun FlowContent.projectHeader() {
+public fun FlowContent.projectHeader(projectData: ProjectVersion) {
     div(className = "grid grid-cols-1 w-full justify-items-center gap-4 pt-6 select-none") {
         div(className = "flex items-center") {
             navigate(to = "/") {
@@ -25,15 +25,12 @@ public fun FlowContent.projectHeader() {
                     text("project name")
                 }
             }
-            // versionComponent(key = "version-component", project = project, versions = versions)
+            versionComponent(project = projectData.project, versions = projectData.document.versions)
         }
     }
 }
 
-/*public fun FlowContent.versionComponent(project: String, versions: List<VersionData>) {
-    val open = remember { mutableStateOf(false) }
-    val ref = useRef<HTMLDivElement>()
-
+public fun FlowContent.versionComponent(project: String, versions: List<VersionData>) {
     val isSingular = versions.size <= 1
     val cursor = if (isSingular) "default" else "pointer"
     val current = versions.find { it.current }
@@ -42,11 +39,9 @@ public fun FlowContent.projectHeader() {
 
     div(
         className = "relative flex items-center justify-center rounded-sm bg-(--project-color) px-2 text-center text-md cursor-$cursor",
-        ref = ref,
-        onClick = { open.value = !open.value },
     ) {
         text(current.reference)
-        if (open.value && versions.size > 1) {
+        /*if (open.value && versions.size > 1) {
             dropdown(key = "version-dropdown", small = true) {
                 versions.forEach { version ->
                     dropdownItem(
@@ -56,6 +51,6 @@ public fun FlowContent.projectHeader() {
                     )
                 }
             }
-        }
+        }*/
     }
-}*/
+}

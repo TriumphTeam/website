@@ -20,12 +20,7 @@ public data class DocsRouteVariables(
 public data class ProjectRouteVariable(
     public val version: String?,
     public val project: String,
-) {
-    public fun createPath(): String {
-        if (version == null) return project
-        return "$version/$project"
-    }
-}
+)
 
 public class DocsRoute(
     version: String?,
@@ -49,7 +44,9 @@ public class DocsRoute(
         val projectResult = projectState.setValue(ProjectRouteVariable(variables.version, variables.project))
         val pageResult = pageState.setValue(variables.page)
 
-        if (projectResult || pageResult) RouteVariablesUpdateResult.UPDATED
+        if (projectResult || pageResult) {
+            return RouteVariablesUpdateResult.UPDATED
+        }
         return RouteVariablesUpdateResult.NOT_UPDATED
     }
 }
@@ -78,7 +75,7 @@ public class RouteVariableState<T>(initialValue: T) : AbstractState<T>(), Mutabl
     }
 
     override fun toString(): String {
-        return "[$value]"
+        return "[$value](${listeners.size})"
     }
 }
 

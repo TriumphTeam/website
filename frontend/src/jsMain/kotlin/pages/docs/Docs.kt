@@ -2,29 +2,38 @@ package dev.triumphteam.frontend.pages.docs
 
 import dev.triumphteam.frontend.components.DEFAULT_BACKGROUND
 import dev.triumphteam.frontend.components.DOTTED_BACKGROUND
+import dev.triumphteam.frontend.pages.docs.components.sidebar.navigationArea
+import dev.triumphteam.frontend.pages.docs.components.sidebar.projectButtons
 import dev.triumphteam.frontend.pages.docs.components.sidebar.projectHeader
+import dev.triumphteam.frontend.pages.docs.components.sidebar.searchButton
 import dev.triumphteam.horizon.html.FlowContent
 import dev.triumphteam.horizon.html.div
 import dev.triumphteam.horizon.state.State
 import dev.triumphteam.website.serializable.ProjectVersion
 
-private const val RESPONSIVE_BAR_POSITION = "fixed xl:static"
+private const val RESPONSIVE_BAR_POSITION = "fixed hidden xl:flex xl:static"
+private const val SIDE_BAR_CLASSES = "flex-col gap-4 px-4 justify-center noise"
 
 public fun FlowContent.docs(pageState: State<String>, projectData: ProjectVersion) {
     div(className = "w-screen h-screen bg-darker-background p-3") {
-        style = "--project-color: todo"
+        style = "--project-color: ${projectData.document.color}"
 
         div(className = "flex flex-row gap-3 h-full") {
-            sideBar()
+            sideBar(pageState, projectData)
             content()
             onThisPage()
         }
     }
 }
 
-private fun FlowContent.sideBar() {
-    div(className = "$RESPONSIVE_BAR_POSITION $DEFAULT_BACKGROUND md:w-72 xl:min-w-60 xl:w-60 2xl:min-w-72 2xl:w-72 rounded-lg") {
-        projectHeader()
+private fun FlowContent.sideBar(pageState: State<String>, projectData: ProjectVersion) {
+    val document = projectData.document
+
+    div(className = "$RESPONSIVE_BAR_POSITION $SIDE_BAR_CLASSES $DEFAULT_BACKGROUND md:w-72 xl:min-w-60 xl:w-60 2xl:min-w-72 2xl:w-72 rounded-lg") {
+        projectHeader(projectData)
+        projectButtons(document.discord, document.github, document.javadocs)
+        searchButton(projectData.version)
+        navigationArea(pageState, document)
     }
 }
 

@@ -15,6 +15,7 @@ import io.ktor.server.resources.get
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
 import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.innerJoin
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -35,7 +36,7 @@ public fun Routing.apiRoutes() {
         val versionEntity = transaction {
             when {
                 version == null -> VersionEntity.find { (Versions.project eq project) and (Versions.default eq true) }
-                else -> VersionEntity.find { (Versions.reference eq version) and (Versions.project eq project) }
+                else -> VersionEntity.find { (Versions.id eq version) and (Versions.project eq project) }
             }.firstOrNull()
         } ?: return@get call.respond(HttpStatusCode.NotFound)
 
@@ -62,7 +63,7 @@ public fun Routing.apiRoutes() {
                         color = firstRow[Projects.color],
                         versions = rows.map { row ->
                             VersionData(
-                                reference = row[Versions.reference],
+                                reference = row[Versions.id].value,
                                 current = row[Versions.default],
                             )
                         }.sortedBy(VersionData::reference),
