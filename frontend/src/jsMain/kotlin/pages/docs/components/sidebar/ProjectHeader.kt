@@ -14,7 +14,7 @@ import dev.triumphteam.website.serializable.VersionData
 
 private const val VERSION_DROPDOWN_ID = "version-dropdown"
 
-public fun FlowContent.projectHeader(projectData: ProjectVersion) {
+public fun FlowContent.projectHeader(projectData: ProjectVersion, small: Boolean) {
     div(className = "grid grid-cols-1 w-full justify-items-center gap-4 pt-6 select-none") {
         div(className = "flex items-center") {
             navigate(to = "/") {
@@ -31,14 +31,15 @@ public fun FlowContent.projectHeader(projectData: ProjectVersion) {
                     text(projectData.name)
                 }
             }
-            versionComponent(project = projectData.project, versions = projectData.document.versions)
+            versionComponent(project = projectData.project, versions = projectData.document.versions, small = small)
         }
     }
 }
 
-public fun FlowContent.versionComponent(project: String, versions: List<VersionData>) {
+public fun FlowContent.versionComponent(project: String, versions: List<VersionData>, small: Boolean) {
     val isSingular = versions.size <= 1
     val cursor = if (isSingular) "default" else "pointer"
+    val versionDropdownId = if (small) "$VERSION_DROPDOWN_ID-small" else VERSION_DROPDOWN_ID
     val current = versions.find { it.current }
 
     if (current == null) return
@@ -46,11 +47,11 @@ public fun FlowContent.versionComponent(project: String, versions: List<VersionD
     button(
         className = "version-dropdown-anchor relative flex items-center justify-center rounded-sm bg-(--project-color) px-2 text-center text-md cursor-$cursor",
     ) {
-        popoverTarget = VERSION_DROPDOWN_ID
+        popoverTarget = versionDropdownId
         text(current.reference)
     }
 
-    dropdown(id = VERSION_DROPDOWN_ID, anchor = "version-dropdown") {
+    dropdown(id = versionDropdownId, anchor = "version-dropdown") {
         versions.forEach { version ->
             dropdownItem(
                 text = version.reference,

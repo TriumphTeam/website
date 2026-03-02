@@ -42,6 +42,7 @@ public fun main() {
     embeddedServer(
         factory = CIO,
         module = Application::module,
+        host = "0.0.0.0",
         port = System.getenv("WEBSITE_PORT")?.toIntOrNull() ?: 8001,
         watchPaths = listOf("classes"),
     ).start(true)

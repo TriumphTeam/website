@@ -6,7 +6,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.serialization.kotlinx.json.json
 
-public const val API_BASE_URL: String = "http://localhost:8001"
+public const val API_BASE_URL: String = "http://192.168.1.65:8001"
 
 public val api: HttpClient = HttpClient(Js) {
     install(ContentNegotiation) {

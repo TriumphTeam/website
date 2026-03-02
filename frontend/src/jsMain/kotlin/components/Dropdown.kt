@@ -9,7 +9,7 @@ import dev.triumphteam.horizon.router.navigate
 public fun FlowContent.dropdown(id: String, anchor: String, children: FlowContent.() -> Unit) {
     div(
         id = id,
-        className = "$anchor open:flex open:flex-col bg-dark-surface rounded-lg p-2 mt-2 shadow-lg border border-white/10 gap-1",
+        className = "$anchor open:flex flex-col bg-dark-surface rounded-lg p-2 mt-2 shadow-lg border border-white/10 gap-1",
     ) {
         popover = "auto"
         children()

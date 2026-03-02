@@ -25,7 +25,7 @@ public fun FlowContent.navigationArea(pageState: State<String>, document: Versio
 
 private fun FlowContent.navigationGroup(pageState: State<String>, text: String, pages: List<NavigationPage>) {
     div {
-        h1(className = "text-white xl:text-lg 2xl:text-xl font-bold") {
+        h1(className = "text-white text-2xl xl:text-lg 2xl:text-xl font-bold") {
             text(text)
         }
         component {
