@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import kotlin.reflect.KProperty
 
 public class ApiCallState<T : Any>(
-    private val block: suspend () -> T,
+    private var block: suspend () -> T,
     private val parentCoroutine: CoroutineScope,
     private val mutationPolicy: StateMutationPolicy<T>,
 ) : AbstractState<ApiResult<T>>() {
@@ -31,11 +31,22 @@ public class ApiCallState<T : Any>(
 
         // If there are no jobs, re launch a new one.
         parentCoroutine.launch {
-            delay(500)
+            // delay(500)
             setValue(block())
         }
 
         return Waiting()
+    }
+
+    public fun refreshCall(block: suspend () -> T) {
+        // Reset all values.
+        this.job?.cancel()
+        this.job = null
+        this.value = null
+        // Change the block.
+        this.block = block
+        // Then trigger an update.
+        update()
     }
 
     private fun setValue(value: T): Boolean {
@@ -59,6 +70,18 @@ public inline fun <T : Any> ApiResult<T>.fold(
 ): Unit = when (this) {
     is Success -> onSuccess()
     is Waiting -> onWaiting()
+}
+
+public inline fun <T : Any> apiCallState(
+    parentCoroutine: CoroutineScope,
+    mutationPolicy: StateMutationPolicy<T> = StructureEqualityPolicy(),
+    noinline block: suspend () -> T,
+): ApiCallState<T> {
+    return ApiCallState(
+        block = block,
+        parentCoroutine = parentCoroutine,
+        mutationPolicy = mutationPolicy,
+    )
 }
 
 public fun <T : Any> FunctionalComponent.rememberApiCallState(

@@ -92,6 +92,17 @@ p:empty {
     opacity: 1;
 }
 
+.version-dropdown-anchor {
+    anchor-name: --version-dropdown;
+}
+
+.version-dropdown {
+    position: absolute;
+    position-anchor: --version-dropdown;
+    top: anchor(bottom);
+    justify-self: anchor-center;
+}
+
 .skeleton-shimmer {
     background: linear-gradient(
             90deg,

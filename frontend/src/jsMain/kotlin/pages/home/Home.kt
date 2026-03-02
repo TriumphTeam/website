@@ -2,6 +2,7 @@ package dev.triumphteam.frontend.pages.home
 
 import dev.triumphteam.frontend.components.DOTTED_BACKGROUND
 import dev.triumphteam.frontend.components.simpleButton
+import dev.triumphteam.frontend.internal.now
 import dev.triumphteam.frontend.pages.home.components.projects
 import dev.triumphteam.horizon.html.FlowContent
 import dev.triumphteam.horizon.html.div
@@ -56,7 +57,7 @@ public fun FlowContent.home() {
             div(className = "flex justify-center items-center") {
                 // Copyright
                 p(className = "text-white/50 text-sm") {
-                    text("© ${js("new Date().getFullYear()")} Triumph Team. All rights reserved.")
+                    text("Copyright © 2020-${now.getFullYear()}, TriumphTeam. All Rights Reserved.")
                 }
             }
         }

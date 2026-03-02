@@ -1,14 +1,23 @@
 package dev.triumphteam.frontend.pages.docs
 
+import dev.triumphteam.frontend.api.api
 import dev.triumphteam.frontend.pages.docs.DocsRoute.Companion.PAGE_VARIABLE
 import dev.triumphteam.frontend.pages.docs.DocsRoute.Companion.PROJECT_PAGE_VARIABLE
 import dev.triumphteam.frontend.pages.docs.DocsRoute.Companion.VERSION_PROJECT_VARIABLE
+import dev.triumphteam.frontend.state.ApiCallState
+import dev.triumphteam.frontend.state.apiCallState
 import dev.triumphteam.horizon.router.Route
 import dev.triumphteam.horizon.router.RouteVariablesUpdateResult
 import dev.triumphteam.horizon.state.AbstractState
 import dev.triumphteam.horizon.state.MutableState
 import dev.triumphteam.horizon.state.policy.StateMutationPolicy
 import dev.triumphteam.horizon.state.policy.StructureEqualityPolicy
+import dev.triumphteam.website.serializable.PROJECT_ROUTE
+import dev.triumphteam.website.serializable.ProjectVersion
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import kotlinx.coroutines.CoroutineScope
 import kotlin.reflect.KProperty
 
 public data class DocsRouteVariables(
@@ -23,6 +32,7 @@ public data class ProjectRouteVariable(
 )
 
 public class DocsRoute(
+    scope: CoroutineScope,
     version: String?,
     project: String,
     page: String,
@@ -34,20 +44,45 @@ public class DocsRoute(
         public const val PAGE_VARIABLE: String = "page"
     }
 
-    public val projectState: RouteVariableState<ProjectRouteVariable> =
-        RouteVariableState(ProjectRouteVariable(version, project))
+    private var projectRouteCache: ProjectRouteVariable = ProjectRouteVariable(version, project)
+    public val projectState: ApiCallState<ProjectVersion> = apiCallState(parentCoroutine = scope) {
+        getProjectVersion(project, version)
+    }
     public val pageState: RouteVariableState<String> = RouteVariableState(page)
 
     override fun updateVariables(variables: Map<String, String>): RouteVariablesUpdateResult {
         val variables = createRouteVariables(variables) ?: return RouteVariablesUpdateResult.ERROR
+        val newProjectRoute = ProjectRouteVariable(variables.version, variables.project)
 
-        val projectResult = projectState.setValue(ProjectRouteVariable(variables.version, variables.project))
-        val pageResult = pageState.setValue(variables.page)
+        val updatedProject = when {
+            // If the project/version are different, we update the state and the cache.
+            projectRouteCache != newProjectRoute -> {
+                // The cache is mostly here to avoid an api call if it is the same.
+                projectRouteCache = newProjectRoute
 
-        if (projectResult || pageResult) {
-            return RouteVariablesUpdateResult.UPDATED
+                // Refresh the project state.
+                projectState.refreshCall {
+                    getProjectVersion(variables.project, variables.version)
+                }
+
+                // True because it's different.
+                true
+            }
+
+            else -> false
         }
+
+        val updatedPage = pageState.setValue(variables.page)
+
+        if (updatedProject || updatedPage) return RouteVariablesUpdateResult.UPDATED
         return RouteVariablesUpdateResult.NOT_UPDATED
+    }
+
+    private suspend fun getProjectVersion(project: String, version: String?): ProjectVersion {
+        return api.get(urlString = PROJECT_ROUTE) {
+            parameter("project", project)
+            parameter("version", version)
+        }.body<ProjectVersion>()
     }
 }
 
@@ -79,9 +114,9 @@ public class RouteVariableState<T>(initialValue: T) : AbstractState<T>(), Mutabl
     }
 }
 
-public fun provideDocsRoute(initialVariables: Map<String, String>): DocsRoute? {
+public fun provideDocsRoute(scope: CoroutineScope, initialVariables: Map<String, String>): DocsRoute? {
     val variables = createRouteVariables(initialVariables) ?: return null
-    return DocsRoute(variables.version, variables.project, variables.page)
+    return DocsRoute(scope, variables.version, variables.project, variables.page)
 }
 
 private fun createRouteVariables(variables: Map<String, String>): DocsRouteVariables? {

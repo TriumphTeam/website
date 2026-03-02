@@ -2,10 +2,10 @@ package dev.triumphteam.frontend.pages.docs
 
 import dev.triumphteam.frontend.components.DEFAULT_BACKGROUND
 import dev.triumphteam.frontend.components.DOTTED_BACKGROUND
+import dev.triumphteam.frontend.internal.now
 import dev.triumphteam.frontend.pages.docs.components.sidebar.navigationArea
 import dev.triumphteam.frontend.pages.docs.components.sidebar.projectButtons
 import dev.triumphteam.frontend.pages.docs.components.sidebar.projectHeader
-import dev.triumphteam.frontend.pages.docs.components.sidebar.searchButton
 import dev.triumphteam.horizon.html.FlowContent
 import dev.triumphteam.horizon.html.div
 import dev.triumphteam.horizon.state.State
@@ -32,8 +32,8 @@ private fun FlowContent.sideBar(pageState: State<String>, projectData: ProjectVe
     div(className = "$RESPONSIVE_BAR_POSITION $SIDE_BAR_CLASSES $DEFAULT_BACKGROUND md:w-72 xl:min-w-60 xl:w-60 2xl:min-w-72 2xl:w-72 rounded-lg") {
         projectHeader(projectData)
         projectButtons(document.discord, document.github, document.javadocs)
-        searchButton(projectData.version)
         navigationArea(pageState, document)
+        smallFooter()
     }
 }
 
@@ -48,5 +48,11 @@ private fun FlowContent.content() {
 private fun FlowContent.onThisPage() {
     div(className = "$RESPONSIVE_BAR_POSITION $DEFAULT_BACKGROUND w-128 rounded-lg") {
 
+    }
+}
+
+private fun FlowContent.smallFooter() {
+    div(className = "flex-none text-[0.5em] text-center py-2") {
+        text("Copyright © 2020-${now.getFullYear()}, TriumphTeam. All Rights Reserved.")
     }
 }
