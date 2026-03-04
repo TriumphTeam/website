@@ -76,7 +76,9 @@ public fun Routing.apiRoutes() {
 
     get<Api.Page> { api ->
         val pageEntity = transaction {
-            PageEntity.find { (Pages.reference eq api.page) and (Pages.version eq api.version) }.firstOrNull()
+            PageEntity.find {
+                (Pages.project eq api.project) and (Pages.version eq api.version) and (Pages.reference eq api.page)
+            }.firstOrNull()
         } ?: return@get call.respond(HttpStatusCode.NotFound)
 
         call.respond(pageEntity.content)

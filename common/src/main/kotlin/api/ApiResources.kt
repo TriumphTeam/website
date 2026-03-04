@@ -20,6 +20,7 @@ public object Api {
     @Resource(PAGE_ROUTE)
     public data class Page(
         public val version: String,
+        public val project: String,
         public val page: String,
     )
 

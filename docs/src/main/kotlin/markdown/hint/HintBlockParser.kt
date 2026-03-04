@@ -47,21 +47,21 @@ public class HintBlockParser(
             if (fenceLength < 3) return null
 
             if (typeChar != null) fenceLength++
-            val type = HintType.fromChar(line.getOrNull(3)) ?: return null
+            val type = HintType.fromChar(line.getOrNull(3))
 
             return HintBlockParser(type, fenceLength, indent)
         }
     }
 }
 
-public fun HintType.Companion.fromChar(token: Char?): HintType? {
+public fun HintType.Companion.fromChar(token: Char?): HintType {
     if (token == null || token == ' ') return HintType.INFO
 
     return when (token) {
         'v' -> HintType.SUCCESS
         'x' -> HintType.ERROR
         '!' -> HintType.WARNING
-        else -> null
+        else -> HintType.QUOTE
     }
 }
 

@@ -3,6 +3,7 @@ package dev.triumphteam.frontend.pages.docs
 import dev.triumphteam.frontend.components.DEFAULT_BACKGROUND
 import dev.triumphteam.frontend.components.DOTTED_BACKGROUND
 import dev.triumphteam.frontend.internal.now
+import dev.triumphteam.frontend.pages.docs.components.pageContent
 import dev.triumphteam.frontend.pages.docs.components.sidebar.navigationArea
 import dev.triumphteam.frontend.pages.docs.components.sidebar.projectButtons
 import dev.triumphteam.frontend.pages.docs.components.sidebar.projectHeader
@@ -23,8 +24,7 @@ public fun FlowContent.docs(pageState: State<String>, projectData: ProjectVersio
 
         div(className = "flex flex-row gap-3 h-full") {
             sideBar(pageState, projectData)
-            content()
-            onThisPage()
+            content(pageState, projectData)
         }
     }
 }
@@ -64,17 +64,11 @@ private fun FlowContent.sideBar(pageState: State<String>, projectData: ProjectVe
     }
 }
 
-private fun FlowContent.content() {
+private fun FlowContent.content(pageState: State<String>, projectData: ProjectVersion) {
     div(className = "$DEFAULT_BACKGROUND w-full rounded-lg") {
-        div(className = "$DOTTED_BACKGROUND w-full h-full") {
-
+        div(className = "$DOTTED_BACKGROUND w-full h-full flex gap-4 p-4 overflow-auto") {
+            pageContent(pageState, projectData)
         }
-    }
-}
-
-private fun FlowContent.onThisPage() {
-    div(className = "$RESPONSIVE_BAR_POSITION $DEFAULT_BACKGROUND w-128 rounded-lg") {
-
     }
 }
 

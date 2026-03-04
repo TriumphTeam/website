@@ -232,5 +232,5 @@ public data class PlatformCondition(public val platform: String) : ComponentCond
 
 @Serializable
 public enum class HintType {
-    INFO, SUCCESS, WARNING, ERROR;
+    INFO, SUCCESS, WARNING, ERROR, QUOTE;
 }

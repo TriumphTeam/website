@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@500&display=swap');
+
+code {
+    padding: .3em !important;
+    border-radius: .3em;
+    background: #282C34;
+    color: #ABB2BF;
+    font-family: "Fira Code", monospace !important;
+}
+
+pre > code {
+    padding: 0 !important;
+    display: block;
+}
+
+code[class*="lang-"],
+pre[class*="lang-"] {
+    color: #FFA07A;
+    background: none;
+    font-family: "Fira Code", monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+@media print {
+    code[class*="lang-"],
+    pre[class*="lang-"] {
+        text-shadow: none;
+    }
+}
+
+pre[class*="lang-"],
+:not(pre) > code[class*="lang-"] {
+    background: #282C34;
+}
+
+/* Code blocks */
+pre {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+    border-radius: .5em;
+    background: #282C34;
+    counter-reset: line;
+}
+
+/* Line numbers */
+pre > code > .code-line {
+    display: block;
+    counter-increment: line;
+    position: relative;
+    padding-left: 3.5em;
+    line-height: 1.4em;
+    min-height: 1.4em;
+}
+
+pre > code > .code-line::before {
+    content: counter(line);
+    position: absolute;
+    left: 0;
+    width: 2.5em;
+    text-align: right;
+    color: #475F63;
+    opacity: 0.5;
+    user-select: none;
+    padding-right: 1em;
+    border-right: 1px solid #2E3C43;
+}
+
+pre::-webkit-scrollbar {
+    height: 7px;
+}
+
+pre::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+pre::-webkit-scrollbar-thumb {
+    background-color: #3C3E41;
+    border-radius: 25px;
+}
+
+/* Inline code */
+:not(pre) > code[class*="lang-"] {
+    padding: .15em .2em .05em;
+    border-radius: .3em;
+    border: .13em solid hsl(30, 20%, 40%);
+    box-shadow: 1px 1px .3em -.1em black inset;
+    white-space: normal;
+}
+
+/* Tokens */
+
+.token {
+    color: #A6B2C0;
+}
+
+.token.punctuation {
+    color: #A6B2C0;
+    opacity: .7;
+}
+
+.token.comment {
+    color: #59626F;
+}
+
+.token.type {
+    color: #35BBCA;
+}
+
+.token.function {
+    color: #61AEEF;
+}
+
+.token.number {
+    color: #F08080;
+}
+
+.token.constant {
+    color: #FB7BBE;
+}
+
+.token.string {
+    color: #1BDD8F;
+}
+
+.token.keyword {
+    color: #C679DD;
+}
+
+.token.label {
+    color: #0191B4;
+    font-style: italic;
+}
