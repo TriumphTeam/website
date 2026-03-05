@@ -5,6 +5,7 @@ import dev.triumphteam.frontend.api.api
 import dev.triumphteam.frontend.components.DOTTED_BACKGROUND
 import dev.triumphteam.frontend.state.fold
 import dev.triumphteam.frontend.state.rememberApiCallState
+import dev.triumphteam.frontend.state.rememberSectionsState
 import dev.triumphteam.horizon.component.functional.component
 import dev.triumphteam.horizon.html.FlowContent
 import dev.triumphteam.horizon.html.a
@@ -23,7 +24,6 @@ import dev.triumphteam.website.serializable.ProjectVersion
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
-import kotlinx.coroutines.selects.select
 
 public fun FlowContent.pageContent(pageState: State<String>, projectData: ProjectVersion) {
     component {
@@ -133,16 +133,23 @@ private fun FlowContent.tableOfContents(sections: List<PageContent>) {
         }
 
         div(className = "border-l-1 border-dark-accent") {
-            sections.forEach { section ->
-                val selected = (0..3).random() == 1
+            component {
 
-                val border = when {
-                    selected -> "border-l-3 border-(--project-color)"
-                    else -> "border-l-3 border-transparent hover:border-l-3 hover:border-(--project-color)/20"
-                }
+                val intersectedSections by rememberSectionsState()
 
-                div(className = "w-full $border -ml-[2px] px-2 py-1") {
-                    section(section, selected = selected)
+                render {
+                    sections.forEach { section ->
+                        val selected = section.id in intersectedSections
+
+                        val border = when {
+                            selected -> "border-l-3 border-(--project-color)"
+                            else -> "border-l-3 border-transparent hover:border-l-3 hover:border-(--project-color)/20"
+                        }
+
+                        div(className = "w-full $border -ml-[2px] px-2 py-1") {
+                            section(section, selected = selected)
+                        }
+                    }
                 }
             }
         }
@@ -158,7 +165,7 @@ private fun FlowContent.section(section: PageContent, selected: Boolean) {
         else -> ""
     }
 
-    div(className = "$level $color px-2 transition ease-in-out hover:text-(--project-color)") {
+    div(className = "$level $color px-2 hover:text-(--project-color)") {
         a(href = "#${section.id}") {
             text(section.name)
         }
