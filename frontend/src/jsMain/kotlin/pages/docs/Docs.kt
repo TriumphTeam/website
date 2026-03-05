@@ -13,18 +13,19 @@ import dev.triumphteam.horizon.html.div
 import dev.triumphteam.horizon.html.i
 import dev.triumphteam.horizon.state.State
 import dev.triumphteam.website.serializable.ProjectVersion
+import kotlinx.serialization.json.JsonNull.content
 
-private const val RESPONSIVE_BAR_POSITION = "fixed hidden xl:flex xl:static"
+private const val RESPONSIVE_BAR_POSITION = "hidden xl:flex xl:sticky top-0"
 private const val SIDE_BAR_SIZES = "w-screen lg:w-72 xl:min-w-60 xl:w-60 2xl:min-w-72 2xl:w-72"
-private const val SIDE_BAR_CLASSES = "flex-col gap-4 px-4 justify-center noise rounded-lg"
+private const val SIDE_BAR_CLASSES = "flex-col gap-4 px-4 justify-center noise"
 
 public fun FlowContent.docs(pageState: State<String>, projectData: ProjectVersion) {
-    div(className = "w-screen h-screen bg-darker-background p-3") {
-        style = "--project-color: ${projectData.document.color}"
+    div(className = "bg-darker-background w-screen min-h-screen") {
+        div(className = "flex flex-row gap-3 w-full min-h-full") {
+            style = "--project-color: ${projectData.document.color}"
 
-        div(className = "flex flex-row gap-3 h-full") {
             sideBar(pageState, projectData)
-            content(pageState, projectData)
+            pageContent(pageState, projectData)
         }
     }
 }
@@ -42,33 +43,24 @@ private fun FlowContent.sideBar(pageState: State<String>, projectData: ProjectVe
     // Then the openable sidebar.
     div(
         id = "sidebar-popover",
-        className = "small-screen-sidebar h-dvh open:xl:hidden bg-transparent text-default-text fixed z-[100] p-4 $SIDE_BAR_SIZES",
+        className = "small-screen-sidebar fixed h-dvh open:xl:hidden bg-transparent text-default-text fixed z-[100] p-4 $SIDE_BAR_SIZES",
     ) {
         popover = "auto"
         div(className = "absolute top-0 right-0 px-8 py-8 text-2xl") {
             button(className = "cursor-pointer") {
-                // popoverTarget = "sidebar-popover"
                 popoverTarget = "sidebar-popover"
                 popoverTargetAction = "hide"
                 i(className = "bx bx-x")
             }
         }
-        div(className = "flex $SIDE_BAR_CLASSES $DEFAULT_BACKGROUND h-full shadow-[4px_4px_12px_rgba(0,0,0,0.25)]") {
+        div(className = "flex $SIDE_BAR_CLASSES $DEFAULT_BACKGROUND h-full shadow-[4px_4px_12px_rgba(0,0,0,0.25)] rounded-lg") {
             sideBarContent(pageState, projectData, small = true)
         }
     }
 
     // The bottom part is the desktop version.
-    div(className = "$RESPONSIVE_BAR_POSITION $SIDE_BAR_SIZES $SIDE_BAR_CLASSES $DEFAULT_BACKGROUND") {
+    div(className = "$RESPONSIVE_BAR_POSITION $SIDE_BAR_SIZES $SIDE_BAR_CLASSES $DEFAULT_BACKGROUND h-screen rounded-r-lg") {
         sideBarContent(pageState, projectData, small = false)
-    }
-}
-
-private fun FlowContent.content(pageState: State<String>, projectData: ProjectVersion) {
-    div(className = "$DEFAULT_BACKGROUND w-full rounded-lg") {
-        div(className = "$DOTTED_BACKGROUND w-full h-full flex gap-4 p-4 overflow-auto") {
-            pageContent(pageState, projectData)
-        }
     }
 }
 

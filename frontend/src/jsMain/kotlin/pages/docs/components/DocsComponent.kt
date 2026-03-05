@@ -52,6 +52,9 @@ import dev.triumphteam.website.serializable.UnderlineComponent
 import kotlinx.browser.window
 
 public fun FlowTag.docsComponents(document: PageDocument) {
+    document.content.children.forEach { component ->
+        println(component)
+    }
     rootComponent(document.content)
 }
 
@@ -174,7 +177,7 @@ private fun FlowContent.hintBlock(type: HintType, children: List<DocComponent>) 
         HintType.QUOTE -> null
     }
 
-    div(className = "border-l-4 $color bg-dark-background-secondary-transparent !pl-4 !py-4 my-2 mx-2 rounded-l-sm rounded-r-md flex flex-row items-center") {
+    div(className = "border-l-4 $color bg-dark-surface-transparent !pl-4 !py-4 my-2 mx-2 rounded-l-sm rounded-r-md flex flex-row items-center") {
         if (icon != null) {
             i(className = "$icon pr-4 text-xl")
         }
@@ -254,10 +257,11 @@ private fun FlowContent.linkComponent(component: LinkComponent) {
         ) {
             childComponent(component.children)
         }
+        return
     }
 
     navigate(
-        to = "../${component.destination}",
+        to = "..${component.destination}",
         className = className,
     ) {
         childComponent(component.children)

@@ -2,6 +2,7 @@ package dev.triumphteam.frontend.pages.docs.components
 
 import dev.triumphteam.frontend.api.API_BASE_URL
 import dev.triumphteam.frontend.api.api
+import dev.triumphteam.frontend.components.DOTTED_BACKGROUND
 import dev.triumphteam.frontend.state.fold
 import dev.triumphteam.frontend.state.rememberApiCallState
 import dev.triumphteam.horizon.component.functional.component
@@ -22,6 +23,7 @@ import dev.triumphteam.website.serializable.ProjectVersion
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import kotlinx.coroutines.selects.select
 
 public fun FlowContent.pageContent(pageState: State<String>, projectData: ProjectVersion) {
     component {
@@ -64,7 +66,11 @@ private fun FlowContent.page(pageDocument: PageDocument) {
     val previous = pageDocument.previous
     val next = pageDocument.next
 
-    div(className = "flex-grow flex flex-col min-h-0 min-w-0 px-6 items-center") {
+    div(className = "$DOTTED_BACKGROUND relative flex-grow flex flex-col min-h-0 min-w-0 px-6 items-center") {
+        // Fade backgrounds to make the dots a little nicer.
+        div(className = "absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-darker-background to-transparent pointer-events-none z-10")
+        div(className = "absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-darker-background to-transparent pointer-events-none z-10")
+
         div(id = "doc-content", className = "flex-1 [&>*]:px-2 pt-12 w-full md:w-8/10") {
             h1(className = "text-4xl font-medium text-white text-center pointer-events-none") {
                 text(pageDocument.name)
@@ -80,11 +86,11 @@ private fun FlowContent.page(pageDocument: PageDocument) {
             }
 
             docsComponents(
-                 document = pageDocument,
-                 /*buildToolState = buildToolState,
-                 languageState = languageState,
-                 platformState = platformState,*/
-             )
+                document = pageDocument,
+                /*buildToolState = buildToolState,
+                languageState = languageState,
+                platformState = platformState,*/
+            )
         }
         div(className = "px-2 mt-12 pb-8 flex items-center justify-between gap-2 text-sm w-full md:w-8/10") {
             div {
@@ -118,7 +124,7 @@ private fun FlowContent.page(pageDocument: PageDocument) {
 }
 
 private fun FlowContent.tableOfContents(sections: List<PageContent>) {
-    div(className = "hidden lg:sticky lg:top-0 min-w-72 w-72 lg:flex flex-col") {
+    div(className = "hidden sticky top-0 self-start max-h-screen min-w-72 w-72 lg:flex flex-col pt-12 px-2") {
         div(className = "flex gap-1 text-lg font-bold items-center mb-2") {
             i(className = "bx bx-menu-select")
             h2(className = "text-center") {
@@ -126,9 +132,19 @@ private fun FlowContent.tableOfContents(sections: List<PageContent>) {
             }
         }
 
-        sections.forEachIndexed { index, section ->
-            val prevLevel = sections.getOrNull(index - 1)?.level
-            section(section, selected = false)
+        div(className = "border-l-1 border-dark-accent") {
+            sections.forEach { section ->
+                val selected = (0..3).random() == 1
+
+                val border = when {
+                    selected -> "border-l-3 border-(--project-color)"
+                    else -> "border-l-3 border-transparent hover:border-l-3 hover:border-(--project-color)/20"
+                }
+
+                div(className = "w-full $border -ml-[2px] px-2 py-1") {
+                    section(section, selected = selected)
+                }
+            }
         }
     }
 }
@@ -142,7 +158,7 @@ private fun FlowContent.section(section: PageContent, selected: Boolean) {
         else -> ""
     }
 
-    div(className = "$level $color border-l-1 px-2 transition ease-in-out hover:text-(--project-color)") {
+    div(className = "$level $color px-2 transition ease-in-out hover:text-(--project-color)") {
         a(href = "#${section.id}") {
             text(section.name)
         }
