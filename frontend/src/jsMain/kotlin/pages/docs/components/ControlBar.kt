@@ -8,7 +8,7 @@ import dev.triumphteam.horizon.html.span
 import dev.triumphteam.website.serializable.VersionSetting
 
 public fun FlowContent.controlBar(settings: List<VersionSetting>) {
-    div(className = "fixed left-1/2 -translate-x-1/2 bottom-6 border border-white/10 bg-dark-background/80 p-2 backdrop-blur-md rounded-lg text-dark-text-primary") {
+    div(className = "fixed left-1/2 -translate-x-1/2 bottom-6 border border-white/10 bg-dark-background/80 p-2 noise backdrop-blur-md rounded-lg text-dark-text-primary") {
         div(className = "flex justify-center items-center gap-2") {
             div(className = "flex-grow flex justify-center items-center gap-2") {
                 settings.forEach { setting ->

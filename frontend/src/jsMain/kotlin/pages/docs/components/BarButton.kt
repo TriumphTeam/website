@@ -6,7 +6,7 @@ import dev.triumphteam.horizon.html.attributes.Target
 import dev.triumphteam.horizon.html.element.ATag
 
 private const val BUTTON_CLASSES =
-    "flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 font-medium transition select-none"
+    "flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 font-medium transition select-none noise"
 
 public fun FlowContent.barButton(
     decorate: String = "bg-white/5 hover:bg-white/10 text-dark-text-primary text-sm",
