@@ -15,6 +15,7 @@ import dev.triumphteam.website.serializable.NavigationGroup
 import dev.triumphteam.website.serializable.NavigationPage
 import dev.triumphteam.website.serializable.PageContent
 import dev.triumphteam.website.serializable.PageDocument
+import dev.triumphteam.website.serializable.VersionSetting
 import dev.triumphteam.website.serializable.Repository
 import dev.triumphteam.website.serializable.VersionData
 import dev.triumphteam.website.serializable.VersionDocument
@@ -90,9 +91,9 @@ public suspend fun setupRepository(projects: File) {
                                 },
                             )
                         },
-                        platforms = version.platforms,
-                        languages = version.languages,
-                        buildTools = version.buildTools,
+                        settings = version.settings.map { (key, value) ->
+                            VersionSetting(key, value)
+                        },
                         github = version.github,
                         discord = version.discord,
                         javadocs = version.javadocs,

@@ -18,12 +18,16 @@ public data class VersionDocument(
     public val color: String,
     public val stable: Boolean,
     public val groups: List<NavigationGroup>,
-    public val platforms: List<String>,
-    public val languages: List<String>,
-    public val buildTools: List<String>,
+    public val settings: List<VersionSetting>,
     public val github: String?,
     public val discord: String?,
     public val javadocs: String?,
+)
+
+@Serializable
+public data class VersionSetting(
+    public val id: String,
+    public val values: List<String>,
 )
 
 @Serializable

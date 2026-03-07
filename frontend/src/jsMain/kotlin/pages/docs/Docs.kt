@@ -1,8 +1,8 @@
 package dev.triumphteam.frontend.pages.docs
 
 import dev.triumphteam.frontend.components.DEFAULT_BACKGROUND
-import dev.triumphteam.frontend.components.DOTTED_BACKGROUND
 import dev.triumphteam.frontend.internal.now
+import dev.triumphteam.frontend.pages.docs.components.controlBar
 import dev.triumphteam.frontend.pages.docs.components.pageContent
 import dev.triumphteam.frontend.pages.docs.components.sidebar.navigationArea
 import dev.triumphteam.frontend.pages.docs.components.sidebar.projectButtons
@@ -13,7 +13,6 @@ import dev.triumphteam.horizon.html.div
 import dev.triumphteam.horizon.html.i
 import dev.triumphteam.horizon.state.State
 import dev.triumphteam.website.serializable.ProjectVersion
-import kotlinx.serialization.json.JsonNull.content
 
 private const val RESPONSIVE_BAR_POSITION = "hidden xl:flex xl:sticky top-0"
 private const val SIDE_BAR_SIZES = "w-screen lg:w-72 xl:min-w-60 xl:w-60 2xl:min-w-72 2xl:w-72"
@@ -21,12 +20,15 @@ private const val SIDE_BAR_CLASSES = "flex-col gap-4 px-4 justify-center noise"
 
 public fun FlowContent.docs(pageState: State<String>, projectData: ProjectVersion) {
     div(className = "bg-darker-background w-screen min-h-screen") {
+        style = "--project-color: ${projectData.document.color}"
+
         div(className = "flex flex-row gap-3 w-full min-h-full") {
-            style = "--project-color: ${projectData.document.color}"
 
             sideBar(pageState, projectData)
             pageContent(pageState, projectData)
         }
+
+        controlBar(projectData.document.settings)
     }
 }
 
@@ -43,7 +45,7 @@ private fun FlowContent.sideBar(pageState: State<String>, projectData: ProjectVe
     // Then the openable sidebar.
     div(
         id = "sidebar-popover",
-        className = "small-screen-sidebar fixed h-dvh open:xl:hidden bg-transparent text-default-text fixed z-[100] p-4 $SIDE_BAR_SIZES",
+        className = "small-screen-sidebar fixed h-dvh open:xl:hidden bg-transparent text-dark-text-secondary fixed z-[100] p-4 $SIDE_BAR_SIZES",
     ) {
         popover = "auto"
         div(className = "absolute top-0 right-0 px-8 py-8 text-2xl") {

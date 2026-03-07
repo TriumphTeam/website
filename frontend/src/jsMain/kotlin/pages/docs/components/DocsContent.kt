@@ -72,7 +72,7 @@ private fun FlowContent.page(pageDocument: PageDocument) {
         div(className = "absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-darker-background to-transparent pointer-events-none z-10")
 
         div(id = "doc-content", className = "flex-1 [&>*]:px-2 pt-12 w-full md:w-8/10") {
-            h1(className = "text-4xl font-medium text-white text-center pointer-events-none") {
+            h1(className = "text-4xl font-medium text-dark-text-primary text-center pointer-events-none") {
                 text(pageDocument.name)
             }
             h2(className = "text-lg text-center") {
@@ -125,14 +125,14 @@ private fun FlowContent.page(pageDocument: PageDocument) {
 
 private fun FlowContent.tableOfContents(sections: List<PageContent>) {
     div(className = "hidden sticky top-0 self-start max-h-screen min-w-72 w-72 lg:flex flex-col pt-12 px-2") {
-        div(className = "flex gap-1 text-lg font-bold items-center mb-2") {
+        div(className = "flex gap-1 text-lg font-bold items-center mb-2 text-dark-text-primary") {
             i(className = "bx bx-menu-select")
             h2(className = "text-center") {
                 text("On this page")
             }
         }
 
-        div(className = "border-l-1 border-dark-accent") {
+        div(className = "border-l-1 border-dark-surface") {
             component {
 
                 val intersectedSections by rememberSectionsState()

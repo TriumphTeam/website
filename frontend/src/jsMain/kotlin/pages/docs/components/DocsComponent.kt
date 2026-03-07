@@ -52,9 +52,6 @@ import dev.triumphteam.website.serializable.UnderlineComponent
 import kotlinx.browser.window
 
 public fun FlowTag.docsComponents(document: PageDocument) {
-    document.content.children.forEach { component ->
-        println(component)
-    }
     rootComponent(document.content)
 }
 
@@ -130,7 +127,7 @@ private fun FlowContent.headerComponent(component: HeaderComponent) {
     div(id = "doc-section", className = "group py-4") {
         a(
             href = "#${component.id}",
-            className = "$textSize inline-flex font-medium text-white",
+            className = "$textSize inline-flex font-medium text-dark-text-primary",
         ) {
             span(id = "hash", className = "absolute -ml-6 opacity-0 group-hover:opacity-20 transition-opacity") {
                 text("#")

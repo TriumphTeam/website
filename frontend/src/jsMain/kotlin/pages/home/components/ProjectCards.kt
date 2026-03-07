@@ -41,7 +41,7 @@ public fun FlowContent.projects() {
 
 private fun FlowContent.projectBadge(project: Project?) {
     val classes =
-        "group flex items-center gap-3 px-4 py-2.5 bg-dark-surface/60 backdrop-blur-sm rounded-md border border-dark-accent hover:border-primary/50 hover:scale-105 transition-all duration-200 hover:shadow-lg hover:shadow-primary/10"
+        "group flex items-center gap-3 px-4 py-2.5 bg-dark-surface/60 backdrop-blur-sm rounded-md border border-dark-surface hover:border-primary/50 hover:scale-105 transition-all duration-200 hover:shadow-lg hover:shadow-primary/10"
 
     if (project == null) {
         div(className = "$classes skeleton-shimmer h-8 w-32")
@@ -50,14 +50,14 @@ private fun FlowContent.projectBadge(project: Project?) {
 
     navigate(
         to = "/docs/${project.id}/introduction",
-        className = "group flex items-center gap-3 px-4 py-2.5 bg-dark-surface/60 backdrop-blur-sm rounded-md border border-dark-accent hover:border-primary/50 hover:scale-105 transition-all duration-200 hover:shadow-lg hover:shadow-primary/10",
+        className = "group flex items-center gap-3 px-4 py-2.5 bg-dark-surface/60 backdrop-blur-sm rounded-md border border-dark-surface hover:border-primary/50 hover:scale-105 transition-all duration-200 hover:shadow-lg hover:shadow-primary/10",
     ) {
         img(
             className = "w-6 h-6 object-contain",
             src = "$API_BASE_URL/assets/${project.id}/icon.png",
             alt = "${project.id} logo",
         )
-        span(className = "text-white/80 group-hover:text-white text-sm font-medium uppercase transition-colors duration-200") {
+        span(className = "text-dark-text-primary/80 group-hover:text-dark-text-primary text-sm font-medium uppercase transition-colors duration-200") {
             text(project.name)
         }
     }

@@ -20,7 +20,7 @@ public fun FlowContent.dropdown(id: String, anchor: String, children: FlowConten
 public fun FlowContent.dropdownItem(text: String, destination: String) {
     navigate(
         to = destination,
-        className = "px-3 py-1.5 rounded-md text-sm text-white/80 hover:text-white hover:bg-(--project-color) cursor-pointer transition duration-200 ease-in-out",
+        className = "px-3 py-1.5 rounded-md text-sm text-dark-text-primary/80 hover:text-dark-text-primary hover:bg-(--project-color) cursor-pointer transition duration-200 ease-in-out",
     ) {
         text(text)
     }

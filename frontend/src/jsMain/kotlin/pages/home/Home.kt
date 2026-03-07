@@ -29,11 +29,11 @@ public fun FlowContent.home() {
                         )
                     }
 
-                    h1(className = "text-dark-text text-center text-6xl lg:text-8xl font-bold uppercase leading-tight") {
+                    h1(className = "text-dark-text-primary text-center text-6xl lg:text-8xl font-bold uppercase leading-tight") {
                         text("Triumph Team")
                     }
 
-                    h2(className = "text-light-text/80 text-center text-lg lg:text-xl font-light tracking-wide max-w-2xl px-4") {
+                    h2(className = "text-dark-text-primary/80 text-center text-lg lg:text-xl font-light tracking-wide max-w-2xl px-4") {
                         text("Making libraries for your block game projects.")
                     }
 
@@ -56,7 +56,7 @@ public fun FlowContent.home() {
         div(className = "max-w-7xl mx-auto px-6 py-8") {
             div(className = "flex justify-center items-center") {
                 // Copyright
-                p(className = "text-white/50 text-sm") {
+                p(className = "text-dark-text-primary/50 text-sm") {
                     text("Copyright © 2020-${now.getFullYear()}, TriumphTeam. All Rights Reserved.")
                 }
             }

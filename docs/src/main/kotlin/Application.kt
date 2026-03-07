@@ -98,9 +98,11 @@ public suspend fun main(args: Array<String>) {
 
     val inputFiles = inputPath.listFiles() ?: emptyArray()
 
-    val repoSettings = HoconSerializer.from<RepoSettings>(inputFiles.findFile(SETTINGS_CONFIG_FILE_NAME) {
-        "Found repository without a '$SETTINGS_CONFIG_FILE_NAME' file!"
-    })
+    val repoSettings = HoconSerializer.from<RepoSettings>(
+        inputFiles.findFile(SETTINGS_CONFIG_FILE_NAME) {
+            "Found repository without a '$SETTINGS_CONFIG_FILE_NAME' file!"
+        },
+    )
 
     // Navigate through the file structure and parse all projects
     val projects = Projects(
@@ -120,7 +122,7 @@ public suspend fun main(args: Array<String>) {
                 ),
                 icon = files.findFile(ICON_FILE_NAME) {
                     "Found project folder without an '$ICON_FILE_NAME'. Please make sure to add an icon for the project!"
-                }
+                },
             ).also {
                 logger.info("Parsed project '${it.project.id}', with versions: ${it.project.versions.map(Version::reference)}!")
             }
@@ -172,13 +174,16 @@ public suspend fun main(args: Array<String>) {
         setBody(
             MultiPartFormDataContent(
                 formData {
-                    append("zip", zip.file.readBytes(), Headers.build {
-                        append(HttpHeaders.ContentType, "multipart/form-data")
-                        append(HttpHeaders.ContentDisposition, "filename=\"projects.zip\"")
-                    })
+                    append(
+                        "zip", zip.file.readBytes(),
+                        Headers.build {
+                            append(HttpHeaders.ContentType, "multipart/form-data")
+                            append(HttpHeaders.ContentDisposition, "filename=\"projects.zip\"")
+                        },
+                    )
                 },
-                boundary = "WebAppBoundary"
-            )
+                boundary = "WebAppBoundary",
+            ),
         )
         onUpload { bytesSentTotal, contentLength ->
             logger.info("Sent $bytesSentTotal bytes from $contentLength")
@@ -258,9 +263,7 @@ private fun parseVersions(versions: List<File>, rootDir: File, repoSettings: Rep
             reference = versionConfig.reference,
             stable = versionConfig.stable,
             default = versionConfig.default,
-            platforms = versionConfig.platforms,
-            languages = versionConfig.languages,
-            buildTools = versionConfig.buildTools,
+            settings = versionConfig.settings,
             github = versionConfig.github,
             discord = versionConfig.discord,
             javadocs = versionConfig.javadocs,

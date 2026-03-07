@@ -15,7 +15,7 @@ import dev.triumphteam.website.serializable.VersionData
 private const val VERSION_DROPDOWN_ID = "version-dropdown"
 
 public fun FlowContent.projectHeader(projectData: ProjectVersion, small: Boolean) {
-    div(className = "grid grid-cols-1 w-full justify-items-center gap-4 pt-6 select-none") {
+    div(className = "grid grid-cols-1 w-full justify-items-center gap-4 pt-6 select-none text-dark-text-primary") {
         div(className = "flex items-center") {
             navigate(to = "/") {
                 img(

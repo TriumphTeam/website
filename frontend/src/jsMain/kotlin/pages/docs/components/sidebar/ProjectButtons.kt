@@ -1,5 +1,6 @@
 package dev.triumphteam.frontend.pages.docs.components.sidebar
 
+import dev.triumphteam.frontend.pages.docs.components.barButton
 import dev.triumphteam.horizon.html.FlowContent
 import dev.triumphteam.horizon.html.a
 import dev.triumphteam.horizon.html.attributes.Target
@@ -15,24 +16,17 @@ public fun FlowContent.projectButtons(discord: String?, github: String?, javadoc
 }
 
 private fun FlowContent.projectButton(tooltip: String, icon: String, link: String?) {
-    val isEnabled = link != null
-    val baseClassName = "w-1/3 flex justify-center items-center bg-dark-surface rounded-md p-2"
-
-    if (!isEnabled) {
-        div(className = "$baseClassName text-white/10") {
-            i(className = icon)
-        }
-        return
+    val classes = when {
+        link != null -> "bg-dark-surface hover:bg-(--project-color) text-dark-text-primary"
+        else -> "bg-dark-surface/60 text-dark-text-primary/10"
     }
 
-    a(
-        href = link,
-        target = Target.BLANK,
-        rel = "noopener noreferrer",
-        className = "$baseClassName transition duration-300 ease-in-out hover:bg-(--project-color)",
-        attributes = mutableMapOf("data-tooltip" to tooltip),
+    barButton(
+        decorate = "w-1/3 p-2 $classes",
+        tooltip = if (link != null) tooltip else null,
+        link = link,
+        small = true,
     ) {
-        className = "$baseClassName transition duration-300 ease-in-out hover:bg-(--project-color)"
         i(className = icon)
     }
 }

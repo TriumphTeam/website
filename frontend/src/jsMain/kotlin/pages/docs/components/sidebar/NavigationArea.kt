@@ -11,7 +11,7 @@ import dev.triumphteam.website.serializable.VersionDocument
 
 public fun FlowContent.navigationArea(pageState: State<String>, document: VersionDocument) {
     div(className = "px-4 overflow-y-auto overflow-x-hidden overscroll-contain grow") {
-        div(className = "grid grid-cols-1 gap-10") {
+        div(className = "grid grid-cols-1 gap-10 text-dark-text-secondary") {
             document.groups.forEach { group ->
                 navigationGroup(
                     pageState = pageState,
@@ -25,7 +25,7 @@ public fun FlowContent.navigationArea(pageState: State<String>, document: Versio
 
 private fun FlowContent.navigationGroup(pageState: State<String>, text: String, pages: List<NavigationPage>) {
     div {
-        h1(className = "text-white text-2xl xl:text-lg 2xl:text-xl font-bold") {
+        h1(className = "text-dark-text-primary text-2xl xl:text-lg 2xl:text-xl font-bold") {
             text(text)
         }
         component {

@@ -20,15 +20,12 @@ public fun main() {
             path = "docs/:$VERSION_PROJECT_VARIABLE?/:$PROJECT_PAGE_VARIABLE?/:$PAGE_VARIABLE?",
             routeProvider = { scope, _, variables -> provideDocsRoute(scope, variables) },
         ) { route ->
-            println("is it triggering a full re-render?")
-
             component {
                 // The docs page directly depends on the version and project.
                 // If either of them changes, we need to do a full re-render.
                 val projectResult by remember(route.projectState)
 
                 render {
-                    println("rendering docs")
                     projectResult.fold(
                         onSuccess = {
                             docs(route.pageState, data)
