@@ -4,17 +4,20 @@ import dev.triumphteam.horizon.state.AbstractState
 import dev.triumphteam.horizon.state.MutableState
 import dev.triumphteam.horizon.state.policy.StructureEqualityPolicy
 import kotlinx.browser.localStorage
-import kotlinx.browser.window
 import kotlin.reflect.KProperty
 
-public class LocalStorageState(private val key: String, public val onUpdate: (value: String) -> Unit) :
+public class LocalStorageState(private val key: String, values: List<String>) :
     AbstractState<String>(), MutableState<String> {
 
     private val mutationPolicy = StructureEqualityPolicy<String>()
-    private val media = if (window.matchMedia("(prefers-color-scheme: dark)").matches) "dark" else "light"
     private val storageValue = localStorage.getItem(key)
+    private val firstValue = values.first()
 
-    private var value: String = storageValue ?: media
+    private var value: String = when (storageValue) {
+        null -> firstValue
+        in values -> storageValue
+        else -> firstValue
+    }
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): String {
         return value
@@ -31,16 +34,12 @@ public class LocalStorageState(private val key: String, public val onUpdate: (va
 
         this.value = value
         localStorage.setItem(key, value) // Also write to storage.
-        onUpdate(value)
         update()
         return true
     }
 }
 
-public inline fun localStorageState(
-    key: String,
-    noinline onUpdate: (value: String) -> Unit,
-): MutableState<String> {
-    return LocalStorageState(key, onUpdate)
+public inline fun localStorageState(key: String, values: List<String>): MutableState<String> {
+    return LocalStorageState(key, values)
 }
 

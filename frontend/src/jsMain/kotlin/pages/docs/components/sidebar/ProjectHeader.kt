@@ -45,14 +45,14 @@ public fun FlowContent.versionComponent(project: String, versions: List<VersionD
     if (current == null) return
 
     button(
-        className = "version-dropdown-anchor relative flex items-center justify-center rounded-sm bg-(--project-color) px-3 py-1 text-center text-md cursor-$cursor",
+        className = "flex items-center justify-center rounded-sm bg-(--project-color) px-3 py-1 text-center text-md cursor-$cursor",
     ) {
         popoverTarget = versionDropdownId
         text(current.reference)
     }
 
-    dropdown(id = versionDropdownId, anchor = "version-dropdown") {
-        versions.forEach { version ->
+    dropdown(id = versionDropdownId) {
+        versions.filterNot { it.current }.forEach { version ->
             dropdownItem(
                 text = version.reference,
                 destination = "/docs/${version.reference}/$project/introduction",

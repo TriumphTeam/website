@@ -7,12 +7,14 @@ import dev.triumphteam.frontend.pages.docs.components.pageContent
 import dev.triumphteam.frontend.pages.docs.components.sidebar.navigationArea
 import dev.triumphteam.frontend.pages.docs.components.sidebar.projectButtons
 import dev.triumphteam.frontend.pages.docs.components.sidebar.projectHeader
+import dev.triumphteam.frontend.state.localStorageState
 import dev.triumphteam.horizon.html.FlowContent
 import dev.triumphteam.horizon.html.button
 import dev.triumphteam.horizon.html.div
 import dev.triumphteam.horizon.html.i
 import dev.triumphteam.horizon.state.State
 import dev.triumphteam.website.serializable.ProjectVersion
+import dev.triumphteam.website.serializable.SettingValue
 import org.w3c.dom.Element
 
 private const val RESPONSIVE_BAR_POSITION = "hidden xl:flex xl:sticky top-0"
@@ -20,6 +22,10 @@ private const val SIDE_BAR_SIZES = "w-screen lg:w-72 xl:min-w-60 xl:w-60 2xl:min
 private const val SIDE_BAR_CLASSES = "flex-col gap-4 px-4 justify-center noise"
 
 public fun FlowContent.docs(pageState: State<String>, projectData: ProjectVersion) {
+    val settingStates = projectData.document.settings.associate { setting ->
+        setting.id to localStorageState(setting.id, setting.values.map(SettingValue::id))
+    }
+
     div(className = "bg-darker-background w-screen min-h-screen") {
         style = "--project-color: ${projectData.document.color}"
 
@@ -29,7 +35,7 @@ public fun FlowContent.docs(pageState: State<String>, projectData: ProjectVersio
             pageContent(pageState, projectData)
         }
 
-        controlBar(projectData.document.settings)
+        controlBar(projectData.document.settings, settingStates)
     }
 }
 

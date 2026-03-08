@@ -27,7 +27,14 @@ public data class VersionDocument(
 @Serializable
 public data class VersionSetting(
     public val id: String,
-    public val values: List<String>,
+    public val name: String,
+    public val values: List<SettingValue>,
+)
+
+@Serializable
+public data class SettingValue(
+    public val id: String,
+    public val name: String,
 )
 
 @Serializable

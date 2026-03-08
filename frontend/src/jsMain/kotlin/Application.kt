@@ -20,6 +20,7 @@ public fun main() {
             path = "docs/:$VERSION_PROJECT_VARIABLE?/:$PROJECT_PAGE_VARIABLE?/:$PAGE_VARIABLE?",
             routeProvider = { scope, _, variables -> provideDocsRoute(scope, variables) },
         ) { route ->
+
             component {
                 // The docs page directly depends on the version and project.
                 // If either of them changes, we need to do a full re-render.

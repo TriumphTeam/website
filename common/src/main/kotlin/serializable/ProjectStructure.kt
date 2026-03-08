@@ -19,7 +19,7 @@ public data class Version(
     public val stable: Boolean,
     public val default: Boolean,
     public val groups: List<Group>,
-    public val settings: Map<String, List<String>>,
+    public val settings: List<VersionSetting>,
     public val github: String?,
     public val discord: String?,
     public val javadocs: String?,

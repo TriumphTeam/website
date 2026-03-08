@@ -3,16 +3,33 @@ package dev.triumphteam.frontend.components
 import dev.triumphteam.horizon.html.FlowContent
 import dev.triumphteam.horizon.html.TagMarker
 import dev.triumphteam.horizon.html.div
+import dev.triumphteam.horizon.html.span
 import dev.triumphteam.horizon.router.navigate
 
 @TagMarker
-public fun FlowContent.dropdown(id: String, anchor: String, children: FlowContent.() -> Unit) {
+public fun FlowContent.dropdown(
+    id: String,
+    decorate: String = "",
+    title: String? = "version",
+    children: FlowContent.() -> Unit,
+) {
     div(
         id = id,
-        className = "$anchor open:flex flex-col bg-dark-surface rounded-lg p-2 mt-2 shadow-lg border border-white/10 gap-1",
+        className = "$decorate dropdown open:flex items-center justify-center hidden flex-col min-w-32 overflow-hidden rounded-xl border border-white/10 bg-dark-surface/95 py-2 mt-2 shadow-xl backdrop-blur-md",
     ) {
         popover = "auto"
-        children()
+
+        if (title != null) {
+            div(className = "py-1 px-2 mb-1 border-b border-white/10 text-center") {
+                span(className = "text-xs font-semibold uppercase tracking-wide text-dark-text-primary/50") {
+                    text(title)
+                }
+            }
+        }
+
+        div(className = "flex flex-col items-center justify-center text-center gap-1 w-full") {
+            children()
+        }
     }
 }
 
@@ -20,7 +37,7 @@ public fun FlowContent.dropdown(id: String, anchor: String, children: FlowConten
 public fun FlowContent.dropdownItem(text: String, destination: String) {
     navigate(
         to = destination,
-        className = "px-3 py-1.5 rounded-md text-sm text-dark-text-primary/80 hover:text-dark-text-primary hover:bg-(--project-color) cursor-pointer transition duration-200 ease-in-out",
+        className = "w-full p-2 text-sm font-medium text-dark-text-primary/80 hover:text-dark-text-primary hover:bg-(--project-color) cursor-pointer transition",
     ) {
         text(text)
     }

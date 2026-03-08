@@ -1,9 +1,7 @@
 package dev.triumphteam.frontend.pages.docs.components.sidebar
 
-import dev.triumphteam.frontend.pages.docs.components.barButton
+import dev.triumphteam.frontend.pages.docs.components.barLink
 import dev.triumphteam.horizon.html.FlowContent
-import dev.triumphteam.horizon.html.a
-import dev.triumphteam.horizon.html.attributes.Target
 import dev.triumphteam.horizon.html.div
 import dev.triumphteam.horizon.html.i
 
@@ -21,7 +19,7 @@ private fun FlowContent.projectButton(tooltip: String, icon: String, link: Strin
         else -> "bg-dark-surface/60 text-dark-text-primary/10"
     }
 
-    barButton(
+    barLink(
         decorate = "w-1/3 p-2 $classes",
         tooltip = if (link != null) tooltip else null,
         link = link,

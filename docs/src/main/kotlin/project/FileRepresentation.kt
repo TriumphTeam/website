@@ -1,5 +1,6 @@
 package dev.triumphteam.website.docs.project
 
+import dev.triumphteam.website.serializable.VersionSetting
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,7 +18,7 @@ public data class VersionConfig(
     public val reference: String,
     public val stable: Boolean = true,
     public val default: Boolean = false,
-    public val settings: Map<String, List<String>>,
+    public val settings: List<VersionSetting>,
     public val github: String? = null,
     public val discord: String? = null,
     public val javadocs: String? = null,

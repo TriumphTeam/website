@@ -4,7 +4,10 @@ import dev.triumphteam.frontend.components.DOTTED_BACKGROUND
 import dev.triumphteam.frontend.components.simpleButton
 import dev.triumphteam.frontend.internal.now
 import dev.triumphteam.frontend.pages.home.components.projects
+import dev.triumphteam.horizon.component.functional.component
 import dev.triumphteam.horizon.html.FlowContent
+import dev.triumphteam.horizon.html.b
+import dev.triumphteam.horizon.html.button
 import dev.triumphteam.horizon.html.div
 import dev.triumphteam.horizon.html.footer
 import dev.triumphteam.horizon.html.h1
@@ -43,6 +46,26 @@ public fun FlowContent.home() {
                         }
                         simpleButton {
                             i(className = "bxl bx-github")
+                        }
+                    }
+
+                    component {
+
+                        var isOpen by remember(false)
+
+                        render {
+                            button {
+                                onClick = {
+                                    isOpen = !isOpen
+                                }
+                                text("Click me")
+                            }
+
+                            val openClass = if (isOpen) "test-open" else "test-closed"
+
+                            div(className = "$openClass absolute w-32 h-32 bg-red-400 test") {
+                               text("dropdown")
+                            }
                         }
                     }
 

@@ -91,9 +91,7 @@ public suspend fun setupRepository(projects: File) {
                                 },
                             )
                         },
-                        settings = version.settings.map { (key, value) ->
-                            VersionSetting(key, value)
-                        },
+                        settings = version.settings,
                         github = version.github,
                         discord = version.discord,
                         javadocs = version.javadocs,

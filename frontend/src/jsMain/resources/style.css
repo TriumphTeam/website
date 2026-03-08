@@ -117,10 +117,13 @@ p:empty {
 }
 
 .version-dropdown {
-    position: absolute;
     position-anchor: implicit;
     top: anchor(bottom);
     justify-self: anchor-center;
+}
+
+.dropdown {
+    position: absolute;
 
     transform-origin: top center;
     transform: scaleY(0);
@@ -130,7 +133,7 @@ p:empty {
     transition-behavior: allow-discrete;
 }
 
-.version-dropdown:popover-open {
+.dropdown:popover-open {
     transform: scaleY(1);
     opacity: 1;
 
@@ -174,4 +177,24 @@ p:empty {
     @starting-style {
         transform: translateX(-100%);
     }
+}
+
+.setting-dropdown {
+    top: anchor(top);
+    justify-self: anchor-center;
+    translate: 0 calc(-100% - 8px);
+}
+
+.test {
+    transition: transform 0.5s var(--timing-function), opacity 0.1s linear;
+}
+
+.test-open {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.test-closed {
+    transform: scale(0);
+    opacity: 0;
 }
