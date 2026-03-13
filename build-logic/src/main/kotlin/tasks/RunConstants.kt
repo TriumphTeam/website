@@ -74,6 +74,11 @@ val RUN_DOCS_UPLOAD = """
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="RunDocsUpload" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
+      <option name="env">
+        <map>
+          <entry key="INPUT_DIR" value="../data" />
+        </map>
+      </option>
       <option name="executionName" />
       <option name="externalProjectPath" value="${'$'}PROJECT_DIR$/docs" />
       <option name="externalSystemIdString" value="GRADLE" />
@@ -84,10 +89,9 @@ val RUN_DOCS_UPLOAD = """
       <option name="taskNames">
         <list>
           <option value="run" />
-          <option value="--args=&quot;-i ../data&quot;" />
         </list>
       </option>
-      <option name="vmOptions" value="" />
+      <option name="vmOptions" />
     </ExternalSystemSettings>
     <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
     <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>

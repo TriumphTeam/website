@@ -77,20 +77,32 @@ private val logger: Logger = LoggerFactory.getLogger("docs")
 
 public suspend fun main(args: Array<String>) {
 
+    val environmentPath = System.getenv("INPUT_DIR")
+
     val options = DefaultParser().parse(
         Options().apply {
-            addOption(Option.builder("i").longOpt("input").hasArg().required().build())
+            addOption(Option.builder("i").longOpt("input").hasArg().build())
             //addOption(Option.builder("b").longOpt("bearer").hasArg().required().build())
             //addOption(Option.builder("u").longOpt("url").hasArg().required().build())
         },
         args,
     )
 
-    println("DEBUG ARGS: ${args.toList()} -> ${Path(options.getOptionValue("i")).toFile().absolutePath}")
     // Grab paths to work with
-    val inputPath = Path(options.getOptionValue("i")).toFile().also { file ->
-        if (!file.isDirectory()) error("Input path is not a valid directory!")
+    val inputPath = when {
+        environmentPath != null -> Path(environmentPath)
+        else -> Path(
+            requireNotNull(options.getOptionValue("i")) {
+                "Could not find input path! Please provide it with the -i flag!"
+            },
+        )
+    }.toFile()
+
+    require(inputPath.exists() && inputPath.isDirectory) {
+        "Input path '${inputPath.absolutePath}' does not exist or is not a directory!"
     }
+
+    logger.info("Using input path: ${inputPath.absolutePath}")
 
     val bearer = "bearer" //options.getOptionValue("b")
     val url = "http://127.0.0.1:8001" //options.getOptionValue("u")
