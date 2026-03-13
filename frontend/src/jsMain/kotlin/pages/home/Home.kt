@@ -6,7 +6,6 @@ import dev.triumphteam.frontend.internal.now
 import dev.triumphteam.frontend.pages.home.components.projects
 import dev.triumphteam.horizon.component.functional.component
 import dev.triumphteam.horizon.html.FlowContent
-import dev.triumphteam.horizon.html.b
 import dev.triumphteam.horizon.html.button
 import dev.triumphteam.horizon.html.div
 import dev.triumphteam.horizon.html.footer
@@ -61,9 +60,9 @@ public fun FlowContent.home() {
                                 text("Click me")
                             }
 
-                            val openClass = if (isOpen) "test-open" else "test-closed"
+                            val openClass = if (isOpen) "dropdown-open" else "dropdown-closed"
 
-                            div(className = "$openClass absolute w-32 h-32 bg-red-400 test") {
+                            div(className = "$openClass absolute w-32 h-32 bg-red-400 dropdown") {
                                text("dropdown")
                             }
                         }

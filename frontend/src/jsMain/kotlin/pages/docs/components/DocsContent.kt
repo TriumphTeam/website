@@ -16,27 +16,37 @@ import dev.triumphteam.horizon.html.i
 import dev.triumphteam.horizon.html.img
 import dev.triumphteam.horizon.html.span
 import dev.triumphteam.horizon.router.navigate
+import dev.triumphteam.horizon.state.MutableState
 import dev.triumphteam.horizon.state.State
 import dev.triumphteam.website.serializable.PAGE_ROUTE
 import dev.triumphteam.website.serializable.PageContent
 import dev.triumphteam.website.serializable.PageDocument
 import dev.triumphteam.website.serializable.ProjectVersion
+import dev.triumphteam.website.serializable.SettingValue
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 
-public fun FlowContent.pageContent(pageState: State<String>, projectData: ProjectVersion) {
+public fun FlowContent.pageContent(
+    pageState: State<String>,
+    projectData: ProjectVersion,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
     component {
 
         val page by remember(pageState)
 
         render {
-            content(page, projectData)
+            content(page, projectData, settingStates)
         }
     }
 }
 
-private fun FlowContent.content(page: String, projectData: ProjectVersion) {
+private fun FlowContent.content(
+    page: String,
+    projectData: ProjectVersion,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
     component {
 
         val result by rememberApiCallState {
@@ -50,7 +60,7 @@ private fun FlowContent.content(page: String, projectData: ProjectVersion) {
         render {
             result.fold(
                 onSuccess = {
-                    page(pageDocument = data)
+                    page(pageDocument = data, settingStates = settingStates)
                     tableOfContents(sections = data.sections)
                 },
                 onWaiting = {
@@ -61,7 +71,7 @@ private fun FlowContent.content(page: String, projectData: ProjectVersion) {
     }
 }
 
-private fun FlowContent.page(pageDocument: PageDocument) {
+private fun FlowContent.page(pageDocument: PageDocument, settingStates: Map<String, MutableState<SettingValue>>) {
     val banner = pageDocument.banner
     val previous = pageDocument.previous
     val next = pageDocument.next
@@ -87,9 +97,7 @@ private fun FlowContent.page(pageDocument: PageDocument) {
 
             docsComponents(
                 document = pageDocument,
-                /*buildToolState = buildToolState,
-                languageState = languageState,
-                platformState = platformState,*/
+                settingStates = settingStates,
             )
         }
         div(className = "px-2 mt-12 pb-8 flex items-center justify-between gap-2 text-sm w-full md:w-8/10") {

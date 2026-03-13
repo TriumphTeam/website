@@ -86,6 +86,7 @@ public suspend fun main(args: Array<String>) {
         args,
     )
 
+    println("DEBUG ARGS: ${args.toList()} -> ${Path(options.getOptionValue("i")).toFile().absolutePath}")
     // Grab paths to work with
     val inputPath = Path(options.getOptionValue("i")).toFile().also { file ->
         if (!file.isDirectory()) error("Input path is not a valid directory!")

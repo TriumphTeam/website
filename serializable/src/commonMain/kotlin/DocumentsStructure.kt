@@ -219,27 +219,19 @@ public data class HintComponent(
 
 @Serializable
 @SerialName(CONDITIONAL_COMPONENT_TYPE)
-public data class ConditionalComponent(public val condition: ComponentCondition, public val value: DocComponent) :
-    DocComponent
-
-public const val LANGUAGE_CONDITION_TYPE: String = "language"
-public const val BUILDTOOL_CONDITION_TYPE: String = "buildtool"
-public const val PLATFORM_CONDITION_TYPE: String = "platform"
+public data class ConditionalComponent(public val conditions: List<Conditional>) : DocComponent
 
 @Serializable
-public sealed interface ComponentCondition
+public data class Conditional(
+    public val condition: Condition,
+    public val value: DocComponent,
+)
 
 @Serializable
-@SerialName(LANGUAGE_CONDITION_TYPE)
-public data class LanguageCondition(public val language: String) : ComponentCondition
-
-@Serializable
-@SerialName(BUILDTOOL_CONDITION_TYPE)
-public data class BuildToolCondition(public val buildTool: String) : ComponentCondition
-
-@Serializable
-@SerialName(PLATFORM_CONDITION_TYPE)
-public data class PlatformCondition(public val platform: String) : ComponentCondition
+public data class Condition(
+    public val id: String,
+    public val value: String,
+)
 
 @Serializable
 public enum class HintType {

@@ -10,6 +10,7 @@ import dev.triumphteam.website.serializable.BoldComponent
 import dev.triumphteam.website.serializable.BulletListComponent
 import dev.triumphteam.website.serializable.CodeBlockComponent
 import dev.triumphteam.website.serializable.CodeComponent
+import dev.triumphteam.website.serializable.Conditional
 import dev.triumphteam.website.serializable.ConditionalComponent
 import dev.triumphteam.website.serializable.DocComponent
 import dev.triumphteam.website.serializable.HardLineBreakComponent
@@ -153,10 +154,14 @@ public class MarkdownRenderer(private val replacements: Map<String, Replacement>
         return when (replacement) {
             is Replacement.Raw -> parseMarkdown(replacement.content)
             is Replacement.Conditional -> ConditionalComponent(
-                condition = replacement.condition,
-                value = when (val replacementValue = replacement.value) {
-                    is Value.Raw -> parseMarkdown(replacementValue.value)
-                    is Value.Replacement -> replace(replacementValue.identifier)
+                conditions = replacement.conditions.map { condition ->
+                    Conditional(
+                        condition = condition.condition,
+                        value = when (val conditionalValue = condition.value) {
+                            is Value.Raw -> parseMarkdown(conditionalValue.value)
+                            is Value.File -> replace(conditionalValue.identifier)
+                        },
+                    )
                 },
             )
         }

@@ -1,7 +1,7 @@
 package dev.triumphteam.frontend.pages.docs.components.sidebar
 
 import dev.triumphteam.frontend.api.API_BASE_URL
-import dev.triumphteam.frontend.components.dropdown
+import dev.triumphteam.frontend.components.dropdownComponent
 import dev.triumphteam.frontend.components.dropdownItem
 import dev.triumphteam.horizon.html.FlowContent
 import dev.triumphteam.horizon.html.button
@@ -12,9 +12,7 @@ import dev.triumphteam.horizon.router.navigate
 import dev.triumphteam.website.serializable.ProjectVersion
 import dev.triumphteam.website.serializable.VersionData
 
-private const val VERSION_DROPDOWN_ID = "version-dropdown"
-
-public fun FlowContent.projectHeader(projectData: ProjectVersion, small: Boolean) {
+public fun FlowContent.projectHeader(projectData: ProjectVersion) {
     div(className = "grid grid-cols-1 w-full justify-items-center gap-4 pt-6 select-none text-dark-text-primary") {
         div(className = "flex items-center") {
             navigate(to = "/") {
@@ -31,27 +29,31 @@ public fun FlowContent.projectHeader(projectData: ProjectVersion, small: Boolean
                     text(projectData.name)
                 }
             }
-            versionComponent(project = projectData.project, versions = projectData.document.versions, small = small)
+            versionComponent(project = projectData.project, versions = projectData.document.versions)
         }
     }
 }
 
-public fun FlowContent.versionComponent(project: String, versions: List<VersionData>, small: Boolean) {
+public fun FlowContent.versionComponent(project: String, versions: List<VersionData>) {
     val isSingular = versions.size <= 1
     val cursor = if (isSingular) "default" else "pointer"
-    val versionDropdownId = if (small) "$VERSION_DROPDOWN_ID-small" else VERSION_DROPDOWN_ID
     val current = versions.find { it.current }
 
     if (current == null) return
 
-    button(
-        className = "flex items-center justify-center rounded-sm bg-(--project-color) px-3 py-1 text-center text-md cursor-$cursor",
+    dropdownComponent(
+        id = "version-dropdown",
+        title = "Version",
+        decorate = "mt-11",
+        button = { openState ->
+            button(
+                className = "flex items-center justify-center rounded-sm bg-(--project-color) px-3 py-1 text-center text-md cursor-$cursor",
+            ) {
+                onClick = { openState.set(!openState.get()) }
+                text(current.reference)
+            }
+        },
     ) {
-        popoverTarget = versionDropdownId
-        text(current.reference)
-    }
-
-    dropdown(id = versionDropdownId) {
         versions.filterNot { it.current }.forEach { version ->
             dropdownItem(
                 text = version.reference,

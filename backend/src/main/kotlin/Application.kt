@@ -23,9 +23,9 @@ public fun main() {
             HikariConfig(
                 Properties().apply {
                     setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource")
-                    setProperty("dataSource.user", System.getenv("DB_USER") ?: "matt")
-                    setProperty("dataSource.password", System.getenv("DB_PASS") ?: "123456")
-                    setProperty("dataSource.databaseName", System.getenv("DB_NAME") ?: "test")
+                    setProperty("dataSource.user", System.getenv("DB_USER") ?: "triumph")
+                    setProperty("dataSource.password", System.getenv("DB_PASS") ?: "triumph")
+                    setProperty("dataSource.databaseName", System.getenv("DB_NAME") ?: "triumph")
                     setProperty("dataSource.portNumber", System.getenv("DB_PORT") ?: "5432")
                     setProperty("dataSource.serverName", System.getenv("DB_SERVER") ?: "localhost")
                 }

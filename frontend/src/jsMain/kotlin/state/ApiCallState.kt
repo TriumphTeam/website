@@ -7,7 +7,6 @@ import dev.triumphteam.horizon.state.policy.StateMutationPolicy
 import dev.triumphteam.horizon.state.policy.StructureEqualityPolicy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.reflect.KProperty
 
@@ -20,7 +19,7 @@ public class ApiCallState<T : Any>(
     private var value: T? = null
     private var job: Job? = null
 
-    override fun getValue(thisRef: Any?, property: KProperty<*>): ApiResult<T> {
+    override fun get(): ApiResult<T> {
         val value = value
         // First, check if there is already a value, if there is then no point in waiting, just return it.
         if (value != null) return Success(value)
@@ -36,6 +35,10 @@ public class ApiCallState<T : Any>(
         }
 
         return Waiting()
+    }
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): ApiResult<T> {
+        return get()
     }
 
     public fun refreshCall(block: suspend () -> T) {

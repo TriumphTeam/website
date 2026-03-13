@@ -6,40 +6,54 @@ import dev.triumphteam.horizon.state.policy.StructureEqualityPolicy
 import kotlinx.browser.localStorage
 import kotlin.reflect.KProperty
 
-public class LocalStorageState(private val key: String, values: List<String>) :
-    AbstractState<String>(), MutableState<String> {
+public class LocalStorageState<T>(
+    private val key: String,
+    default: T,
+    private val transform: (String) -> T?,
+    private val reverseTransform: (T) -> String,
+) :
+    AbstractState<T>(), MutableState<T> {
 
-    private val mutationPolicy = StructureEqualityPolicy<String>()
+    private val mutationPolicy = StructureEqualityPolicy<T>()
     private val storageValue = localStorage.getItem(key)
-    private val firstValue = values.first()
+    private val firstValue = default
 
-    private var value: String = when (storageValue) {
-        null -> firstValue
-        in values -> storageValue
-        else -> firstValue
-    }
+    private var value: T = storageValue?.let { transform(it) } ?: firstValue
 
-    override fun getValue(thisRef: Any?, property: KProperty<*>): String {
+    override fun get(): T {
         return value
     }
 
-    override fun setValue(thisRef: Any?, property: KProperty<*>, value: String) {
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
+        return get()
+    }
+
+    override fun set(value: T) {
         setValue(value)
     }
 
-    internal fun setValue(value: String): Boolean {
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        set(value)
+    }
+
+    internal fun setValue(value: T): Boolean {
         val shouldMutate = mutationPolicy.shouldMutate(this.value, value)
 
         if (!shouldMutate) return false
 
         this.value = value
-        localStorage.setItem(key, value) // Also write to storage.
+        localStorage.setItem(key, reverseTransform(value)) // Also write to storage.
         update()
         return true
     }
 }
 
-public inline fun localStorageState(key: String, values: List<String>): MutableState<String> {
-    return LocalStorageState(key, values)
+public inline fun <T> localStorageState(
+    key: String,
+    default: T,
+    noinline transform: (String) -> T?,
+    noinline reverseTransform: (T) -> String,
+): MutableState<T> {
+    return LocalStorageState(key, default, transform, reverseTransform)
 }
 

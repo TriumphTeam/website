@@ -41,8 +41,12 @@ public class SectionsObserverState : AbstractState<Set<String>>() {
         allElements.values.forEach { observe(it) }
     }
 
-    override fun getValue(thisRef: Any?, property: KProperty<*>): Set<String> {
+    override fun get(): Set<String> {
         return visibleElements
+    }
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): Set<String> {
+        return get()
     }
 
     override fun onRemove(element: ReactiveElement) {

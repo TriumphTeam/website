@@ -5,15 +5,15 @@ import dev.triumphteam.horizon.html.FlowContent
 import dev.triumphteam.horizon.html.div
 import dev.triumphteam.horizon.html.h1
 import dev.triumphteam.horizon.router.navigate
+import dev.triumphteam.horizon.state.MutableState
 import dev.triumphteam.horizon.state.State
 import dev.triumphteam.website.serializable.NavigationPage
 import dev.triumphteam.website.serializable.VersionDocument
-import org.w3c.dom.Element
 
 public fun FlowContent.navigationArea(
     pageState: State<String>,
     document: VersionDocument,
-    popoverElement: Element? = null,
+    openState: MutableState<Boolean>,
 ) {
     div(className = "px-4 overflow-y-auto overflow-x-hidden overscroll-contain grow") {
         div(className = "grid grid-cols-1 gap-10 text-dark-text-secondary") {
@@ -22,7 +22,7 @@ public fun FlowContent.navigationArea(
                     pageState = pageState,
                     text = group.name,
                     pages = group.pages,
-                    element = popoverElement,
+                    openState = openState,
                 )
             }
         }
@@ -33,7 +33,7 @@ private fun FlowContent.navigationGroup(
     pageState: State<String>,
     text: String,
     pages: List<NavigationPage>,
-    element: Element? = null,
+    openState: MutableState<Boolean>,
 ) {
     div {
         h1(className = "text-dark-text-primary text-2xl xl:text-lg 2xl:text-xl font-bold") {
@@ -48,7 +48,7 @@ private fun FlowContent.navigationGroup(
                         text = page.name,
                         link = page.id,
                         selected = currentPage == page.id,
-                        element = element,
+                        openState = openState,
                     )
                 }
             }
@@ -60,7 +60,7 @@ private fun FlowContent.navigationLink(
     text: String,
     link: String,
     selected: Boolean,
-    element: Element? = null,
+    openState: MutableState<Boolean>,
 ) {
     val color = if (selected) "text-(--project-color)" else ""
 
@@ -69,7 +69,7 @@ private fun FlowContent.navigationLink(
             to = "../$link",
             className = "xl:text-base 2xl:text-lg hover:text-(--project-color) transition ease-in-out",
             beforeNavigate = {
-                element?.asDynamic()?.hidePopover()
+                openState.set(false)
             },
         ) {
             text(text)

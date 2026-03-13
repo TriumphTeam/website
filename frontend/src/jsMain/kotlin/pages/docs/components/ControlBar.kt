@@ -2,20 +2,32 @@ package dev.triumphteam.frontend.pages.docs.components
 
 import dev.triumphteam.frontend.components.dropdown
 import dev.triumphteam.frontend.components.dropdownItem
+import dev.triumphteam.frontend.components.rememberDropdownState
 import dev.triumphteam.horizon.component.functional.component
 import dev.triumphteam.horizon.html.FlowContent
+import dev.triumphteam.horizon.html.TagMarker
+import dev.triumphteam.horizon.html.button
 import dev.triumphteam.horizon.html.div
 import dev.triumphteam.horizon.html.i
 import dev.triumphteam.horizon.html.span
 import dev.triumphteam.horizon.state.MutableState
+import dev.triumphteam.website.serializable.SettingValue
 import dev.triumphteam.website.serializable.VersionSetting
+import org.w3c.dom.events.Event
 
-public fun FlowContent.controlBar(settings: List<VersionSetting>, settingStates: Map<String, MutableState<String>>) {
-    div(className = "fixed left-1/2 -translate-x-1/2 bottom-6 border border-white/10 bg-dark-background/80 p-2 noise backdrop-blur-md rounded-lg text-dark-text-primary shadow-[0px_0px_14px_0px_rgba(0,_0,_0,_0.6)]") {
-        div(className = "flex justify-center items-center gap-2") {
+private const val BAR_CLASSES = "fixed left-1/2 -translate-x-1/2 bottom-6 border border-white/10 bg-dark-background " +
+        "p-2 noise rounded-lg text-dark-text-primary " +
+        "shadow-[0px_0px_14px_0px_rgba(0,_0,_0,_0.6)]"
+
+public fun FlowContent.controlBar(
+    settings: List<VersionSetting>,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
+    div(className = BAR_CLASSES) {
+        div(className = "flex justify-center items-center gap-2 text-sm xl:text-md") {
             div(className = "flex-grow flex justify-center items-center gap-2") {
                 settings.forEach { setting ->
-                    val state = settingStates[setting.id] ?: return@forEach
+                    val settingState = settingStates[setting.id] ?: return@forEach
 
                     val hasValues = setting.values.size > 1
 
@@ -23,36 +35,38 @@ public fun FlowContent.controlBar(settings: List<VersionSetting>, settingStates:
                     val cursorClass = if (hasValues) "cursor-pointer" else ""
 
                     val dropdownId = "${setting.id}-dropdown"
-                    val anchor = "setting-dropdown-${setting.id}"
 
-                    div(className = "relative") {
+                    if (!hasValues) return@forEach
 
-                        component {
-                            var stateValue by remember(state)
+                    component {
 
-                            render {
-                                barButton(
-                                    decorate = "min-w-32 bg-dark-surface $hoverClass $cursorClass text-sm",
-                                    tooltip = setting.name,
-                                ) {
-                                    style = "anchor-name: --$anchor;"
-                                    popoverTarget = dropdownId
-                                    span { text(stateValue) }
-                                    if (hasValues) i(className = "bx bx-chevron-down")
+                        var opened by rememberDropdownState(dropdownId)
+                        var settingValue by remember(settingState)
+
+                        render {
+                            div(id = dropdownId, className = "relative inline-flex flex-col items-center") {
+                                controlButton(
+                                    hoverClass = hoverClass,
+                                    cursorClass = cursorClass,
+                                    text = settingValue.name,
+                                    showArrow = hasValues,
+                                    onClick = { opened = !opened },
+                                )
+
+                                dropdown(opened = opened, decorate = "bottom-full mb-5", title = setting.name) {
+                                    setting.values.forEach { value ->
+                                        val selected = settingValue == value
+                                        val selectedClass = if (selected) "bg-(--project-color)" else ""
+
+                                        dropdownItem { className ->
+                                            button(className = "$className $selectedClass") {
+                                                onClick = { settingValue = value }
+                                                text(value.name)
+                                            }
+                                        }
+                                    }
                                 }
                             }
-                        }
-
-                        /*if (hasValues) {
-                            dropdown(id = dropdownId, anchor = "setting-dropdown") {
-                                dropdownItem("test", "test")
-                            }
-                        }*/
-                        dropdown(
-                            id = dropdownId,
-                            decorate = ""
-                        ) {
-                            dropdownItem("test", "test")
                         }
                     }
                 }
@@ -62,11 +76,28 @@ public fun FlowContent.controlBar(settings: List<VersionSetting>, settingStates:
 
             div(className = "") {
                 barButton(
-                    decorate = "bg-(--project-color) hover:bg-(--project-color)/90 text-md w-11 cursor-pointer",
+                    decorate = "bg-(--project-color) hover:bg-(--project-color)/90 w-11 cursor-pointer",
                 ) {
                     i(className = "bx bx-search")
                 }
             }
         }
+    }
+}
+
+@TagMarker
+private fun FlowContent.controlButton(
+    hoverClass: String,
+    cursorClass: String,
+    text: String,
+    showArrow: Boolean,
+    onClick: (Event) -> Unit = {},
+) {
+    barButton(
+        decorate = "min-w-16 xl:min-w-32 bg-dark-surface $hoverClass $cursorClass text-sm",
+    ) {
+        this.onClick = onClick
+        span { text(text) }
+        if (showArrow) i(className = "bx bx-chevron-down")
     }
 }

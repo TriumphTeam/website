@@ -10,6 +10,8 @@ import dev.triumphteam.frontend.state.fold
 import dev.triumphteam.horizon.app
 import dev.triumphteam.horizon.component.functional.component
 import dev.triumphteam.horizon.html.div
+import kotlinx.browser.document
+import org.w3c.dom.HTMLElement
 
 public fun main() {
     app {

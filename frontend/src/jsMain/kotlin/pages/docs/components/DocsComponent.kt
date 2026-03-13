@@ -1,6 +1,7 @@
 package dev.triumphteam.frontend.pages.docs.components
 
 import dev.triumphteam.frontend.api.API_BASE_URL
+import dev.triumphteam.horizon.component.functional.component
 import dev.triumphteam.horizon.html.FlowContent
 import dev.triumphteam.horizon.html.FlowTag
 import dev.triumphteam.horizon.html.UnsafeApi
@@ -21,8 +22,8 @@ import dev.triumphteam.horizon.html.span
 import dev.triumphteam.horizon.html.ul
 import dev.triumphteam.horizon.html.video
 import dev.triumphteam.horizon.router.navigate
+import dev.triumphteam.horizon.state.MutableState
 import dev.triumphteam.website.serializable.BoldComponent
-import dev.triumphteam.website.serializable.BuildToolCondition
 import dev.triumphteam.website.serializable.BulletListComponent
 import dev.triumphteam.website.serializable.CodeBlockComponent
 import dev.triumphteam.website.serializable.CodeComponent
@@ -35,79 +36,96 @@ import dev.triumphteam.website.serializable.HintType
 import dev.triumphteam.website.serializable.HtmlComponent
 import dev.triumphteam.website.serializable.ImageComponent
 import dev.triumphteam.website.serializable.ItalicComponent
-import dev.triumphteam.website.serializable.LanguageCondition
 import dev.triumphteam.website.serializable.LinkComponent
 import dev.triumphteam.website.serializable.ListItemComponent
 import dev.triumphteam.website.serializable.OrderedListComponent
 import dev.triumphteam.website.serializable.PageDocument
 import dev.triumphteam.website.serializable.ParagraphComponent
-import dev.triumphteam.website.serializable.PlatformCondition
 import dev.triumphteam.website.serializable.QuoteComponent
 import dev.triumphteam.website.serializable.RootComponent
 import dev.triumphteam.website.serializable.SeparatorComponent
+import dev.triumphteam.website.serializable.SettingValue
 import dev.triumphteam.website.serializable.SoftLineBreakComponent
 import dev.triumphteam.website.serializable.StrikethroughComponent
 import dev.triumphteam.website.serializable.TextComponent
 import dev.triumphteam.website.serializable.UnderlineComponent
 import kotlinx.browser.window
 
-public fun FlowTag.docsComponents(document: PageDocument) {
-    rootComponent(document.content)
+public fun FlowContent.docsComponents(
+    document: PageDocument,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
+    rootComponent(document.content, settingStates)
 }
 
-private fun FlowTag.childComponent(children: List<DocComponent>) {
+private fun FlowContent.childComponent(
+    children: List<DocComponent>,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
+    fun simpleText(content: String) {
+        if (this is FlowTag) {
+            text(content)
+            return
+        }
+
+        span { text(content) }
+    }
+
     children.forEach { component ->
         when (component) {
-            is RootComponent -> rootComponent(component)
+            is RootComponent -> rootComponent(component, settingStates)
             is HtmlComponent -> htmlComponent(component)
-            is HeaderComponent -> headerComponent(component)
-            is TextComponent -> text(component.content)
-            is ParagraphComponent -> paragraphComponent(component)
-            is SoftLineBreakComponent -> text(" ") // Soft line break is just a space.
+            is HeaderComponent -> headerComponent(component, settingStates)
+            is TextComponent -> simpleText(component.content)
+            is ParagraphComponent -> paragraphComponent(component, settingStates)
+            is SoftLineBreakComponent -> simpleText(" ") // Soft line break is just a space.
             is HardLineBreakComponent -> br()
-            is QuoteComponent -> quoteComponent(component)
-            is BulletListComponent -> bulletListComponent(component)
-            is OrderedListComponent -> orderListComponent(component)
+            is QuoteComponent -> quoteComponent(component, settingStates)
+            is BulletListComponent -> bulletListComponent(component, settingStates)
+            is OrderedListComponent -> orderListComponent(component, settingStates)
             is CodeComponent -> codeComponent(component)
             is CodeBlockComponent -> codeBlockComponent(component)
 
             is BoldComponent -> {
                 span(className = "font-bold") {
-                    childComponent(component.children)
+                    childComponent(component.children, settingStates)
                 }
             }
 
             is ItalicComponent -> {
                 span(className = "italic") {
-                    childComponent(component.children)
+                    childComponent(component.children, settingStates)
                 }
             }
 
             is StrikethroughComponent -> {
                 span(className = "line-through") {
-                    childComponent(component.children)
+                    childComponent(component.children, settingStates)
                 }
             }
 
             is UnderlineComponent -> {
                 span(className = "underline") {
-                    childComponent(component.children)
+                    childComponent(component.children, settingStates)
                 }
             }
 
             is SeparatorComponent -> separator()
-            is LinkComponent -> linkComponent(component)
+            is LinkComponent -> linkComponent(component, settingStates)
             is ImageComponent -> imageComponent(component)
-            is HintComponent -> hintComponent(component)
-            is ConditionalComponent -> conditionalComponent(component)
+            is HintComponent -> hintComponent(component, settingStates)
+            is ConditionalComponent -> conditionalComponent(component, settingStates)
 
             else -> {}
         }
     }
 }
 
-private fun FlowTag.rootComponent(component: RootComponent) {
-    childComponent(component.children)
+private fun FlowContent.rootComponent(
+    component: RootComponent,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
+    childComponent(component.children, settingStates)
 }
 
 private fun FlowContent.htmlComponent(component: HtmlComponent) {
@@ -116,7 +134,10 @@ private fun FlowContent.htmlComponent(component: HtmlComponent) {
     }
 }
 
-private fun FlowContent.headerComponent(component: HeaderComponent) {
+private fun FlowContent.headerComponent(
+    component: HeaderComponent,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
     val textSize = when (component.level) {
         1 -> "text-2xl"
         2 -> "text-xl"
@@ -134,30 +155,40 @@ private fun FlowContent.headerComponent(component: HeaderComponent) {
             }
             when (component.level) {
                 1 -> h1(id = component.id, className = textSize) {
-                    childComponent(component.children)
+                    childComponent(component.children, settingStates)
                 }
 
                 2 -> h2(id = component.id, className = textSize) {
-                    childComponent(component.children)
+                    childComponent(component.children, settingStates)
                 }
 
                 else -> h3(id = component.id, className = textSize) {
-                    childComponent(component.children)
+                    childComponent(component.children, settingStates)
                 }
             }
         }
     }
 }
 
-private fun FlowContent.paragraphComponent(component: ParagraphComponent) {
-    div(className = "leading-8") { childComponent(component.children) }
+private fun FlowContent.paragraphComponent(
+    component: ParagraphComponent,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
+    div(className = "leading-8") { childComponent(component.children, settingStates) }
 }
 
-private fun FlowContent.quoteComponent(component: QuoteComponent) {
-    hintBlock(HintType.QUOTE, component.children)
+private fun FlowContent.quoteComponent(
+    component: QuoteComponent,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
+    hintBlock(HintType.QUOTE, component.children, settingStates)
 }
 
-private fun FlowContent.hintBlock(type: HintType, children: List<DocComponent>) {
+private fun FlowContent.hintBlock(
+    type: HintType,
+    children: List<DocComponent>,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
     val color = when (type) {
         HintType.INFO -> "border-(--hint-info)"
         HintType.SUCCESS -> "border-(--hint-success)"
@@ -178,33 +209,42 @@ private fun FlowContent.hintBlock(type: HintType, children: List<DocComponent>) 
         if (icon != null) {
             i(className = "$icon pr-4 text-xl")
         }
-        childComponent(children)
+        childComponent(children, settingStates)
     }
 }
 
-private fun FlowContent.bulletListComponent(component: BulletListComponent) {
+private fun FlowContent.bulletListComponent(
+    component: BulletListComponent,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
     ul(className = "list-disc list-outside !pl-8 [&_*]:leading-3") {
-        listItemComponent(component.children)
+        listItemComponent(component.children, settingStates)
     }
 }
 
-public fun FlowContent.orderListComponent(component: OrderedListComponent) {
+public fun FlowContent.orderListComponent(
+    component: OrderedListComponent,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
     ol(className = "list-decimal list-outside !pl-8 [&_*]:leading-3") {
-        listItemComponent(component.children)
+        listItemComponent(component.children, settingStates)
     }
 }
 
-private fun FlowTag.listItemComponent(components: List<DocComponent>) {
+private fun FlowTag.listItemComponent(
+    components: List<DocComponent>,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
     components.forEach { component ->
         when (component) {
             is ListItemComponent -> {
                 li(className = "py-2") {
-                    childComponent(component.children)
+                    childComponent(component.children, settingStates)
                 }
             }
 
-            is BulletListComponent -> bulletListComponent(component)
-            is OrderedListComponent -> orderListComponent(component)
+            is BulletListComponent -> bulletListComponent(component, settingStates)
+            is OrderedListComponent -> orderListComponent(component, settingStates)
 
             else -> {}
         }
@@ -242,7 +282,10 @@ private fun FlowContent.codeBlockComponent(component: CodeBlockComponent) {
     }
 }
 
-private fun FlowContent.linkComponent(component: LinkComponent) {
+private fun FlowContent.linkComponent(
+    component: LinkComponent,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
     val className = "text-(--project-color) hover:text-(--project-color)/70 transition-colors duration-300 ease-in-out"
 
     if (!component.destination.startsWith("/")) {
@@ -252,7 +295,7 @@ private fun FlowContent.linkComponent(component: LinkComponent) {
             target = Target.BLANK,
             rel = "noreferrer",
         ) {
-            childComponent(component.children)
+            childComponent(component.children, settingStates)
         }
         return
     }
@@ -261,7 +304,7 @@ private fun FlowContent.linkComponent(component: LinkComponent) {
         to = "..${component.destination}",
         className = className,
     ) {
-        childComponent(component.children)
+        childComponent(component.children, settingStates)
     }
 }
 
@@ -290,15 +333,28 @@ private fun FlowContent.imageComponent(component: ImageComponent) {
     )
 }
 
-private fun FlowContent.hintComponent(component: HintComponent) {
-    hintBlock(component.hintType, component.children)
+private fun FlowContent.hintComponent(
+    component: HintComponent,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
+    hintBlock(component.hintType, component.children, settingStates)
 }
 
-private fun FlowContent.conditionalComponent(component: ConditionalComponent) {
-    when (val condition = component.condition) {
-        is PlatformCondition -> {}
-        is LanguageCondition -> {}
-        is BuildToolCondition -> {}
+private fun FlowContent.conditionalComponent(
+    component: ConditionalComponent,
+    settingStates: Map<String, MutableState<SettingValue>>,
+) {
+    component.conditions.forEach { condition ->
+        val settingState = settingStates[condition.condition.id] ?: return@forEach
+
+        component {
+            val state by remember(settingState)
+
+            render {
+                if (state.id != condition.condition.value) return@render
+                childComponent(listOf(condition.value), settingStates)
+            }
+        }
     }
 }
 

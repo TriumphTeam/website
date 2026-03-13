@@ -1,6 +1,6 @@
 package dev.triumphteam.website.docs.project
 
-import dev.triumphteam.website.serializable.ComponentCondition
+import dev.triumphteam.website.serializable.Condition
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -11,18 +11,21 @@ public sealed interface Replacement {
     public data class Raw(public val content: String) : Replacement
 
     @Serializable
-    public data class Conditional(
-        public val condition: ComponentCondition,
-        public val value: Value,
-    ) : Replacement
+    public data class Conditional(public val conditions: List<ConditionalValue>) : Replacement
 }
+
+@Serializable
+public data class ConditionalValue(
+    public val condition: Condition,
+    public val value: Value,
+)
 
 @Serializable
 public sealed interface Value {
 
     @Serializable
-    @SerialName("replacement")
-    public data class Replacement(public val identifier: String) : Value
+    @SerialName("file")
+    public data class File(public val identifier: String) : Value
 
     @Serializable
     @SerialName("raw")

@@ -93,12 +93,20 @@ public class RouteVariableState<T>(initialValue: T) : AbstractState<T>(), Mutabl
     internal var value: T = initialValue
         private set
 
-    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
+    override fun get(): T {
         return value
     }
 
-    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
+        return get()
+    }
+
+    override fun set(value: T) {
         setValue(value)
+    }
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        set(value)
     }
 
     internal fun setValue(value: T): Boolean {
