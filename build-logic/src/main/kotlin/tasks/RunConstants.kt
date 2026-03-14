@@ -64,7 +64,7 @@ val RUN_BACKEND = """
     <GradleProfilingDisabled>false</GradleProfilingDisabled>
     <GradleCoverageDisabled>false</GradleCoverageDisabled>
     <method v="2">
-      <option name="RunConfigurationTask" enabled="true" run_configuration_name="RunPosgress" run_configuration_type="docker-deploy" />
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="RunPostgress" run_configuration_type="docker-deploy" />
     </method>
   </configuration>
 </component>

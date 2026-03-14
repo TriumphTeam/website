@@ -35,6 +35,8 @@
 
 html, body {
     @apply bg-darker-background text-dark-text-secondary;
+    margin: 0;
+    padding: 0;
 }
 
 html {

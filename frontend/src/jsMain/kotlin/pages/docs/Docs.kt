@@ -30,7 +30,5 @@ public fun FlowContent.docs(pageState: State<String>, projectData: ProjectVersio
             sidebar(pageState, projectData)
             pageContent(pageState, projectData, settingStates)
         }
-
-        controlBar(projectData.document.settings, settingStates)
     }
 }

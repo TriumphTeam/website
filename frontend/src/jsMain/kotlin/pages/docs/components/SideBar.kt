@@ -5,6 +5,7 @@ import dev.triumphteam.frontend.internal.now
 import dev.triumphteam.frontend.pages.docs.components.sidebar.navigationArea
 import dev.triumphteam.frontend.pages.docs.components.sidebar.projectButtons
 import dev.triumphteam.frontend.pages.docs.components.sidebar.projectHeader
+import dev.triumphteam.frontend.pages.docs.components.sidebar.searchButton
 import dev.triumphteam.horizon.component.functional.component
 import dev.triumphteam.horizon.html.FlowContent
 import dev.triumphteam.horizon.html.button
@@ -80,6 +81,7 @@ private fun FlowContent.sideBarContent(
 
     projectHeader(projectData)
     projectButtons(document.discord, document.github, document.javadocs)
+    searchButton()
     navigationArea(pageState, document, openState)
     smallFooter()
 }
