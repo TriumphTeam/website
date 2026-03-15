@@ -48,26 +48,6 @@ public fun FlowContent.home() {
                         }
                     }
 
-                    component {
-
-                        var isOpen by remember(false)
-
-                        render {
-                            button {
-                                onClick = {
-                                    isOpen = !isOpen
-                                }
-                                text("Click me")
-                            }
-
-                            val openClass = if (isOpen) "dropdown-open" else "dropdown-closed"
-
-                            div(className = "$openClass absolute w-32 h-32 bg-red-400 dropdown") {
-                               text("dropdown")
-                            }
-                        }
-                    }
-
                     projects()
                 }
             }

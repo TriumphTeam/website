@@ -18,10 +18,7 @@ public fun FlowContent.searchButton() {
 
         render {
             div(className = "cursor-pointer") {
-                onClick = {
-                    println("Clicked")
-                    openedState.set(true)
-                }
+                onClick = { openedState.set(true) }
 
                 div(className = "$SEARCH_CLASS w-full") {
                     div(className = "w-full") {

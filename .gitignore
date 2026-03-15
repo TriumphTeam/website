@@ -133,3 +133,4 @@ projects.zip
 .idea/
 
 old-frontend/
+/backend/data-ktor/
