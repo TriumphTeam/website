@@ -8,7 +8,6 @@ import dev.triumphteam.horizon.state.policy.StructureEqualityPolicy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlin.reflect.KProperty
 
 public class ApiCallState<T : Any>(
     private var block: suspend () -> T,
@@ -35,10 +34,6 @@ public class ApiCallState<T : Any>(
         }
 
         return Waiting()
-    }
-
-    override fun getValue(thisRef: Any?, property: KProperty<*>): ApiResult<T> {
-        return get()
     }
 
     public fun refreshCall(block: suspend () -> T) {

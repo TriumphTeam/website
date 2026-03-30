@@ -43,7 +43,7 @@ public class ContentSection(
     public val title: String,
     public val section: String,
     public val sectionId: String,
-    public val content: String,
+    @JsName("content") public val content: String,
 )
 
 @Serializable

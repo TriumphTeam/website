@@ -9,7 +9,6 @@ import dev.triumphteam.horizon.state.policy.StructureEqualityPolicy
 import kotlinx.browser.document
 import org.w3c.dom.Element
 import org.w3c.dom.asList
-import kotlin.reflect.KProperty
 
 public class SectionsObserverState : AbstractState<Set<String>>() {
 
@@ -43,10 +42,6 @@ public class SectionsObserverState : AbstractState<Set<String>>() {
 
     override fun get(): Set<String> {
         return visibleElements
-    }
-
-    override fun getValue(thisRef: Any?, property: KProperty<*>): Set<String> {
-        return get()
     }
 
     override fun onRemove(element: ReactiveElement) {

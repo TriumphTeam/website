@@ -24,10 +24,6 @@ public class LocalStorageState<T>(
         return value
     }
 
-    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        return get()
-    }
-
     override fun set(value: T) {
         setValue(value)
     }

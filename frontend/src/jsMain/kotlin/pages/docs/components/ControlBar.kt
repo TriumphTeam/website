@@ -15,7 +15,7 @@ import dev.triumphteam.website.serializable.SettingValue
 import dev.triumphteam.website.serializable.VersionSetting
 import org.w3c.dom.events.Event
 
-private const val BAR_CLASSES = "fixed left-1/2 -translate-x-1/2 bottom-6 border border-white/10 bg-dark-background " +
+private const val BAR_CLASSES = "fixed z-90 left-1/2 -translate-x-1/2 bottom-6 border border-white/10 bg-dark-background " +
         "p-2 noise rounded-lg text-dark-text-primary " +
         "shadow-[0px_0px_14px_0px_rgba(0,_0,_0,_0.6)]"
 
@@ -97,7 +97,12 @@ private fun FlowContent.controlButton(
         decorate = "min-w-16 xl:min-w-32 bg-dark-surface $hoverClass $cursorClass text-sm",
     ) {
         this.onClick = onClick
-        span { text(text) }
+        span(className = "hidden lg:inline") {
+            text(text)
+        }
+
+        i(className = "inline xl:!hidden bx bx-check")
+
         if (showArrow) i(className = "bx bx-chevron-down")
     }
 }

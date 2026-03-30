@@ -3,8 +3,10 @@ package dev.triumphteam.backend.content
 import dev.triumphteam.website.serializable.CodeComponent
 import dev.triumphteam.website.serializable.ContentSection
 import dev.triumphteam.website.serializable.DocComponent
+import dev.triumphteam.website.serializable.HardLineBreakComponent
 import dev.triumphteam.website.serializable.HeaderComponent
 import dev.triumphteam.website.serializable.RootComponent
+import dev.triumphteam.website.serializable.SoftLineBreakComponent
 import dev.triumphteam.website.serializable.TextComponent
 import dev.triumphteam.website.serializable.WithChildren
 
@@ -48,6 +50,11 @@ public class ContentExtractor(
 
         if (component is CodeComponent) {
             current?.append(component.content)
+            return
+        }
+
+        if (component is SoftLineBreakComponent || component is HardLineBreakComponent) {
+            current?.append(" ")
             return
         }
 

@@ -168,3 +168,7 @@ p:empty {
     transform: scale(0);
     opacity: 0;
 }
+
+.search-area {
+    transition: opacity 0.2s ease;
+}

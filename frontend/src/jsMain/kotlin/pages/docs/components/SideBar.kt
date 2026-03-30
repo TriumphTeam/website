@@ -25,7 +25,7 @@ private const val SIDEBAR_CLASSES = "flex-col gap-4 px-4 justify-center noise"
 
 private const val SIDEBAR_ID = "sidebar"
 
-public fun FlowContent.sidebar(pageState: State<String>, projectData: ProjectVersion) {
+public fun FlowContent.sidebar(pageState: State<String>, searchOpenedState: MutableState<Boolean>, projectData: ProjectVersion) {
     component {
         val openState = mutableStateOf(false)
         var opened by remember(openState)
@@ -66,7 +66,7 @@ public fun FlowContent.sidebar(pageState: State<String>, projectData: ProjectVer
                 id = SIDEBAR_ID,
                 className = "sidebar $openClasses $RESPONSIVE_BAR_POSITION $SIDEBAR_SIZES $SIDEBAR_CLASSES $DEFAULT_BACKGROUND h-screen rounded-r-lg",
             ) {
-                sideBarContent(pageState, projectData, openState)
+                sideBarContent(pageState, searchOpenedState, projectData, openState)
             }
         }
     }
@@ -74,6 +74,7 @@ public fun FlowContent.sidebar(pageState: State<String>, projectData: ProjectVer
 
 private fun FlowContent.sideBarContent(
     pageState: State<String>,
+    searchOpenedState: MutableState<Boolean>,
     projectData: ProjectVersion,
     openState: MutableState<Boolean>,
 ) {
@@ -81,7 +82,7 @@ private fun FlowContent.sideBarContent(
 
     projectHeader(projectData)
     projectButtons(document.discord, document.github, document.javadocs)
-    searchButton()
+    searchButton(searchOpenedState)
     navigationArea(pageState, document, openState)
     smallFooter()
 }

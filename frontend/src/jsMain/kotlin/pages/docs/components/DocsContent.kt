@@ -26,6 +26,7 @@ import dev.triumphteam.website.serializable.SettingValue
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import kotlinx.browser.document
 
 public fun FlowContent.pageContent(
     pageState: State<String>,
@@ -62,6 +63,12 @@ private fun FlowContent.content(
                 onSuccess = {
                     page(pageDocument = data, settingStates = settingStates)
                     tableOfContents(sections = data.sections)
+
+                    // After we're done rendering, we should attempt to scroll to the anchor.
+                    document.location?.hash?.let { hash ->
+                        if (hash.isEmpty()) return@let
+                        document.getElementById(hash.substring(1))?.scrollIntoView()
+                    }
                 },
                 onWaiting = {
                     page(pageDocument = null, settingStates = settingStates)

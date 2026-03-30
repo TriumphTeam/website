@@ -15,7 +15,6 @@ import dev.triumphteam.website.serializable.NavigationGroup
 import dev.triumphteam.website.serializable.NavigationPage
 import dev.triumphteam.website.serializable.PageContent
 import dev.triumphteam.website.serializable.PageDocument
-import dev.triumphteam.website.serializable.VersionSetting
 import dev.triumphteam.website.serializable.Repository
 import dev.triumphteam.website.serializable.VersionData
 import dev.triumphteam.website.serializable.VersionDocument

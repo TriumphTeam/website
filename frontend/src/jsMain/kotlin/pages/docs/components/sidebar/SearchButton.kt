@@ -8,7 +8,7 @@ import dev.triumphteam.horizon.html.div
 import dev.triumphteam.horizon.html.i
 import dev.triumphteam.horizon.html.span
 
-public fun FlowContent.searchButton(version: String) {
+public fun FlowContent.searchButton(versison: String, s: Int) {
     // val modalTag = searchModal()
 
     div(

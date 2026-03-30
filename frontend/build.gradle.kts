@@ -14,6 +14,7 @@ root {
             dependencies {
                 implementation("dev.triumphteam:horizon-core:1.0.0-SNAPSHOT")
                 implementation(npm("@tailwindcss/vite", "4.1.18"))
+                implementation(npm("fuse.js", "7.1.0"))
                 implementation(libs.bundles.ktor.client)
                 implementation(libs.ktor.client.js)
                 implementation(projects.websiteSerializable)
